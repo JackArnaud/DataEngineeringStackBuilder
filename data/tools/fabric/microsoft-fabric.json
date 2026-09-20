@@ -1,0 +1,30 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "microsoft-fabric",
+  "name": "Microsoft Fabric",
+  "vendor": "Microsoft",
+  "kind": "bundle",
+  "sku": "Microsoft Fabric on an F capacity. Fabric Data Science, Fabric IQ, Copilot and industry solutions are not scored, so derived coverage may understate the platform. Power BI content needs a Pro or Premium Per User licence for viewers below F64.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["sql", "python", "scala", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "includes": [
+    "fabric-onelake",
+    "fabric-data-factory",
+    "fabric-data-engineering",
+    "fabric-data-warehouse",
+    "fabric-real-time-intelligence",
+    "fabric-sql-database",
+    "fabric-mirroring",
+    "fabric-power-bi",
+    "fabric-platform"
+  ],
+  "bundling": "single-contract",
+  "presentation": {
+    "tagline": "SaaS analytics platform: ingestion, lake, warehouse, streaming and Power BI on one capacity."
+  },
+  "pairs_with": ["snowflake", "databricks"],
+  "updated": "2026-09-20"
+}

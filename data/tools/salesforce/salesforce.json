@@ -1,0 +1,26 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "salesforce",
+  "name": "Salesforce (CRM platform)",
+  "vendor": "Salesforce",
+  "kind": "tool",
+  "sku": "Salesforce CRM applications and their REST API. Data Cloud, Tableau Next and Agentforce are not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "per-seat",
+  "interfaces": ["api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.saas-api": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Holds business records such as accounts and custom objects, and exposes them through a REST API that reads object metadata, queries and searches, and creates, updates and deletes records over standard HTTP.",
+      "source": "https://trailhead.salesforce.com/content/learn/modules/api_basics/api_basics_rest"
+    }
+  },
+  "presentation": {
+    "tagline": "CRM applications whose customer records reach the stack through APIs."
+  },
+  "pairs_with": ["tableau", "snowflake"],
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-cloud-sql",
+  "name": "Cloud SQL",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud SQL for MySQL, PostgreSQL and SQL Server.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed relational database service for MySQL, PostgreSQL and SQL Server, aimed at applications that need reliable SQL storage without self-managed administration.",
+      "source": "https://docs.cloud.google.com/sql/docs/introduction"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Handles backups and recovery, high availability and failover, automated maintenance and monitoring for each instance. It manages the database's infrastructure, not yours.",
+      "source": "https://docs.cloud.google.com/sql/docs/introduction"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed MySQL, PostgreSQL and SQL Server for application databases."
+  },
+  "pairs_with": ["postgres", "gcp-datastream"],
+  "updated": "2026-09-20"
+}

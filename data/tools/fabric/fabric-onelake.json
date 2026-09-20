@@ -1,0 +1,65 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-onelake",
+  "name": "OneLake",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "OneLake and the OneLake catalog, included with every Microsoft Fabric tenant and used on a Fabric capacity.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["api", "ui", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.object-store": {
+      "level": 3,
+      "delivery": "native",
+      "note": "One unified data lake per tenant, built on Azure Data Lake Storage, with no infrastructure to provision. It is reached through ADLS Gen2 APIs, and shortcuts give zero-copy access to ADLS, Blob Storage, Amazon S3, Google Cloud Storage and other sources.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    },
+    "store.table-format": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Stores tables in the open Delta Parquet or Iceberg formats, and virtualises metadata so Iceberg tables can be read as Delta and Delta tables can be read by Iceberg readers such as Snowflake.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "The OneLake catalog is the single place to discover, manage and govern data items across OneLake, filtered by domain, workspace, item type and endorsement, with metadata such as owners, schema, lineage and usage.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "OneLake security roles set permissions on folders, tables, rows and columns, and are enforced across SQL, Spark and Power BI so the same rule holds in every engine.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Sensitivity labels enforce encryption or access restrictions on items, and data loss prevention policies detect and alert on sensitive uploads and downloads. Tenant-level policies protect data that lands in OneLake.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "The catalog enriches each data item with lineage metadata. It is a per-item view within Fabric rather than lineage across other platforms.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "One tenant-wide data lake in open table formats, with a governing catalog."
+  },
+  "updated": "2026-09-20"
+}

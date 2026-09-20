@@ -1,0 +1,119 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "snowflake-core",
+  "name": "Snowflake (core platform)",
+  "vendor": "Snowflake",
+  "kind": "tool",
+  "sku": "Snowflake Standard edition. Capability that needs the Enterprise edition is scored in the other Snowflake records with an enterprise-tier constraint.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "java", "scala", "ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.warehouse": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A cloud data platform with separate storage, compute and cloud-services layers. Virtual warehouses are the compute clusters that run SQL, and Snowflake tables are described as ideal for data warehouses.",
+      "source": "https://docs.snowflake.com/en/user-guide/intro-key-concepts"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A SQL query engine designed natively for the cloud, run on virtual warehouses.",
+      "source": "https://docs.snowflake.com/en/user-guide/intro-key-concepts"
+    },
+    "transform.sql-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Dynamic tables turn a SELECT query into a table that Snowflake keeps up to date by refreshing only changed rows, and Snowflake infers the dependency graph between them from the SQL.",
+      "source": "https://docs.snowflake.com/en/user-guide/dynamic-tables-about"
+    },
+    "transform.code-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Snowpark provides Python, Java and Scala libraries whose DataFrame operations and UDFs run inside Snowflake, with no separate cluster.",
+      "source": "https://docs.snowflake.com/en/developer-guide/snowpark/index"
+    },
+    "store.table-format": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Apache Iceberg tables keep data in storage you manage, with Snowflake or an external catalog as the catalog, ACID transactions and schema evolution. Available on all accounts, clouds and regions.",
+      "source": "https://docs.snowflake.com/en/user-guide/tables-iceberg"
+    },
+    "store.olap-serving": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Interactive warehouses and interactive tables are built for sub-second responses and high concurrency, for real-time dashboards and data-powered APIs. Queries over 5 seconds fall back to a standard warehouse.",
+      "source": "https://docs.snowflake.com/en/user-guide/interactive"
+    },
+    "serve.semantic-layer": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Semantic views store metrics, dimensions and relationships as database objects, queried with SQL, Cortex Analyst or BI tools. Querying them reached general availability in August 2025.",
+      "source": "https://docs.snowflake.com/en/user-guide/views-semantic/overview"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Tasks run SQL or stored procedures on a fixed interval or a cron expression, on serverless or warehouse compute, with automatic retry.",
+      "source": "https://docs.snowflake.com/en/user-guide/tasks-intro"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Tasks chain into task graphs that run in series or parallel. It orchestrates work inside Snowflake only.",
+      "source": "https://docs.snowflake.com/en/user-guide/tasks-intro"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A task can be triggered when new data arrives in a stream instead of on a clock.",
+      "source": "https://docs.snowflake.com/en/user-guide/tasks-intro"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "DCM Projects give declarative object management with plan-then-deploy validation and multi-environment targeting, and the Snowflake CLI has first-party integrations for GitHub Actions, GitLab CI/CD and Azure DevOps.",
+      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.cost-visibility",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Budgets set a monthly credit limit on the whole account or on a custom group of objects or tagged resources, and notify by email, cloud messaging or webhook when spend is projected to exceed it. Usage data refreshes every 6.5 hours by default.",
+      "source": "https://docs.snowflake.com/en/user-guide/budgets"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Alerts evaluate a condition on a schedule, or on newly inserted data, and then run an action such as sending a notification. They can watch credit usage or data that breaks a business rule.",
+      "source": "https://docs.snowflake.com/en/user-guide/alerts"
+    },
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform"],
+      "note": "A Terraform provider manages account-level objects, alongside DCM Projects for the objects inside databases. It provisions Snowflake objects, not the cloud beneath them.",
+      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops"
+    },
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform"],
+      "note": "DCM Projects target multiple environments from one declarative definition.",
+      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops"
+    }
+  ],
+  "presentation": {
+    "tagline": "Cloud data platform: SQL warehouses, Snowpark, dynamic tables, tasks and Iceberg."
+  },
+  "updated": "2026-09-20"
+}

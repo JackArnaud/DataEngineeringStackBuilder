@@ -13,6 +13,8 @@ function setup(url = "/") {
 }
 
 const chips = () => screen.getByRole("list", { name: "Selected tools" });
+/** The "Add all" control lives in a vendor's heading row; several vendors have one, so find it by vendor. */
+const vendorHead = (vendor: string) => screen.getByRole("heading", { name: vendor }).closest<HTMLElement>(".vendor__head")!;
 const gapButtons = () => screen.getAllByRole("button").filter((b) => b.classList.contains("gap"));
 
 beforeEach(() => window.history.replaceState(null, "", "/"));
@@ -60,10 +62,20 @@ describe("building a stack", () => {
 
   it("adds every service of a portfolio at once, and only its services", async () => {
     const user = setup();
-    await user.click(screen.getByRole("button", { name: "Add all 9 services" }));
+    await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: "Add all 9 services" }));
     expect(within(chips()).getAllByRole("listitem")).toHaveLength(9);
     expect(within(chips()).queryByText("Amazon Web Services")).toBeNull();
-    expect((screen.getByRole("button", { name: "All services added" }) as HTMLButtonElement).disabled).toBe(true);
+    expect((within(vendorHead("Amazon Web Services")).getByRole("button", { name: "All services added" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("adds a portfolio service that the picker lists under another vendor", async () => {
+    window.history.replaceState(null, "", "/");
+    const user = userEvent.setup();
+    const moved = { ...model, tools: model.tools.map((t) => (t.id === "aws-glue" ? { ...t, vendor: "Somebody Else" } : t)) };
+    render(<Builder model={moved} />);
+    await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: "Add all 9 services" }));
+    expect(within(chips()).getAllByRole("listitem")).toHaveLength(9);
+    expect(within(chips()).getByText("AWS Glue")).toBeTruthy();
   });
 
   it("removes a tool", async () => {

@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "snowflake-openflow",
+  "name": "Snowflake Openflow",
+  "vendor": "Snowflake",
+  "kind": "tool",
+  "sku": "Openflow, generally available as a Snowflake Deployment on Snowpark Container Services (AWS, Azure and GCP commercial regions) and as a BYOC deployment in your own cloud (AWS commercial regions).",
+  "license": "proprietary",
+  "deployment": ["saas", "cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "sql"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed integration service built on Apache NiFi, with hundreds of processors and connectors for databases, SaaS platforms such as Salesforce and HubSpot, streaming services and cloud storage, in batch and streaming modes.",
+      "source": "https://docs.snowflake.com/en/user-guide/data-integration/openflow/about"
+    },
+    "ingest.cdc": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Database connectors with change data capture for MySQL, PostgreSQL, Oracle, SQL Server and MongoDB. The overview does not give a release state per connector, so check the one you need.",
+      "source": "https://docs.snowflake.com/en/user-guide/data-integration/openflow/about"
+    }
+  },
+  "presentation": {
+    "tagline": "Managed NiFi-based connectors that bring databases, SaaS and streams into Snowflake."
+  },
+  "updated": "2026-09-20"
+}

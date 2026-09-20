@@ -38,7 +38,10 @@ describe("suggestions", () => {
 
   it("offer tools that provide a missing band capability, highest level first", () => {
     const s = suggest(["aws-s3"], "band:govern.masking@store");
-    expect(s[0]).toMatchObject({ tool: "unity-catalog", level: 3 });
+    expect(s[0]).toMatchObject({ level: 3 });
+    expect(s.filter((x) => x.level === 3).map((x) => x.tool)).toEqual(expect.arrayContaining(["unity-catalog", "gcp-bigquery"]));
+    // Snowflake Horizon scores masking only on Enterprise, so it is not offered for it.
+    expect(s.map((x) => x.tool)).not.toContain("snowflake-horizon");
     expect(s.map((x) => x.level)).toEqual([...s.map((x) => x.level)].sort((a, b) => b - a));
     expect(s.find((x) => x.tool === "postgres")).toMatchObject({ level: 1, delivery: "community" });
   });

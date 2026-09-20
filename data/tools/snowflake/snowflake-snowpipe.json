@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "snowflake-snowpipe",
+  "name": "Snowpipe and Snowpipe Streaming",
+  "vendor": "Snowflake",
+  "kind": "tool",
+  "sku": "Snowpipe and Snowpipe Streaming, available in Snowflake Standard edition.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "java", "python"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Snowpipe loads files from a stage as soon as they arrive, in a serverless way, triggered by cloud storage event notifications or a REST call. It loads files only; it does not extract from databases or SaaS applications.",
+      "source": "https://docs.snowflake.com/en/user-guide/data-load-snowpipe-intro"
+    },
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Snowpipe Streaming writes rows straight into tables from applications, the Kafka connector or SDKs, quoting as low as 5 seconds from ingest to queryable. Named channels give ordered, exactly-once ingestion.",
+      "source": "https://docs.snowflake.com/en/user-guide/snowpipe-streaming/data-load-snowpipe-streaming-overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Serverless file loading and low-latency row streaming into Snowflake tables."
+  },
+  "updated": "2026-09-20"
+}

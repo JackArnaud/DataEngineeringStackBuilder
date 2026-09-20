@@ -1,0 +1,32 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dynamics-365",
+  "name": "Microsoft Dynamics 365",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "Dynamics 365 business applications on Microsoft Dataverse, with the Dataverse Web API and Azure Synapse Link. Copilot and Fabric-side analytics are not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "per-seat",
+  "interfaces": ["api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.saas-api": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Business applications whose data lives in Dataverse tables, exposed through the Dataverse Web API, an OData v4 RESTful interface that does the same operations as the .NET SDK.",
+      "source": "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview"
+    },
+    "ingest.cdc": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Azure Synapse Link for Dataverse continuously pushes standard and custom tables, including create, update and delete changes, to Azure Data Lake Storage Gen2 or Synapse using change tracking. It exports from Dataverse only and needs an Azure subscription.",
+      "source": "https://learn.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake"
+    }
+  },
+  "presentation": {
+    "tagline": "ERP and CRM applications on Dataverse, with a REST API and lake export."
+  },
+  "pairs_with": ["power-bi"],
+  "updated": "2026-09-20"
+}

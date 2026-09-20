@@ -1,0 +1,25 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "snowflake-apps",
+  "name": "Streamlit in Snowflake",
+  "vendor": "Snowflake",
+  "kind": "tool",
+  "sku": "Streamlit in Snowflake, as included in the Snowflake platform. The Native App Framework is not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.data-apps": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Builds, deploys and shares Streamlit apps inside Snowflake, with Snowflake managing compute and storage. App source is stored as Snowflake objects under role-based access control, and apps run on either a warehouse or a container runtime.",
+      "source": "https://docs.snowflake.com/en/developer-guide/streamlit/about-streamlit"
+    }
+  },
+  "presentation": {
+    "tagline": "Streamlit data apps that run next to the data, under Snowflake's access model."
+  },
+  "updated": "2026-09-20"
+}

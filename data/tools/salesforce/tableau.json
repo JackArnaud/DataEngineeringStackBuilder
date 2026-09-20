@@ -1,0 +1,79 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "tableau",
+  "name": "Tableau",
+  "vendor": "Salesforce",
+  "kind": "tool",
+  "sku": "Tableau Cloud and Server, base edition. Data Management (Catalog, Prep Conductor, virtual connections, data policies) is only available with Tableau Enterprise, Cloud+ or Tableau+, so those features carry an enterprise-tier constraint. Tableau Next is not scored.",
+  "license": "proprietary",
+  "deployment": ["saas", "self-hosted", "desktop"],
+  "pricing_model": "per-seat",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.bi-viz": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Tableau Desktop is the authoring tool for visualisations and dashboards, and Tableau Cloud and Server add web authoring and a platform for sharing and consuming analytics.",
+      "source": "https://help.tableau.com/current/tableau-next/en-us/tableau_next_tableau_product_overview.htm"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "note": "Prep Conductor runs Tableau Prep flows on a schedule on Tableau Server or Cloud. It needs Data Management, so it is not available on the base edition.",
+      "source": "https://help.tableau.com/current/prep/en-us/prep_get_started.htm"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Row-level security by manual or dynamic user filters, by the database's own row-level security, or by JWT user attributes for embedded content. None of these needs Data Management.",
+      "source": "https://help.tableau.com/current/online/en-us/rls_options_overview.htm"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["serve"],
+      "note": "Data policies enforce row-level security on virtual connections, on the server for every query. The only row-level option that needs a Data Management licence.",
+      "source": "https://help.tableau.com/current/online/en-us/rls_options_overview.htm"
+    },
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["serve"],
+      "note": "Tableau Catalog indexes workbooks, data sources, sheets, virtual connections and flows, and lets stewards add descriptions, certification and data quality warnings. Licensed through Data Management. It catalogs Tableau content, not the wider estate.",
+      "source": "https://help.tableau.com/current/online/en-us/dm_catalog_overview.htm"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 3,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["serve"],
+      "note": "Catalog shows lineage and impact analysis: which workbooks and other content depend on a given column or field. Licensed through Data Management.",
+      "source": "https://help.tableau.com/current/online/en-us/dm_catalog_overview.htm"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Visual self-service data preparation",
+      "description": "Point-and-click combining, cleaning and shaping of data in a flow, aimed at analysts, without writing SQL or Spark code. It sits between SQL transformation and code transformation and fits neither.",
+      "home": "transform",
+      "nearest_existing": "transform.code-transform",
+      "source": "https://help.tableau.com/current/prep/en-us/prep_get_started.htm"
+    }
+  ],
+  "presentation": {
+    "tagline": "Visual analytics: dashboards and exploration, with governance on the higher editions."
+  },
+  "pairs_with": ["salesforce", "snowflake"],
+  "updated": "2026-09-20"
+}

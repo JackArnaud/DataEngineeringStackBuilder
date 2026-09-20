@@ -1,0 +1,52 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-sql-database",
+  "name": "Azure SQL Database",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure SQL Database, the single-database and elastic-pool PaaS service. Azure SQL Managed Instance and SQL Server on Azure VMs are separate offerings and are not scored here.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed PaaS database engine that always runs the latest stable SQL Server engine, with high availability, in-memory OLTP and a serverless compute option.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Microsoft handles upgrading, patching, backups (full, differential and log, with point-in-time restore), failover and replication. It manages the database's infrastructure, not yours.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Query Store records query performance, automatic tuning and recommendations flag regressions and index problems, and built-in alerting emits metrics and logs to Azure Monitor.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Central identity management for database users through Microsoft Entra integration, with multifactor authentication.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed SQL Server engine for application databases."
+  },
+  "pairs_with": ["ssms", "azure-data-factory"],
+  "updated": "2026-09-20"
+}

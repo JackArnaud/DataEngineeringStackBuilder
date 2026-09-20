@@ -68,7 +68,14 @@ describe("seed dataset structure", () => {
 
   it("carries proposed capabilities as evidence for taxonomy growth", () => {
     const proposals = records.flatMap((r) => (r.proposed_capabilities ?? []).map((p) => ({ id: r.id, ...p })));
-    expect(proposals.map((p) => p.id).sort()).toEqual(["postgres", "ssms"]);
+    expect(proposals.map((p) => p.id).sort()).toEqual([
+      "azure-data-factory",
+      "fabric-data-factory",
+      "postgres",
+      "power-bi",
+      "ssms",
+      "tableau",
+    ]);
     for (const p of proposals) expect(p.nearest_existing).toBeDefined();
   });
 
@@ -108,13 +115,24 @@ describe("seed dataset structure", () => {
         .filter(({ s }) => s.constraint?.includes("enterprise-tier"))
         .map(({ id }) => `${t.id}:${id}`),
     );
-    expect(constrained).toEqual(["dbt-platform-services:orchestrate.dependency-dag"]);
+    expect(constrained.sort()).toEqual([
+      "dbt-platform-services:orchestrate.dependency-dag",
+      "snowflake-horizon:govern.masking",
+      "snowflake-horizon:govern.policy",
+      "snowflake-horizon:observe.lineage",
+      "snowflake-horizon:quality.anomaly-detection",
+      "snowflake-horizon:quality.tests",
+      "tableau:govern.catalog",
+      "tableau:govern.policy",
+      "tableau:observe.lineage",
+      "tableau:orchestrate.scheduling",
+    ]);
   });
 
   it("leaves no capability unscored except the ones we know no seed covers", () => {
     // Add a capability to this list only when it is a deliberate, understood gap. Remove it
     // as soon as a record scores it. A new taxonomy capability with no scores fails this test.
-    const KNOWN_UNSCORED = ["source.saas-api", "store.olap-serving"];
+    const KNOWN_UNSCORED: string[] = [];
     const scored = new Set(tools.flatMap((t) => [...Object.keys(t.coverage ?? {}), ...(t.bands ?? []).map((b) => b.band)]));
     const unscored = Object.keys(taxonomy.capabilities).filter((id) => !scored.has(id));
     expect(unscored.filter((id) => !KNOWN_UNSCORED.includes(id))).toEqual([]);

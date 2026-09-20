@@ -1,0 +1,49 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-composer",
+  "name": "Cloud Composer (now Managed Service for Apache Airflow)",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "The managed Apache Airflow service documented as Cloud Composer and since renamed Managed Service for Apache Airflow. The record ID keeps the old name because IDs are immutable.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "ui", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed workflow orchestration service on Apache Airflow to create, schedule, monitor and manage pipelines that span clouds and on-premises data centres.",
+      "source": "https://docs.cloud.google.com/composer/docs/composer-3/composer-overview"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Workflows are Airflow DAGs written in Python: collections of tasks organised to reflect their relationships and dependencies, using native Airflow tools such as the web interface and CLI.",
+      "source": "https://docs.cloud.google.com/composer/docs/composer-3/composer-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Each environment is a self-contained Airflow deployment on a GKE cluster with its own web server, metadata database and Cloud Storage bucket for DAGs, logs and plugins, so separate environments can be run side by side.",
+      "source": "https://docs.cloud.google.com/composer/docs/composer-3/composer-overview"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "The Airflow web interface plus logging and monitoring of environments and DAG runs.",
+      "source": "https://docs.cloud.google.com/composer/docs/composer-3/composer-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed Apache Airflow for scheduling and orchestrating pipelines."
+  },
+  "updated": "2026-09-20"
+}

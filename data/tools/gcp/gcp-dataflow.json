@@ -1,0 +1,41 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-dataflow",
+  "name": "Dataflow",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Dataflow, built on Apache Beam.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["java", "python", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.stream-processing": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Unified stream and batch processing at scale on the open-source Apache Beam model, with Google managing the resources and autoscaling worker VMs up and down.",
+      "source": "https://docs.cloud.google.com/dataflow/docs/overview"
+    },
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Pipelines are written with the Apache Beam SDKs for Java, Python and Go, from pre-built templates, or in JupyterLab notebooks, for ETL and data movement.",
+      "source": "https://docs.cloud.google.com/dataflow/docs/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "A graphical monitoring interface shows pipeline progress and execution details.",
+      "source": "https://docs.cloud.google.com/dataflow/docs/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed Apache Beam for batch and streaming pipelines."
+  },
+  "updated": "2026-09-20"
+}

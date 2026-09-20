@@ -1,0 +1,27 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-cost-management",
+  "name": "Microsoft Cost Management",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Microsoft Cost Management and Billing, covering Azure cost. It reports Azure costs across every service, so the scope is the whole spine.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "free",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "bands": [
+    {
+      "band": "observe.cost-visibility",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["source", "ingest", "store", "transform", "orchestrate", "serve"],
+      "note": "A suite of FinOps tools to analyse, monitor and optimise cloud costs: Cost Analysis, budget, anomaly and scheduled alerts, tag inheritance and shared-cost allocation rules, and exports to external systems.",
+      "source": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/overview-cost-management"
+    }
+  ],
+  "presentation": {
+    "tagline": "Cost analysis, budgets, anomaly alerts and cost allocation for Azure."
+  },
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-stream-analytics",
+  "name": "Azure Stream Analytics",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Stream Analytics, cloud and IoT Edge.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.stream-processing": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed stream processing engine. Jobs read from Event Hubs, IoT Hub or Blob and Data Lake storage, and use a SQL query language with temporal constraints, plus pattern matching, geospatial and anomaly detection functions. It guarantees exactly-once processing with at-least-once delivery.",
+      "source": "https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction"
+    }
+  },
+  "presentation": {
+    "tagline": "SQL-based stream processing over event data, with a no-code editor."
+  },
+  "pairs_with": ["azure-event-hubs"],
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-pubsub",
+  "name": "Pub/Sub",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Pub/Sub.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.event-stream": {
+      "level": 3,
+      "delivery": "native",
+      "note": "An asynchronous, scalable messaging service in which publishers send events without regard to how they are processed and Pub/Sub delivers them to every service that reacts, with latencies typically around 100 milliseconds.",
+      "source": "https://docs.cloud.google.com/pubsub/docs/overview"
+    },
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Used for streaming analytics and data integration pipelines that load and distribute data. Processing is left to the subscribing services.",
+      "source": "https://docs.cloud.google.com/pubsub/docs/overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Global event messaging that decouples producers from consumers."
+  },
+  "updated": "2026-09-20"
+}

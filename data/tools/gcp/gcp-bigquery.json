@@ -1,0 +1,73 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-bigquery",
+  "name": "BigQuery",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "BigQuery. BigQuery ML and Dataform are not scored here; Dataform has its own record.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.warehouse": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed data platform with a storage layer and a separate compute layer that scale independently, and a serverless architecture with no infrastructure to manage.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/introduction"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "ANSI-standard SQL queries, plus Python through BigQuery DataFrames, on the serverless compute layer.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/introduction"
+    },
+    "transform.code-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "BigQuery DataFrames lets Python users analyse and transform data in BigQuery. SQL transformation workflows are scored under Dataform.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/introduction"
+    },
+    "store.table-format": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Supports open table formats Apache Iceberg, Delta and Hudi through BigLake tables and managed Iceberg tables.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/introduction"
+    },
+    "ingest.batch-extract": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Loads batch files in Avro, Parquet, CSV and JSON. It loads what is handed to it; it does not pull from source systems, which Datastream and others do.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/introduction"
+    },
+    "ingest.stream-ingest": {
+      "level": 2,
+      "delivery": "native",
+      "note": "The Storage Write API streams rows in continuously.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/introduction"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.masking",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "serve"],
+      "note": "Dynamic data masking obscures a column for chosen users while still letting them query it, with rules such as nullify, SHA-256 hash, default value, email mask and random hash, attached through policy tags.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/column-data-masking-intro"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "serve"],
+      "note": "Column-level security through policy tags in inheriting taxonomies, with a Fine-Grained Reader role for unmasked access.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/column-data-masking-intro"
+    }
+  ],
+  "presentation": {
+    "tagline": "Serverless data warehouse with SQL, Python, open table formats and column masking."
+  },
+  "updated": "2026-09-20"
+}

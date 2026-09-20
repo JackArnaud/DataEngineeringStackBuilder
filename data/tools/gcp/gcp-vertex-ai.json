@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-vertex-ai",
+  "name": "Vertex AI (now Gemini Enterprise Agent Platform)",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Model serving and Feature Store on the platform documented as Vertex AI, now under the Gemini Enterprise Agent Platform name. The record ID keeps the old name because IDs are immutable. Training, agents and generative services are not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.ml-serving": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Models are served from endpoints that give online inferences, managed alongside a Model Registry and MLOps tooling for pipelines, experiments and model monitoring.",
+      "source": "https://docs.cloud.google.com/vertex-ai/docs/start/introduction-unified-platform"
+    },
+    "transform.feature-eng": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A Feature Store organises and serves ML features.",
+      "source": "https://docs.cloud.google.com/vertex-ai/docs/start/introduction-unified-platform"
+    }
+  },
+  "presentation": {
+    "tagline": "Managed model endpoints and a feature store."
+  },
+  "updated": "2026-09-20"
+}

@@ -2,39 +2,47 @@
 
 ## Tools to add
 
+All the requested tools are scored. Candidates for later:
+
 | Tool | Why it matters | Notes |
 |---|---|---|
-| Snowflake | Requested. Bundle, single contract. | Likely covers `store.olap-serving` (interactive tables); verify. Edition split may need the enterprise-tier flag or separate records. |
-| GCP | Requested. Portfolio, like AWS. | Per-service records: BigQuery, Dataflow, Pub/Sub, Composer, Looker and others. |
-| Azure | Requested. Portfolio. | Boundary with Fabric and Power BI needs settling first (see Fabric). |
-| Microsoft Fabric | Added. Suite that overlaps Azure and Power BI. | Decide whether it is a bundle, a portfolio, or part of Azure before scoring. Its Real-Time Intelligence workload may cover `store.olap-serving`; verify. Also the natural home for Power BI Premium capacity. |
-| Oracle DB | Requested. Source and engine, like Postgres. | Exercises `source.oltp` and a heavier `store.warehouse` (Autonomous Data Warehouse). |
-| Power BI | Requested. Pro, Premium and Fabric tiers. | First real test of plan tiers: separate records or the enterprise-tier flag. |
-| Tableau | Requested. | `serve.bi-viz`; Salesforce owns it, so check how it composes. |
-| Salesforce | Added. A SaaS application that holds business data. | Would be the first score for `source.saas-api`. Also a possible home for Tableau. |
-| Microsoft Dynamics | Added. Business applications on Dataverse. | Second `source.saas-api` score. Check its link to Fabric before scoring. |
+| Oracle APEX | Oracle's low-code app builder, a `serve.data-apps` candidate. | The docs host refused fetches, so no record exists. Autonomous Database scores `serve.data-apps` at 2 from its workload list; APEX itself is unscored. |
+| Azure Synapse Analytics | Overlaps Fabric and the Azure warehouse story. | Microsoft documents Fabric as the successor for new work; decide whether a legacy record is worth it. |
+| Google Dataproc, Bigtable, Spanner, AlloyDB | Fill out the GCP portfolio. | The `gcp` portfolio lists 11 services and says it understates the catalogue. |
 
 ## Known coverage gaps
 
-- **`source.saas-api`** is scored by no record yet. Salesforce and Dynamics close it.
-- **`store.olap-serving`** is scored by no record yet. Snowflake and Fabric are the likely candidates.
-
-Both are pinned in `seeds.test.ts`, so a third gap cannot appear unnoticed.
+None: every taxonomy capability is scored by at least one record. `seeds.test.ts` pins that the
+list of unscored capabilities is empty, so a new capability with no score fails the test.
 
 ## Records to deepen
 
 - Databricks: Genie and agent tooling are not scored.
+- Fabric: Data Science, Fabric IQ, Copilot, Git integration and the OneLake shortcut transformations are not scored. The dbt job and Eventhouse anomaly detection are preview and skipped.
+- Azure: the portfolio lists nine services; Synapse, HDInsight, Cosmos DB and Functions are not scored.
+- Oracle: `govern.masking` is scored 2 for Data Redaction with a note to check the licence, because the docs page states none.
 - AWS: EMR, Step Functions, Quick, Firehose and Managed Service for Apache Flink are not scored, so AWS has no BI and only Glue for orchestration.
 - Lakeflow Connect: only Salesforce, Workday and SQL Server are confirmed GA; other connectors' release states are unchecked.
 
 ## Open decisions
 
-- **Plan tiers.** `enterprise-tier` works for a few capabilities (dbt platform) but scales poorly. Power BI and Snowflake will show whether separate records are better.
+- **Plan tiers.** Resolved in practice, not in the schema. Where a tier is a different product bought
+  separately, it is a separate record (`power-bi` on Pro versus `fabric-power-bi` on a capacity).
+  Where a tier adds a handful of capabilities to one product, it is the `enterprise-tier` constraint
+  (Snowflake Horizon, Tableau, dbt platform). No third case has appeared. Capacity-size rules, such
+  as Power BI viewers needing a licence below F64, live in the `sku` text because no constraint value
+  expresses them.
+- **Renamed services.** Google renamed Dataplex to Knowledge Catalog, Composer to Managed Service for
+  Apache Airflow and Vertex AI to Gemini Enterprise Agent Platform. Record IDs keep the old names
+  because IDs are immutable, and the display names carry both.
 
 ## Tooling
 
 - **ID immutability check.** Diff the taxonomy ID set against `main` in CI.
-- **Taxonomy backlog report** built from `proposed_capabilities`. Two proposals exist today (Postgres CDC source interface, SSMS administration console).
+- **Taxonomy backlog report** built from `proposed_capabilities`. Six records carry proposals today: Postgres (CDC source interface), SSMS (administration console),
+  and "visual self-service data preparation" from Power BI, Tableau, Azure Data Factory and Data
+  Factory in Fabric. The last one has four independent records asking for it, so it is the first
+  candidate for a real taxonomy capability.
 
 ## For the stack builder UI
 

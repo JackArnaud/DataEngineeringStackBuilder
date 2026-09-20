@@ -1,0 +1,76 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-data-factory",
+  "name": "Azure Data Factory",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Data Factory (ADF). Microsoft documents Data Factory in Microsoft Fabric as its next generation, so new projects on Fabric should look at fabric-data-factory instead.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The Copy activity moves data from on-premises and cloud sources (SaaS services, databases, file shares, FTP and web services) into a central store, with broad connectivity, compression, and data preview and validation.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Pipelines group activities that can be chained in sequence or run in parallel, with control flow for branching, parameters and For-each loops.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Pipelines run from triggers that decide when an execution starts, including a daily schedule.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Custom event triggers run an action when a certain event occurs, and a pipeline can be started when files land in a blob container.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Full support for CI/CD of data pipelines using Azure DevOps and GitHub, so ETL processes can be developed incrementally before publishing.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "orchestrate"],
+      "note": "Built-in monitoring of scheduled activities and pipelines for success and failure rates, through Azure Monitor, API, PowerShell, Azure Monitor logs and health panels in the Azure portal.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "orchestrate"],
+      "note": "Microsoft Entra ID integration and role-based access control decide who can use data flows and pipelines.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Visual self-service data preparation",
+      "description": "Point-and-click combining, cleaning and shaping of data aimed at analysts, without writing SQL or Spark code. Mapping data flows build transformation graphs that run on a managed Spark cluster the user never operates.",
+      "home": "transform",
+      "nearest_existing": "transform.code-transform",
+      "source": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed pipelines to copy, transform and schedule data across Azure and beyond."
+  },
+  "updated": "2026-09-20"
+}

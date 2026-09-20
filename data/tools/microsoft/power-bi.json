@@ -1,0 +1,67 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "power-bi",
+  "name": "Power BI",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "Power BI Desktop and the Power BI service on a Pro licence. Capability that needs Premium Per User or a Premium or Fabric capacity is not scored here; Power BI as a Fabric workload is scored under Microsoft Fabric.",
+  "license": "proprietary",
+  "deployment": ["saas", "desktop"],
+  "pricing_model": "per-seat",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.bi-viz": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Microsoft's business analytics platform. Power BI Desktop builds reports with more than 30 built-in and custom visuals, and the Power BI service publishes, shares, schedules refresh and collaborates. A Pro licence is needed to share with other Pro users.",
+      "source": "https://learn.microsoft.com/en-us/power-bi/fundamentals/power-bi-overview"
+    },
+    "serve.semantic-layer": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Data models with relationships, DAX measures and calculated columns are published as semantic models that many reports share. The model lives inside Power BI rather than serving other tools.",
+      "source": "https://learn.microsoft.com/en-us/power-bi/fundamentals/power-bi-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Power BI Desktop is the report-building environment, with data modelling, DAX, a performance analyzer, external tools and composite models.",
+      "source": "https://learn.microsoft.com/en-us/power-bi/fundamentals/power-bi-overview"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Row-level security restricts rows per viewer with roles and DAX filters, including dynamic rules that use the signed-in user. It applies only to Viewers, not to workspace Admins, Members or Contributors, and cannot restrict columns.",
+      "source": "https://learn.microsoft.com/en-us/fabric/security/service-admin-row-level-security"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Every workspace has a lineage view of its data sources, dataflows, semantic models, reports and dashboards, and their external dependencies. It needs a Pro licence and a Contributor role, and covers Power BI artifacts only.",
+      "source": "https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-data-lineage"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Visual self-service data preparation",
+      "description": "Point-and-click combining, cleaning and shaping of data (Power Query, dataflows) aimed at analysts, without writing SQL or Spark code. Dataflows Gen1 are in a legacy state, and Dataflow Gen2 is the recommended path on Fabric.",
+      "home": "transform",
+      "nearest_existing": "transform.code-transform",
+      "source": "https://learn.microsoft.com/en-us/power-bi/transform-model/dataflows/dataflows-introduction-self-service"
+    }
+  ],
+  "presentation": {
+    "tagline": "Desktop and cloud BI: reports, dashboards and shared semantic models."
+  },
+  "pairs_with": ["snowflake", "dynamics-365"],
+  "updated": "2026-09-20"
+}

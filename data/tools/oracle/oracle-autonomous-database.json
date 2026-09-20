@@ -1,0 +1,53 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "oracle-autonomous-database",
+  "name": "Oracle Autonomous AI Database",
+  "vendor": "Oracle",
+  "kind": "tool",
+  "sku": "Autonomous AI Database Serverless, covering its lakehouse and data warehouse, transaction processing, JSON and APEX workload types.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.warehouse": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The lakehouse and data warehouse workload uses Hybrid Columnar Compression on all tables by default, caches results for every SQL statement, chooses parallelism itself and is tuned for direct-path bulk loads.",
+      "source": "https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/appendix-autonomous-database-data-warehouse-workload.html"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully autonomous database that scales elastically and delivers fast query performance with no database administration.",
+      "source": "https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/index.html"
+    },
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A transaction processing workload type for OLTP, alongside the analytics and JSON workloads.",
+      "source": "https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/index.html"
+    },
+    "serve.data-apps": {
+      "level": 2,
+      "delivery": "native",
+      "note": "APEX is offered as a workload type for application development. This score rests on that mention alone; a page describing APEX itself could not be fetched.",
+      "source": "https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/index.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "store", "serve"],
+      "note": "You do not configure hardware or install software: the service provisions, backs up, patches, upgrades and grows or shrinks the database itself. It manages the database's infrastructure, not yours.",
+      "source": "https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/index.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Self-managing Oracle database with warehouse, transaction and APEX workloads."
+  },
+  "updated": "2026-09-20"
+}

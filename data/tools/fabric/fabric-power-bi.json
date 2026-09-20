@@ -1,0 +1,42 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-power-bi",
+  "name": "Power BI in Microsoft Fabric",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "Power BI as a Fabric workload on a Fabric capacity, with Direct Lake over OneLake. On an F capacity below F64 every viewer needs a Pro or Premium Per User licence, and creating Power BI items outside My workspace always needs Pro or Premium Per User. Scored separately from the standalone power-bi record, which is the Pro tier.",
+  "license": "proprietary",
+  "deployment": ["saas", "desktop"],
+  "pricing_model": "capacity",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.bi-viz": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Connects to data sources and builds interactive charts and dashboards shared across the organisation, over all data in Fabric.",
+      "source": "https://learn.microsoft.com/en-us/fabric/fundamentals/microsoft-fabric-overview"
+    },
+    "serve.semantic-layer": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Power BI reports read OneLake through Direct Lake mode in the Analysis Services engine, which loads and refreshes large volumes of data quickly without making a copy. The model lives inside Fabric and Power BI rather than serving other tools.",
+      "source": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Power BI Desktop is the report-building environment, with data modelling, DAX, a performance analyzer, external tools and composite models.",
+      "source": "https://learn.microsoft.com/en-us/power-bi/fundamentals/power-bi-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Power BI on a Fabric capacity, reading OneLake directly."
+  },
+  "pairs_with": ["power-bi"],
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-platform",
+  "name": "Fabric workspaces and deployment pipelines",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "The Fabric platform layer for application lifecycle management: workspaces and deployment pipelines. Git integration is documented separately and not scored. Some item types deploy in preview.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Deployment pipelines promote content through development, test and production stages, each pair of items linked, and the same deployment can be automated through REST APIs and DevOps. Supported items span lakehouses, notebooks, pipelines, warehouses, eventhouses and Power BI content, some in preview.",
+      "source": "https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.environments",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "A pipeline has two to ten stages, three by default, with content copied from one stage's workspace to the next. Development is for building, test for reviewers and larger data volumes, and production for business users.",
+      "source": "https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines"
+    }
+  ],
+  "presentation": {
+    "tagline": "Dev, test and production stages for Fabric content."
+  },
+  "updated": "2026-09-20"
+}

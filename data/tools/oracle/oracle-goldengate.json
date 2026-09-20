@@ -1,0 +1,32 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "oracle-goldengate",
+  "name": "Oracle GoldenGate",
+  "vendor": "Oracle",
+  "kind": "tool",
+  "sku": "Oracle GoldenGate core product family.",
+  "license": "proprietary",
+  "deployment": ["self-hosted", "cloud-managed"],
+  "pricing_model": "hybrid",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Reads the database transaction logs to continuously capture changed data, both DML and DDL, with minimal impact on the source, and moves only committed transactions. Works across heterogeneous relational and document databases, message stores and applications.",
+      "source": "https://docs.oracle.com/en/database/goldengate/core/26/coredoc/overview-oracle-goldengate.html"
+    },
+    "ingest.batch-extract": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Supports bulk ETL and ELT through Data Transforms, alongside its real-time replication.",
+      "source": "https://docs.oracle.com/en/database/goldengate/core/26/coredoc/overview-oracle-goldengate.html"
+    }
+  },
+  "presentation": {
+    "tagline": "Log-based change capture and replication across heterogeneous databases."
+  },
+  "pairs_with": ["oracle-database"],
+  "updated": "2026-09-20"
+}

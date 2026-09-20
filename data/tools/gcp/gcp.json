@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp",
+  "name": "Google Cloud",
+  "vendor": "Google Cloud",
+  "kind": "portfolio",
+  "sku": "Eleven data-path services only. This is a sample of the Google Cloud catalogue, so derived coverage understates it (no Dataproc, Bigtable, Spanner, AlloyDB, Data Fusion, Analytics Hub and others).",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "includes": [
+    "gcp-cloud-storage",
+    "gcp-bigquery",
+    "gcp-dataflow",
+    "gcp-pubsub",
+    "gcp-datastream",
+    "gcp-dataplex",
+    "gcp-composer",
+    "gcp-dataform",
+    "gcp-looker",
+    "gcp-vertex-ai",
+    "gcp-cloud-sql"
+  ],
+  "bundling": "a-la-carte",
+  "presentation": {
+    "tagline": "Independently purchased cloud services; compose the ones you use."
+  },
+  "updated": "2026-09-20"
+}

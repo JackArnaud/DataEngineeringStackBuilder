@@ -1,0 +1,48 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-dataform",
+  "name": "Dataform",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Dataform, for transformation workflows in BigQuery.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.sql-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A service for analysts to develop, test, version and schedule SQL transformation workflows in BigQuery, written in SQLX files, following an ELT pattern.",
+      "source": "https://docs.cloud.google.com/dataform/docs/overview"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "The ref function references tables without hard-coded names and builds a dependency tree that decides execution order. It orders Dataform's own actions only.",
+      "source": "https://docs.cloud.google.com/dataform/docs/overview"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Workflows can be scheduled, as part of the service's develop, test, version and schedule cycle.",
+      "source": "https://docs.cloud.google.com/dataform/docs/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.tests",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Assertions check that data is correct, such as uniqueness and null checks or custom conditions, as part of the workflow.",
+      "source": "https://docs.cloud.google.com/dataform/docs/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "SQL transformation workflows for BigQuery, with dependencies and assertions."
+  },
+  "pairs_with": ["gcp-bigquery", "dbt-core"],
+  "updated": "2026-09-20"
+}

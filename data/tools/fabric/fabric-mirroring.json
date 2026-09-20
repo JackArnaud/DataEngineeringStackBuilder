@@ -1,0 +1,26 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-mirroring",
+  "name": "Mirroring in Microsoft Fabric",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "Database mirroring and open mirroring in Microsoft Fabric, on a running Fabric capacity. Metadata mirroring, which shortcuts to data rather than copying it, is not scored as ingestion.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Continuously replicates databases into OneLake as Delta tables, with changes published as fast as every 15 seconds. Sources include Azure SQL Database, SQL Server, Oracle, Snowflake, Google BigQuery, Azure Cosmos DB, Azure Database for PostgreSQL and SAP, plus open mirroring for custom writers. A Fabric capacity must be running, and the replication compute is free up to a limit.",
+      "source": "https://learn.microsoft.com/en-us/fabric/mirroring/overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Near-real-time replication of operational databases into OneLake."
+  },
+  "pairs_with": ["snowflake", "oracle-database", "azure-sql-database"],
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-sql-database",
+  "name": "SQL database in Microsoft Fabric",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "SQL database in Microsoft Fabric, which uses the same SQL Database Engine as Azure SQL Database, on a Fabric capacity.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["sql", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The home in Fabric for OLTP workloads. Its data is replicated into OneLake in near real time so it can be analysed without loading the transactional database.",
+      "source": "https://learn.microsoft.com/en-us/fabric/database/sql/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Row-level and object-level security, sharing of a single database without workspace access, and Microsoft Entra authentication.",
+      "source": "https://learn.microsoft.com/en-us/fabric/database/sql/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Transactional SQL database inside Fabric, mirrored to OneLake."
+  },
+  "pairs_with": ["azure-sql-database"],
+  "updated": "2026-09-20"
+}

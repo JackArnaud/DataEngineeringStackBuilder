@@ -183,7 +183,17 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
   otherwise inert.
 - **The render model is not schema-validated.** Its shape is a TypeScript interface exported from
   the compile package. A JSON Schema for it would let a non-TypeScript consumer validate it.
-- **Plan tiers as separate records.** `dbt-platform` is scored at the Starter plan and flags
-  Enterprise-only capability. Whether a plan that adds many capabilities (Power BI Premium, Snowflake
-  Enterprise) should be a separate record instead is unresolved; the flag scales poorly past a few
-  capabilities.
+- **Plan tiers as separate records.** Settled by phase 6 without a schema change. A tier that is a
+  different product bought separately gets its own record: `power-bi` is the Pro tier, and
+  `fabric-power-bi` is Power BI on a Fabric capacity. A tier that adds a few capabilities to one
+  product uses the `enterprise-tier` constraint: Snowflake Horizon and Tableau carry ten of them
+  between them, and the base level is never raised. Rules about capacity size (viewers need a Pro
+  licence below F64) sit in the `sku` text. The flag would scale poorly if a single record needed
+  more than about ten constrained scores; none does yet.
+- **Where a suite's platform features live.** Fabric's workspaces and deployment pipelines are their
+  own record (`fabric-platform`) inside the `microsoft-fabric` bundle, not scores on an unrelated
+  workload. It keeps `orchestrate.ci-cd` and `platform.environments` attributable to the feature
+  that provides them.
+- **Vendor is a picker grouping.** Microsoft Purview is documented as a Microsoft product but is
+  listed under the "Microsoft Azure" vendor so it sits beside the Azure services in the picker, and
+  the portfolio's "Add all" uses the portfolio's `includes`, not whatever shares the vendor label.

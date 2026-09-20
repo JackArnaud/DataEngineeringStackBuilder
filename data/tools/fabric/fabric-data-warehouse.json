@@ -1,0 +1,59 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-data-warehouse",
+  "name": "Fabric Data Warehouse",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "The Fabric warehouse item and the SQL analytics endpoint of the lakehouse, on a Fabric capacity.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["sql", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.warehouse": {
+      "level": 3,
+      "delivery": "native",
+      "note": "An enterprise-scale relational warehouse on a data lake foundation, for star or snowflake schemas and curated data marts. Storage and compute are separated, and it supports full multi-table ACID transactions.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-warehouse/data-warehousing"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Queried in T-SQL on an autonomous distributed engine with no tuning knobs, including cross-database queries across warehouses, mirrored databases and lakehouse SQL endpoints.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-warehouse/data-warehousing"
+    },
+    "transform.sql-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Developed primarily in T-SQL, with stored procedures, functions, materialized views and CTAS or INSERT..SELECT to transform data in place.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-warehouse/data-warehousing"
+    },
+    "store.table-format": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Data is natively stored as Delta tables, Parquet files with a file-based transaction log, and replicated automatically to OneLake Files for external access.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-warehouse/data-warehousing"
+    },
+    "ingest.batch-extract": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Bulk loading through COPY INTO, pipelines and dataflows, or Spark writing directly to the Delta tables. It loads data handed to it and does not pull from source systems itself.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-warehouse/data-warehousing"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "serve"],
+      "note": "Permissions can be managed on objects in the SQL analytics endpoint, alongside OneLake security for the SQL analytics endpoint.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-warehouse/data-warehousing"
+    }
+  ],
+  "presentation": {
+    "tagline": "T-SQL lake warehouse on Delta tables, integrated with Power BI."
+  },
+  "updated": "2026-09-20"
+}

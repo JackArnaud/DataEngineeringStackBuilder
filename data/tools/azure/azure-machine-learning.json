@@ -1,0 +1,35 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-machine-learning",
+  "name": "Azure Machine Learning",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Machine Learning (v2 platform). Training, the model catalog and prompt flow are not scored; prompt flow retires on 20 April 2027.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "cli", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.ml-serving": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Managed endpoints abstract the infrastructure for both batch and real-time scoring. Real-time endpoints answer over HTTPS and can split traffic across model deployments to test new versions.",
+      "source": "https://learn.microsoft.com/en-us/azure/machine-learning/overview-what-is-azure-machine-learning"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Studio with managed Jupyter notebooks, a drag-and-drop designer, an automated ML interface, the Python SDK v2, the Azure CLI and VS Code.",
+      "source": "https://learn.microsoft.com/en-us/azure/machine-learning/overview-what-is-azure-machine-learning"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed ML lifecycle with real-time and batch model endpoints."
+  },
+  "updated": "2026-09-20"
+}

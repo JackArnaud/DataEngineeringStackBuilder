@@ -1,0 +1,25 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-datastream",
+  "name": "Datastream",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Datastream.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A serverless change data capture and replication service. Sources are MySQL, Oracle, PostgreSQL including AlloyDB, SQL Server, MongoDB and Spanner, plus Salesforce and ServiceNow, replicated into BigQuery or written as a change event stream to Cloud Storage.",
+      "source": "https://docs.cloud.google.com/datastream/docs/overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Serverless change data capture from databases and SaaS into BigQuery."
+  },
+  "updated": "2026-09-20"
+}

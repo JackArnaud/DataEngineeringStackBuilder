@@ -1,0 +1,43 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-cloud-storage",
+  "name": "Cloud Storage",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Storage buckets.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.object-store": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A scalable, managed service that stores data as immutable objects in buckets, with Standard, Nearline, Coldline, Archive and Rapid storage classes and Autoclass transitions between tiers.",
+      "source": "https://docs.cloud.google.com/storage/docs/introduction"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Identity and Access Management for role-based control, and access control lists for finer object-level permissions. Control is at bucket and object level, not column or row.",
+      "source": "https://docs.cloud.google.com/storage/docs/introduction"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Object Lifecycle Management deletes or transitions objects by rule, and retention policies with Bucket Lock enforce regulatory data retention rules.",
+      "source": "https://docs.cloud.google.com/storage/docs/introduction"
+    }
+  ],
+  "presentation": {
+    "tagline": "Object storage that underpins Google Cloud data lakes."
+  },
+  "updated": "2026-09-20"
+}

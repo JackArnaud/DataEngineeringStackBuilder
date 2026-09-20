@@ -1,0 +1,43 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-data-lake-storage",
+  "name": "Azure Data Lake Storage",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Data Lake Storage Gen2, which is a set of capabilities enabled on a Blob Storage account by turning on the hierarchical namespace.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.object-store": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A cloud-based enterprise data lake built on Azure Blob Storage. It stores data in any format, adds a hierarchical directory structure and Hadoop-compatible access, and sets no limits on account size, file size or total data stored.",
+      "source": "https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Supports both Azure role-based access control and POSIX-style access control lists, with permissions set at directory or file level. It does not restrict columns or rows.",
+      "source": "https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Automated lifecycle policy management and object-level tiering, inherited from Blob Storage, manage storage cost.",
+      "source": "https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction"
+    }
+  ],
+  "presentation": {
+    "tagline": "Object storage with a directory hierarchy, built for analytics on Azure."
+  },
+  "updated": "2026-09-20"
+}

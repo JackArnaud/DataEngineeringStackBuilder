@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "snowflake",
+  "name": "Snowflake",
+  "vendor": "Snowflake",
+  "kind": "bundle",
+  "sku": "Snowflake Standard edition. Capability that needs the Enterprise edition carries an enterprise-tier constraint, and Business Critical features are not scored. Cortex AI services and Snowpark Container Services are not scored, so derived coverage may understate the platform.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "java", "scala", "ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "includes": ["snowflake-core", "snowflake-snowpipe", "snowflake-openflow", "snowflake-horizon", "snowflake-ai-ml", "snowflake-apps"],
+  "bundling": "single-contract",
+  "presentation": {
+    "tagline": "Cloud data platform: warehouse, ingestion, governance, ML and apps under one contract."
+  },
+  "pairs_with": ["dbt-core", "dbt-platform"],
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-real-time-intelligence",
+  "name": "Real-Time Intelligence in Microsoft Fabric",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "The Real-Time Intelligence workload of Microsoft Fabric (Real-Time hub, Eventstreams, Eventhouse and Activator) on a Fabric capacity. Eventhouse anomaly detection is marked preview on the deployment pipelines page and is not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["sql", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Eventstreams collect and send large volumes of real-time data with no code, from connectors including Apache Kafka, Azure Event Hubs, AWS Kinesis, Google Pub/Sub and MQTT.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    },
+    "ingest.cdc": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Eventstreams and the Real-Time hub accept database change data capture feeds from Azure SQL Database, Azure Cosmos DB and PostgreSQL. It is a streaming source, not a general CDC replicator.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    },
+    "transform.stream-processing": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Eventstreams filter, clean, transform, apply windowed aggregations and detect duplicates, with content-based routing and derived eventstreams that others can consume.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    },
+    "store.olap-serving": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Eventhouses are the analytics engine for data in motion. Data is organised by arrival time and indexed and partitioned for fast queries over large amounts of data.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Eventhouse data is queried in native KQL or in T-SQL from the KQL queryset, with code, low-code and no-code options.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    },
+    "serve.bi-viz": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Real-Time dashboards and KQL querysets visualise data seconds after ingestion, and the same data feeds Power BI reports.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Activator alerts run actions when data patterns or conditions are met, including Fabric pipelines, Spark jobs and Dataflows, so orchestration can be event-driven without schedules.",
+      "source": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Streaming ingestion, KQL analytics and event-driven actions in Fabric."
+  },
+  "updated": "2026-09-20"
+}

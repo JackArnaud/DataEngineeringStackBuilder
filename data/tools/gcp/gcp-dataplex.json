@@ -1,0 +1,51 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-dataplex",
+  "name": "Dataplex Universal Catalog (now Knowledge Catalog)",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "The governance service documented as Dataplex Universal Catalog and renamed Knowledge Catalog on 10 April 2026. The record ID keeps the old name because IDs are immutable.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "A Gemini-powered catalog for the whole data estate: automatic metadata collection, semantic search for discovery, enrichment of technical metadata and business glossaries.",
+      "source": "https://docs.cloud.google.com/dataplex/docs/introduction"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Data lineage tracks how data moves and transforms across systems.",
+      "source": "https://docs.cloud.google.com/dataplex/docs/introduction"
+    },
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Automated data profiling and quality checks.",
+      "source": "https://docs.cloud.google.com/dataplex/docs/introduction"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Data governance with automatic metadata collection and policy enforcement across the estate.",
+      "source": "https://docs.cloud.google.com/dataplex/docs/introduction"
+    }
+  ],
+  "presentation": {
+    "tagline": "Catalog, lineage, quality checks and policy across Google Cloud data."
+  },
+  "updated": "2026-09-20"
+}

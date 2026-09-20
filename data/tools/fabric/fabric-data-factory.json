@@ -1,0 +1,58 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-data-factory",
+  "name": "Data Factory in Microsoft Fabric",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "The Data Factory workload of Microsoft Fabric on a Fabric capacity. The dbt job is marked preview on the deployment pipelines page and is not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["ui", "api", "python"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Connects to more than 170 data sources, including multicloud and on-premises through gateways. Copy job handles bulk and incremental copy, and Copy activity moves data at any scale with manual control of parallel copying.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    },
+    "ingest.cdc": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Copy job offers change data capture replication as one of its delivery styles. Continuous database replication is done by Mirroring, which is scored separately.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Pipelines run multiple data movements, transformations and other activities in one workflow, with loops and conditionals in a low-code designer. It also integrates Apache Airflow for orchestration as Python DAGs.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Pipelines can be scheduled to run at specific times.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Pipelines can be triggered based on events as well as by schedule.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    }
+  },
+  "proposed_capabilities": [
+    {
+      "name": "Visual self-service data preparation",
+      "description": "Point-and-click combining, cleaning and shaping of data aimed at analysts, without writing SQL or Spark code. Dataflow Gen2 is a low-code interface with over 300 transformations for joins, aggregations and cleansing.",
+      "home": "transform",
+      "nearest_existing": "transform.code-transform",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Copy, transform and orchestrate data inside Fabric, the next generation of Azure Data Factory."
+  },
+  "updated": "2026-09-20"
+}

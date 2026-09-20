@@ -93,7 +93,7 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
         <div className="picklist">
           {groups.length === 0 && <p className="muted">No tool matches “{query}”.</p>}
           {groups.map((g) => {
-            const serviceIds = g.tools.filter((t) => isSelectable(model, t.id) && t.kind === "tool").map((t) => t.id);
+            const serviceIds = (g.portfolio?.includes ?? g.tools.map((t) => t.id)).filter((id) => isSelectable(model, id) && lookup.tool(id)?.kind === "tool");
             const allAdded = serviceIds.every((id) => selected.has(id));
             return (
               <div key={g.vendor} className="vendor">

@@ -1,0 +1,41 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fabric-data-engineering",
+  "name": "Fabric Data Engineering",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "The Data Engineering workload of Microsoft Fabric (lakehouse, Spark notebooks and Spark job definitions) on a Fabric capacity. Fabric Data Science is not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "capacity",
+  "interfaces": ["python", "sql", "scala", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Apache Spark for large datasets. Notebooks in Python, R and Scala carry ingestion, preparation and transformation code, and Spark job definitions submit that code to a Spark cluster.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-engineering/data-engineering-overview"
+    },
+    "transform.stream-processing": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Spark job definitions can submit batch or streaming jobs to the Spark cluster. Continuous event processing is centred on Real-Time Intelligence, which is scored separately.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-engineering/data-engineering-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Interactive notebooks with live code, visualisations and narrative text, running in the Fabric web experience.",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-engineering/data-engineering-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Spark notebooks, job definitions and a lakehouse over OneLake."
+  },
+  "updated": "2026-09-20"
+}

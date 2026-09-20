@@ -1,0 +1,51 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-purview",
+  "name": "Microsoft Purview",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "The Microsoft Purview data governance solutions (Data Map and Unified Catalog). Its data security and compliance solutions (Insider Risk, eDiscovery, Audit and others) are not scored. Documented as a Microsoft product; it is grouped with the Azure services so the picker offers it beside them.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "The Data Map inventories data assets and metadata, and the Unified Catalog organises them into governance domains, data products and glossary terms, searchable with an AI-powered copilot.",
+      "source": "https://learn.microsoft.com/en-us/purview/unified-catalog"
+    },
+    {
+      "band": "govern.policy",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Attaches policies to glossary terms and critical data elements, manages self-service access requests, and applies sensitivity labels and data loss prevention across the estate.",
+      "source": "https://learn.microsoft.com/en-us/purview/unified-catalog"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "The platform keeps an inventory of data assets, their metadata and their lineage, so the topography of the data estate can be understood.",
+      "source": "https://learn.microsoft.com/en-us/purview/unified-catalog"
+    },
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Data quality rules are set through governance domains, data products and the assets themselves, and produce quality scores at asset, data product and domain level.",
+      "source": "https://learn.microsoft.com/en-us/purview/unified-catalog"
+    }
+  ],
+  "presentation": {
+    "tagline": "Data catalog, policy, lineage and quality scoring across a Microsoft data estate."
+  },
+  "updated": "2026-09-20"
+}

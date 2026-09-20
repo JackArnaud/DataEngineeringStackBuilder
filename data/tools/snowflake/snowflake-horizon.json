@@ -1,0 +1,80 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "snowflake-horizon",
+  "name": "Snowflake Horizon Catalog",
+  "vendor": "Snowflake",
+  "kind": "tool",
+  "sku": "Snowflake Standard edition. Governance and quality features that need the Enterprise edition carry an enterprise-tier constraint, so they count as a remedy and never as coverage.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Horizon Catalog is Snowflake's catalog for data inside and outside Snowflake, connecting external data through Iceberg and external tables and adding semantic views, auto-generated descriptions and object tagging. The overview names no edition limit, but the editions page says some tagging features need Enterprise.",
+      "source": "https://docs.snowflake.com/en/user-guide/snowflake-horizon"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Discretionary and role-based access control: objects have owners who grant privileges to roles, roles go to users, and roles inherit. Row-level restriction is a separate Enterprise feature, scored under policy.",
+      "source": "https://docs.snowflake.com/en/user-guide/security-access-control-overview"
+    },
+    {
+      "band": "govern.masking",
+      "level": 3,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["store", "transform", "serve"],
+      "note": "Column-level security applies masking policies to columns in tables or views. Listed on the editions page as Enterprise edition or higher.",
+      "source": "https://docs.snowflake.com/en/user-guide/intro-editions"
+    },
+    {
+      "band": "govern.policy",
+      "level": 3,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["store", "transform", "serve"],
+      "note": "Row access policies decide which rows a query can see, and data classification identifies potentially sensitive data. Both are listed as Enterprise edition or higher, and some tagging features need Enterprise too.",
+      "source": "https://docs.snowflake.com/en/user-guide/intro-editions"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 3,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["store", "transform", "serve"],
+      "note": "Lineage at table and column level, upstream and downstream, across tables, views, dynamic tables, Iceberg tables, semantic views, stages and ML objects, for impact analysis. An Enterprise edition feature.",
+      "source": "https://docs.snowflake.com/en/user-guide/ui-snowsight-lineage"
+    },
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["store"],
+      "note": "Data metric functions measure attributes such as null counts or freshness, and expectations flag results outside an acceptable range. They run on a schedule, hourly by default, and need the Enterprise edition.",
+      "source": "https://docs.snowflake.com/en/user-guide/data-quality-intro"
+    },
+    {
+      "band": "quality.anomaly-detection",
+      "level": 2,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "scope": ["store"],
+      "note": "Anomaly detection learns from history to flag a metric above or below its predicted range. It currently supports volume and freshness metrics, and needs the Enterprise edition.",
+      "source": "https://docs.snowflake.com/en/user-guide/data-quality-intro"
+    }
+  ],
+  "presentation": {
+    "tagline": "Catalog, access control, masking, lineage and data quality for Snowflake data."
+  },
+  "updated": "2026-09-20"
+}

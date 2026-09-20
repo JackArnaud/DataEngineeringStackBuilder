@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-data-explorer",
+  "name": "Azure Data Explorer",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Data Explorer clusters and databases, queried with Kusto Query Language.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.olap-serving": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Built for interactive analytics over high-velocity raw data. It ingests millions of events per second, indexes and partitions everything by ingestion time, and returns queries over petabytes in milliseconds to seconds.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-explorer/data-explorer-overview"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Queried with Kusto Query Language, which covers aggregation, time series, geospatial and joins, and also supports T-SQL.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-explorer/data-explorer-overview"
+    },
+    "ingest.stream-ingest": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Queued or streaming ingestion with connectors and managed pipelines, and continuous export to Data Lake Storage. It loads events handed to it and does not carry them from the source.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-explorer/data-explorer-overview"
+    },
+    "serve.bi-viz": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Built-in visualisation and dashboards, plus connectors for Power BI, Grafana, Kibana and Databricks, and ODBC for Tableau and others.",
+      "source": "https://learn.microsoft.com/en-us/azure/data-explorer/data-explorer-overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Fast analytics over logs, telemetry and time series, queried with KQL."
+  },
+  "pairs_with": ["azure-event-hubs"],
+  "updated": "2026-09-20"
+}

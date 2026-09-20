@@ -1,0 +1,41 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-event-hubs",
+  "name": "Azure Event Hubs",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Event Hubs, Standard, Premium and Dedicated tiers.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.event-stream": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed event streaming platform. Producers send events over Apache Kafka, AMQP 1.0 or HTTPS into partitioned, append-only logs, with retention of up to 7 days on Standard and 90 days on Premium and Dedicated.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about"
+    },
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Ingests millions of events per second with low latency, and Capture writes the stream to Blob Storage or Data Lake Storage in near real time for long-term retention.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Azure Monitor metrics, diagnostic logs and alerts track throughput, latency, errors and consumer lag.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed event streaming with Kafka compatibility."
+  },
+  "updated": "2026-09-20"
+}
