@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://data-engineering-stack-builder/schemas/lens.schema.json",
+  "title": "Lens",
+  "description": "A projection of the same facts into a different mental model. Maps every stage to zones, with capability-level overrides only where the stage default is wrong. Structural rules only; the validator checks that every stage is mapped and every override resolves.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "zones", "defaults", "overrides", "unmapped"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "$ref": "#/$defs/slug" },
+    "name": { "type": "string", "minLength": 1 },
+    "zones": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/slug" }
+    },
+    "defaults": {
+      "description": "Stage id -> where that stage's capabilities land. Every stage must appear. Band cells are placed by the stage they are scored at.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/slug" },
+      "additionalProperties": { "$ref": "#/$defs/placement" }
+    },
+    "overrides": {
+      "description": "Exceptions where the stage default is wrong. Most specific match wins: an exact capability ID beats a <stage-or-band>.* pattern, which beats the stage default.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["match", "zones"],
+        "properties": {
+          "match": { "$ref": "#/$defs/match" },
+          "zones": { "$ref": "#/$defs/placement" },
+          "note": { "type": "string", "minLength": 10 }
+        }
+      }
+    },
+    "unmapped": {
+      "description": "What happens to anything placed as 'unmapped'. drop removes it from the view; rail shows it in a side rail so a gap never silently vanishes.",
+      "enum": ["drop", "rail"]
+    }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "match": {
+      "description": "An exact capability ID, or <stage-or-band>.* for every capability under it.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.([a-z][a-z0-9]*(-[a-z0-9]+)*|\\*)$"
+    },
+    "placement": {
+      "description": "A list of zone ids, 'all' for every zone, or 'unmapped' when this lens has no honest home for it.",
+      "oneOf": [
+        { "enum": ["all", "unmapped"] },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        }
+      ]
+    }
+  }
+}

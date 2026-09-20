@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "databricks-lakeflow-connect",
+  "name": "Lakeflow Connect",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Lakeflow Connect managed connectors as included in the Databricks platform. Documentation reviewed on the AWS docs site. Connectors are in various release states, so check the specific connector before relying on it.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Managed connectors for databases, SaaS applications, files and query-based sources build ingestion pipelines on serverless compute, governed by Unity Catalog. Salesforce and Workday were announced GA; other connectors are in various release states.",
+      "source": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/"
+    },
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Database connectors ingest only what changed since the last run. The SQL Server connector is GA and supports both CDC and Change Tracking, from Azure SQL, RDS, GCP and on-premises servers, and can track history as SCD Type 2. Other database connectors may be in earlier release states.",
+      "source": "https://www.databricks.com/blog/announcing-sql-server-connector-lakeflow-connect-now-generally-available"
+    }
+  },
+  "presentation": {
+    "tagline": "Managed connectors that ingest databases and SaaS apps incrementally into the lakehouse."
+  },
+  "updated": "2026-09-20"
+}

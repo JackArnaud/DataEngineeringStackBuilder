@@ -1,0 +1,63 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-s3",
+  "name": "Amazon S3",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon S3 general purpose buckets and S3 Tables table buckets.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "store.object-store": {
+      "level": 3,
+      "delivery": "native",
+      "note": "An object storage service for any amount of data, used for data lakes, backup, archive and big data analytics.",
+      "source": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    },
+    "store.table-format": {
+      "level": 2,
+      "delivery": "native",
+      "note": "S3 Tables are a separate bucket type that stores tables in Apache Iceberg format and runs compaction, snapshot management and unreferenced-file cleanup automatically. It is one bucket type among four, not what S3 is mainly used for.",
+      "source": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables.html"
+    },
+    "source.file-drop": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Files are uploaded into buckets and picked up from there, which is how partner extracts and exports commonly land. SFTP delivery needs AWS Transfer Family, a separate service.",
+      "source": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Buckets are private by default, with access managed through IAM, bucket policies, access points and Block Public Access. Control is at bucket, prefix or object-tag level, not column or row level.",
+      "source": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Object Lock enforces write-once-read-many retention with retention periods and legal holds, and lifecycle rules transition or expire objects.",
+      "source": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "CloudWatch metrics track the operational health of S3 resources and CloudTrail records bucket and object API calls. This is service health and access auditing, not data freshness.",
+      "source": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Object storage that underpins most AWS data lakes."
+  },
+  "updated": "2026-09-20"
+}

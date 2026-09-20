@@ -1,0 +1,3665 @@
+{
+  "bands": [
+    {
+      "id": "govern",
+      "name": "Govern",
+      "rationale": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values."
+    },
+    {
+      "id": "quality",
+      "name": "Quality",
+      "rationale": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges."
+    },
+    {
+      "id": "observe",
+      "name": "Observe",
+      "rationale": "Peaks where jobs run and fail, and where spend accrues."
+    },
+    {
+      "id": "platform",
+      "name": "Platform",
+      "rationale": "Environments and workflow matter most where code is written and deployed."
+    }
+  ],
+  "capabilities": [
+    {
+      "description": "Can act as the operational system of record behind an application. Scored when the tool is itself such an origin, not when it merely connects to one.",
+      "id": "source.oltp",
+      "kind": "spine",
+      "name": "Transactional database",
+      "parent": "source",
+      "status": "active"
+    },
+    {
+      "description": "Holds business data in a hosted application and exposes it through an API or export.",
+      "id": "source.saas-api",
+      "kind": "spine",
+      "name": "SaaS application data",
+      "parent": "source",
+      "status": "active"
+    },
+    {
+      "description": "Receives or exposes files (CSV, JSON, Parquet, partner extracts) by upload, SFTP or shared storage.",
+      "id": "source.file-drop",
+      "kind": "spine",
+      "name": "File drop",
+      "parent": "source",
+      "status": "active"
+    },
+    {
+      "description": "Emits or hosts a continuous feed of application, device or clickstream events.",
+      "id": "source.event-stream",
+      "kind": "spine",
+      "name": "Event stream",
+      "parent": "source",
+      "status": "active"
+    },
+    {
+      "description": "Scheduled or on-demand bulk extraction from source systems into the platform.",
+      "id": "ingest.batch-extract",
+      "kind": "spine",
+      "name": "Batch extract",
+      "parent": "ingest",
+      "status": "active"
+    },
+    {
+      "description": "Log-based or incremental capture of row-level changes from databases.",
+      "id": "ingest.cdc",
+      "kind": "spine",
+      "name": "Change data capture",
+      "parent": "ingest",
+      "status": "active"
+    },
+    {
+      "description": "Continuous ingestion of event streams with defined delivery semantics.",
+      "id": "ingest.stream-ingest",
+      "kind": "spine",
+      "name": "Stream ingest",
+      "parent": "ingest",
+      "status": "active"
+    },
+    {
+      "description": "Pushing modelled data back into operational and SaaS systems.",
+      "id": "ingest.reverse-etl",
+      "kind": "spine",
+      "name": "Reverse ETL",
+      "parent": "ingest",
+      "status": "active"
+    },
+    {
+      "description": "Durable, cheap, schema-less storage for files and blobs.",
+      "id": "store.object-store",
+      "kind": "spine",
+      "name": "Object store",
+      "parent": "store",
+      "status": "active"
+    },
+    {
+      "description": "Transactional table layer over files (Iceberg, Delta, Hudi style): ACID, schema evolution, time travel.",
+      "id": "store.table-format",
+      "kind": "spine",
+      "name": "Table format",
+      "parent": "store",
+      "status": "active"
+    },
+    {
+      "description": "Managed analytical store with SQL access, separating modelled data from raw files.",
+      "id": "store.warehouse",
+      "kind": "spine",
+      "name": "Warehouse",
+      "parent": "store",
+      "status": "active"
+    },
+    {
+      "description": "Low-latency analytical store built to answer many concurrent aggregate queries.",
+      "id": "store.olap-serving",
+      "kind": "spine",
+      "name": "OLAP serving",
+      "parent": "store",
+      "status": "active"
+    },
+    {
+      "description": "Modelling and reshaping data by authoring SQL.",
+      "id": "transform.sql-transform",
+      "kind": "spine",
+      "name": "SQL transformation",
+      "parent": "transform",
+      "status": "active"
+    },
+    {
+      "description": "Modelling and reshaping data in a general-purpose language (Python, Scala, Spark).",
+      "id": "transform.code-transform",
+      "kind": "spine",
+      "name": "Code transformation",
+      "parent": "transform",
+      "status": "active"
+    },
+    {
+      "description": "Stateful transformation of events as they arrive: windows, joins, aggregations.",
+      "id": "transform.stream-processing",
+      "kind": "spine",
+      "name": "Stream processing",
+      "parent": "transform",
+      "status": "active"
+    },
+    {
+      "description": "Producing, storing and reusing model features, including point-in-time correctness.",
+      "id": "transform.feature-eng",
+      "kind": "spine",
+      "name": "Feature engineering",
+      "parent": "transform",
+      "status": "active"
+    },
+    {
+      "description": "Running work on a time-based schedule.",
+      "id": "orchestrate.scheduling",
+      "kind": "spine",
+      "name": "Scheduling",
+      "parent": "orchestrate",
+      "status": "active"
+    },
+    {
+      "description": "Expressing and executing task dependencies, retries and backfills.",
+      "id": "orchestrate.dependency-dag",
+      "kind": "spine",
+      "name": "Dependency DAG",
+      "parent": "orchestrate",
+      "status": "active"
+    },
+    {
+      "description": "Starting work in response to data arrival or external events rather than the clock.",
+      "id": "orchestrate.event-triggers",
+      "kind": "spine",
+      "name": "Event triggers",
+      "parent": "orchestrate",
+      "status": "active"
+    },
+    {
+      "description": "Testing and promoting pipeline code and definitions across environments.",
+      "id": "orchestrate.ci-cd",
+      "kind": "spine",
+      "name": "CI/CD",
+      "parent": "orchestrate",
+      "status": "active"
+    },
+    {
+      "description": "Interactive SQL access for analysts, tools and applications.",
+      "id": "serve.query-engine",
+      "kind": "spine",
+      "name": "Query engine",
+      "parent": "serve",
+      "status": "active"
+    },
+    {
+      "description": "Governed, reusable metric and dimension definitions that sit between data and consumers.",
+      "id": "serve.semantic-layer",
+      "kind": "spine",
+      "name": "Semantic layer",
+      "parent": "serve",
+      "status": "active"
+    },
+    {
+      "description": "Dashboards, reports and exploratory analysis for business users.",
+      "id": "serve.bi-viz",
+      "kind": "spine",
+      "name": "BI and visualisation",
+      "parent": "serve",
+      "status": "active"
+    },
+    {
+      "description": "Building interactive applications on top of data.",
+      "id": "serve.data-apps",
+      "kind": "spine",
+      "name": "Data apps",
+      "parent": "serve",
+      "status": "active"
+    },
+    {
+      "description": "Deploying trained models and exposing predictions to consumers.",
+      "id": "serve.ml-serving",
+      "kind": "spine",
+      "name": "ML serving",
+      "parent": "serve",
+      "status": "active"
+    },
+    {
+      "description": "Inventory of data assets with ownership, descriptions and search.",
+      "id": "govern.catalog",
+      "kind": "band",
+      "name": "Catalog",
+      "parent": "govern",
+      "status": "active"
+    },
+    {
+      "description": "Deciding who can read or change which data.",
+      "id": "govern.access-control",
+      "kind": "band",
+      "name": "Access control",
+      "parent": "govern",
+      "status": "active"
+    },
+    {
+      "description": "Obscuring or tokenising sensitive values while keeping data usable.",
+      "id": "govern.masking",
+      "kind": "band",
+      "name": "Masking",
+      "parent": "govern",
+      "status": "active"
+    },
+    {
+      "description": "Defining and enforcing data-handling rules such as retention, residency and classification.",
+      "id": "govern.policy",
+      "kind": "band",
+      "name": "Policy",
+      "parent": "govern",
+      "status": "active"
+    },
+    {
+      "description": "Assertions on data that pass or fail: uniqueness, nulls, referential integrity, custom rules.",
+      "id": "quality.tests",
+      "kind": "band",
+      "name": "Data tests",
+      "parent": "quality",
+      "status": "active"
+    },
+    {
+      "description": "Agreed, enforceable schema and semantics at a producer-consumer boundary.",
+      "id": "quality.contracts",
+      "kind": "band",
+      "name": "Data contracts",
+      "parent": "quality",
+      "status": "active"
+    },
+    {
+      "description": "Detecting unexpected change in volume, freshness, distribution or schema without hand-written rules.",
+      "id": "quality.anomaly-detection",
+      "kind": "band",
+      "name": "Anomaly detection",
+      "parent": "quality",
+      "status": "active"
+    },
+    {
+      "description": "Health, freshness and failure visibility, with alerting.",
+      "id": "observe.monitoring",
+      "kind": "band",
+      "name": "Monitoring",
+      "parent": "observe",
+      "status": "active"
+    },
+    {
+      "description": "Tracing where data came from and what depends on it.",
+      "id": "observe.lineage",
+      "kind": "band",
+      "name": "Lineage",
+      "parent": "observe",
+      "status": "active"
+    },
+    {
+      "description": "Attributing spend to workloads, teams and datasets.",
+      "id": "observe.cost-visibility",
+      "kind": "band",
+      "name": "Cost visibility",
+      "parent": "observe",
+      "status": "active"
+    },
+    {
+      "description": "Provisioning and running the compute and storage underneath, including infrastructure as code.",
+      "id": "platform.infra",
+      "kind": "band",
+      "name": "Infrastructure",
+      "parent": "platform",
+      "status": "active"
+    },
+    {
+      "description": "Separate dev, test and production spaces with safe promotion between them.",
+      "id": "platform.environments",
+      "kind": "band",
+      "name": "Environments",
+      "parent": "platform",
+      "status": "active"
+    },
+    {
+      "description": "Tooling that makes authoring, running and debugging work productive: editors, IDEs, local runs, CLIs.",
+      "id": "platform.dev-experience",
+      "kind": "band",
+      "name": "Developer experience",
+      "parent": "platform",
+      "status": "active"
+    }
+  ],
+  "criticality": {
+    "govern.access-control@ingest": 3,
+    "govern.access-control@orchestrate": 1,
+    "govern.access-control@serve": 4,
+    "govern.access-control@source": 2,
+    "govern.access-control@store": 5,
+    "govern.access-control@transform": 3,
+    "govern.catalog@ingest": 3,
+    "govern.catalog@orchestrate": 1,
+    "govern.catalog@serve": 4,
+    "govern.catalog@source": 2,
+    "govern.catalog@store": 5,
+    "govern.catalog@transform": 3,
+    "govern.masking@ingest": 3,
+    "govern.masking@orchestrate": 0,
+    "govern.masking@serve": 4,
+    "govern.masking@source": 2,
+    "govern.masking@store": 5,
+    "govern.masking@transform": 3,
+    "govern.policy@ingest": 3,
+    "govern.policy@orchestrate": 1,
+    "govern.policy@serve": 4,
+    "govern.policy@source": 2,
+    "govern.policy@store": 5,
+    "govern.policy@transform": 3,
+    "observe.cost-visibility@ingest": 4,
+    "observe.cost-visibility@orchestrate": 1,
+    "observe.cost-visibility@serve": 3,
+    "observe.cost-visibility@source": 1,
+    "observe.cost-visibility@store": 4,
+    "observe.cost-visibility@transform": 4,
+    "observe.lineage@ingest": 4,
+    "observe.lineage@orchestrate": 2,
+    "observe.lineage@serve": 3,
+    "observe.lineage@source": 1,
+    "observe.lineage@store": 3,
+    "observe.lineage@transform": 4,
+    "observe.monitoring@ingest": 4,
+    "observe.monitoring@orchestrate": 5,
+    "observe.monitoring@serve": 3,
+    "observe.monitoring@source": 1,
+    "observe.monitoring@store": 3,
+    "observe.monitoring@transform": 4,
+    "platform.dev-experience@ingest": 2,
+    "platform.dev-experience@orchestrate": 3,
+    "platform.dev-experience@serve": 2,
+    "platform.dev-experience@source": 1,
+    "platform.dev-experience@store": 3,
+    "platform.dev-experience@transform": 4,
+    "platform.environments@ingest": 2,
+    "platform.environments@orchestrate": 3,
+    "platform.environments@serve": 2,
+    "platform.environments@source": 1,
+    "platform.environments@store": 3,
+    "platform.environments@transform": 4,
+    "platform.infra@ingest": 2,
+    "platform.infra@orchestrate": 3,
+    "platform.infra@serve": 2,
+    "platform.infra@source": 1,
+    "platform.infra@store": 3,
+    "platform.infra@transform": 4,
+    "quality.anomaly-detection@ingest": 5,
+    "quality.anomaly-detection@orchestrate": 1,
+    "quality.anomaly-detection@serve": 3,
+    "quality.anomaly-detection@source": 2,
+    "quality.anomaly-detection@store": 3,
+    "quality.anomaly-detection@transform": 4,
+    "quality.contracts@ingest": 5,
+    "quality.contracts@orchestrate": 1,
+    "quality.contracts@serve": 3,
+    "quality.contracts@source": 4,
+    "quality.contracts@store": 3,
+    "quality.contracts@transform": 4,
+    "quality.tests@ingest": 5,
+    "quality.tests@orchestrate": 1,
+    "quality.tests@serve": 3,
+    "quality.tests@source": 2,
+    "quality.tests@store": 3,
+    "quality.tests@transform": 4
+  },
+  "criticality_rationale": {
+    "govern.access-control@ingest": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.access-control@orchestrate": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.access-control@serve": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.access-control@source": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.access-control@store": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.access-control@transform": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.catalog@ingest": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.catalog@orchestrate": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.catalog@serve": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.catalog@source": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.catalog@store": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.catalog@transform": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.masking@ingest": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.masking@orchestrate": "Orchestration passes no data values through, so there is nothing to mask.",
+    "govern.masking@serve": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.masking@source": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.masking@store": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.masking@transform": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.policy@ingest": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.policy@orchestrate": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.policy@serve": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.policy@source": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.policy@store": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "govern.policy@transform": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+    "observe.cost-visibility@ingest": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.cost-visibility@orchestrate": "Orchestrators rarely own the spend. Cost shows up in the engine that runs the work.",
+    "observe.cost-visibility@serve": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.cost-visibility@source": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.cost-visibility@store": "Storage and warehouse compute are usually the dominant cost lines.",
+    "observe.cost-visibility@transform": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.lineage@ingest": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.lineage@orchestrate": "Lineage traces data, and data moves through the engines that do the work, not the scheduler. Monitoring is what matters at this stage.",
+    "observe.lineage@serve": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.lineage@source": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.lineage@store": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.lineage@transform": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.monitoring@ingest": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.monitoring@orchestrate": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.monitoring@serve": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.monitoring@source": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.monitoring@store": "Peaks where jobs run and fail, and where spend accrues.",
+    "observe.monitoring@transform": "Peaks where jobs run and fail, and where spend accrues.",
+    "platform.dev-experience@ingest": "Environments and workflow matter most where code is written and deployed.",
+    "platform.dev-experience@orchestrate": "Environments and workflow matter most where code is written and deployed.",
+    "platform.dev-experience@serve": "Environments and workflow matter most where code is written and deployed.",
+    "platform.dev-experience@source": "Environments and workflow matter most where code is written and deployed.",
+    "platform.dev-experience@store": "Environments and workflow matter most where code is written and deployed.",
+    "platform.dev-experience@transform": "Environments and workflow matter most where code is written and deployed.",
+    "platform.environments@ingest": "Environments and workflow matter most where code is written and deployed.",
+    "platform.environments@orchestrate": "Environments and workflow matter most where code is written and deployed.",
+    "platform.environments@serve": "Environments and workflow matter most where code is written and deployed.",
+    "platform.environments@source": "Environments and workflow matter most where code is written and deployed.",
+    "platform.environments@store": "Environments and workflow matter most where code is written and deployed.",
+    "platform.environments@transform": "Environments and workflow matter most where code is written and deployed.",
+    "platform.infra@ingest": "Environments and workflow matter most where code is written and deployed.",
+    "platform.infra@orchestrate": "Environments and workflow matter most where code is written and deployed.",
+    "platform.infra@serve": "Environments and workflow matter most where code is written and deployed.",
+    "platform.infra@source": "Environments and workflow matter most where code is written and deployed.",
+    "platform.infra@store": "Environments and workflow matter most where code is written and deployed.",
+    "platform.infra@transform": "Environments and workflow matter most where code is written and deployed.",
+    "quality.anomaly-detection@ingest": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.anomaly-detection@orchestrate": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.anomaly-detection@serve": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.anomaly-detection@source": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.anomaly-detection@store": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.anomaly-detection@transform": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.contracts@ingest": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.contracts@orchestrate": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.contracts@serve": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.contracts@source": "Contracts exist to fix the one thing quality checks can't: defects that originate upstream.",
+    "quality.contracts@store": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.contracts@transform": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.tests@ingest": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.tests@orchestrate": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.tests@serve": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.tests@source": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.tests@store": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+    "quality.tests@transform": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges."
+  },
+  "derivation_version": "1.0.0",
+  "format": "render-model",
+  "format_version": 1,
+  "lenses": [
+    {
+      "id": "grid",
+      "name": "Audit grid",
+      "placement": {
+        "govern.access-control@ingest": [
+          "ingest"
+        ],
+        "govern.access-control@orchestrate": [
+          "orchestrate"
+        ],
+        "govern.access-control@serve": [
+          "serve"
+        ],
+        "govern.access-control@source": [
+          "source"
+        ],
+        "govern.access-control@store": [
+          "store"
+        ],
+        "govern.access-control@transform": [
+          "transform"
+        ],
+        "govern.catalog@ingest": [
+          "ingest"
+        ],
+        "govern.catalog@orchestrate": [
+          "orchestrate"
+        ],
+        "govern.catalog@serve": [
+          "serve"
+        ],
+        "govern.catalog@source": [
+          "source"
+        ],
+        "govern.catalog@store": [
+          "store"
+        ],
+        "govern.catalog@transform": [
+          "transform"
+        ],
+        "govern.masking@ingest": [
+          "ingest"
+        ],
+        "govern.masking@orchestrate": [
+          "orchestrate"
+        ],
+        "govern.masking@serve": [
+          "serve"
+        ],
+        "govern.masking@source": [
+          "source"
+        ],
+        "govern.masking@store": [
+          "store"
+        ],
+        "govern.masking@transform": [
+          "transform"
+        ],
+        "govern.policy@ingest": [
+          "ingest"
+        ],
+        "govern.policy@orchestrate": [
+          "orchestrate"
+        ],
+        "govern.policy@serve": [
+          "serve"
+        ],
+        "govern.policy@source": [
+          "source"
+        ],
+        "govern.policy@store": [
+          "store"
+        ],
+        "govern.policy@transform": [
+          "transform"
+        ],
+        "ingest.batch-extract@ingest": [
+          "ingest"
+        ],
+        "ingest.cdc@ingest": [
+          "ingest"
+        ],
+        "ingest.reverse-etl@ingest": [
+          "ingest"
+        ],
+        "ingest.stream-ingest@ingest": [
+          "ingest"
+        ],
+        "observe.cost-visibility@ingest": [
+          "ingest"
+        ],
+        "observe.cost-visibility@orchestrate": [
+          "orchestrate"
+        ],
+        "observe.cost-visibility@serve": [
+          "serve"
+        ],
+        "observe.cost-visibility@source": [
+          "source"
+        ],
+        "observe.cost-visibility@store": [
+          "store"
+        ],
+        "observe.cost-visibility@transform": [
+          "transform"
+        ],
+        "observe.lineage@ingest": [
+          "ingest"
+        ],
+        "observe.lineage@orchestrate": [
+          "orchestrate"
+        ],
+        "observe.lineage@serve": [
+          "serve"
+        ],
+        "observe.lineage@source": [
+          "source"
+        ],
+        "observe.lineage@store": [
+          "store"
+        ],
+        "observe.lineage@transform": [
+          "transform"
+        ],
+        "observe.monitoring@ingest": [
+          "ingest"
+        ],
+        "observe.monitoring@orchestrate": [
+          "orchestrate"
+        ],
+        "observe.monitoring@serve": [
+          "serve"
+        ],
+        "observe.monitoring@source": [
+          "source"
+        ],
+        "observe.monitoring@store": [
+          "store"
+        ],
+        "observe.monitoring@transform": [
+          "transform"
+        ],
+        "orchestrate.ci-cd@orchestrate": [
+          "orchestrate"
+        ],
+        "orchestrate.dependency-dag@orchestrate": [
+          "orchestrate"
+        ],
+        "orchestrate.event-triggers@orchestrate": [
+          "orchestrate"
+        ],
+        "orchestrate.scheduling@orchestrate": [
+          "orchestrate"
+        ],
+        "platform.dev-experience@ingest": [
+          "ingest"
+        ],
+        "platform.dev-experience@orchestrate": [
+          "orchestrate"
+        ],
+        "platform.dev-experience@serve": [
+          "serve"
+        ],
+        "platform.dev-experience@source": [
+          "source"
+        ],
+        "platform.dev-experience@store": [
+          "store"
+        ],
+        "platform.dev-experience@transform": [
+          "transform"
+        ],
+        "platform.environments@ingest": [
+          "ingest"
+        ],
+        "platform.environments@orchestrate": [
+          "orchestrate"
+        ],
+        "platform.environments@serve": [
+          "serve"
+        ],
+        "platform.environments@source": [
+          "source"
+        ],
+        "platform.environments@store": [
+          "store"
+        ],
+        "platform.environments@transform": [
+          "transform"
+        ],
+        "platform.infra@ingest": [
+          "ingest"
+        ],
+        "platform.infra@orchestrate": [
+          "orchestrate"
+        ],
+        "platform.infra@serve": [
+          "serve"
+        ],
+        "platform.infra@source": [
+          "source"
+        ],
+        "platform.infra@store": [
+          "store"
+        ],
+        "platform.infra@transform": [
+          "transform"
+        ],
+        "quality.anomaly-detection@ingest": [
+          "ingest"
+        ],
+        "quality.anomaly-detection@orchestrate": [
+          "orchestrate"
+        ],
+        "quality.anomaly-detection@serve": [
+          "serve"
+        ],
+        "quality.anomaly-detection@source": [
+          "source"
+        ],
+        "quality.anomaly-detection@store": [
+          "store"
+        ],
+        "quality.anomaly-detection@transform": [
+          "transform"
+        ],
+        "quality.contracts@ingest": [
+          "ingest"
+        ],
+        "quality.contracts@orchestrate": [
+          "orchestrate"
+        ],
+        "quality.contracts@serve": [
+          "serve"
+        ],
+        "quality.contracts@source": [
+          "source"
+        ],
+        "quality.contracts@store": [
+          "store"
+        ],
+        "quality.contracts@transform": [
+          "transform"
+        ],
+        "quality.tests@ingest": [
+          "ingest"
+        ],
+        "quality.tests@orchestrate": [
+          "orchestrate"
+        ],
+        "quality.tests@serve": [
+          "serve"
+        ],
+        "quality.tests@source": [
+          "source"
+        ],
+        "quality.tests@store": [
+          "store"
+        ],
+        "quality.tests@transform": [
+          "transform"
+        ],
+        "serve.bi-viz@serve": [
+          "serve"
+        ],
+        "serve.data-apps@serve": [
+          "serve"
+        ],
+        "serve.ml-serving@serve": [
+          "serve"
+        ],
+        "serve.query-engine@serve": [
+          "serve"
+        ],
+        "serve.semantic-layer@serve": [
+          "serve"
+        ],
+        "source.event-stream@source": [
+          "source"
+        ],
+        "source.file-drop@source": [
+          "source"
+        ],
+        "source.oltp@source": [
+          "source"
+        ],
+        "source.saas-api@source": [
+          "source"
+        ],
+        "store.object-store@store": [
+          "store"
+        ],
+        "store.olap-serving@store": [
+          "store"
+        ],
+        "store.table-format@store": [
+          "store"
+        ],
+        "store.warehouse@store": [
+          "store"
+        ],
+        "transform.code-transform@transform": [
+          "transform"
+        ],
+        "transform.feature-eng@transform": [
+          "transform"
+        ],
+        "transform.sql-transform@transform": [
+          "transform"
+        ],
+        "transform.stream-processing@transform": [
+          "transform"
+        ]
+      },
+      "stage_placement": {
+        "ingest": [
+          "ingest"
+        ],
+        "orchestrate": [
+          "orchestrate"
+        ],
+        "serve": [
+          "serve"
+        ],
+        "source": [
+          "source"
+        ],
+        "store": [
+          "store"
+        ],
+        "transform": [
+          "transform"
+        ]
+      },
+      "tools": {
+        "fx-alt": {
+          "bands": {},
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "transform"
+          ],
+          "zones": {
+            "transform": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-catalog": {
+          "bands": {
+            "store": {
+              "govern": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [],
+          "zones": {}
+        },
+        "fx-cloud": {
+          "bands": {
+            "serve": {
+              "govern": 2
+            },
+            "store": {
+              "govern": 3
+            },
+            "transform": {
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "ingest",
+            "store",
+            "transform",
+            "orchestrate",
+            "serve"
+          ],
+          "zones": {
+            "ingest": {
+              "cells": [
+                "ingest.batch-extract@ingest",
+                "ingest.cdc@ingest",
+                "ingest.reverse-etl@ingest",
+                "ingest.stream-ingest@ingest"
+              ],
+              "intensity": 3
+            },
+            "orchestrate": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            },
+            "serve": {
+              "cells": [
+                "serve.query-engine@serve"
+              ],
+              "intensity": 3
+            },
+            "store": {
+              "cells": [
+                "store.object-store@store",
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            },
+            "transform": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-modeller": {
+          "bands": {
+            "transform": {
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "transform"
+          ],
+          "zones": {
+            "transform": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-mover": {
+          "bands": {},
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "ingest"
+          ],
+          "zones": {
+            "ingest": {
+              "cells": [
+                "ingest.batch-extract@ingest",
+                "ingest.cdc@ingest",
+                "ingest.reverse-etl@ingest",
+                "ingest.stream-ingest@ingest"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-orchestrator": {
+          "bands": {},
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "orchestrate"
+          ],
+          "zones": {
+            "orchestrate": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-override": {
+          "bands": {},
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "store"
+          ],
+          "zones": {
+            "store": {
+              "cells": [
+                "store.object-store@store"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-sentinel": {
+          "bands": {
+            "ingest": {
+              "quality": 3
+            },
+            "store": {
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [],
+          "zones": {}
+        },
+        "fx-suite": {
+          "bands": {
+            "serve": {
+              "govern": 2
+            },
+            "store": {
+              "govern": 3
+            },
+            "transform": {
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "store",
+            "transform",
+            "orchestrate",
+            "serve"
+          ],
+          "zones": {
+            "orchestrate": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            },
+            "serve": {
+              "cells": [
+                "serve.query-engine@serve"
+              ],
+              "intensity": 3
+            },
+            "store": {
+              "cells": [
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            },
+            "transform": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-warehouse": {
+          "bands": {
+            "serve": {
+              "govern": 2
+            },
+            "store": {
+              "govern": 2
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "store",
+            "serve"
+          ],
+          "zones": {
+            "serve": {
+              "cells": [
+                "serve.query-engine@serve"
+              ],
+              "intensity": 3
+            },
+            "store": {
+              "cells": [
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            }
+          }
+        }
+      },
+      "unmapped": "rail",
+      "zones": [
+        "source",
+        "ingest",
+        "store",
+        "transform",
+        "orchestrate",
+        "serve"
+      ]
+    },
+    {
+      "id": "medallion",
+      "name": "Medallion architecture",
+      "placement": {
+        "govern.access-control@ingest": [
+          "source",
+          "bronze"
+        ],
+        "govern.access-control@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "govern.access-control@serve": [
+          "consume"
+        ],
+        "govern.access-control@source": [
+          "source"
+        ],
+        "govern.access-control@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "govern.access-control@transform": [
+          "silver",
+          "gold"
+        ],
+        "govern.catalog@ingest": [
+          "source",
+          "bronze"
+        ],
+        "govern.catalog@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "govern.catalog@serve": [
+          "consume"
+        ],
+        "govern.catalog@source": [
+          "source"
+        ],
+        "govern.catalog@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "govern.catalog@transform": [
+          "silver",
+          "gold"
+        ],
+        "govern.masking@ingest": [
+          "source",
+          "bronze"
+        ],
+        "govern.masking@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "govern.masking@serve": [
+          "consume"
+        ],
+        "govern.masking@source": [
+          "source"
+        ],
+        "govern.masking@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "govern.masking@transform": [
+          "silver",
+          "gold"
+        ],
+        "govern.policy@ingest": [
+          "source",
+          "bronze"
+        ],
+        "govern.policy@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "govern.policy@serve": [
+          "consume"
+        ],
+        "govern.policy@source": [
+          "source"
+        ],
+        "govern.policy@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "govern.policy@transform": [
+          "silver",
+          "gold"
+        ],
+        "ingest.batch-extract@ingest": [
+          "source",
+          "bronze"
+        ],
+        "ingest.cdc@ingest": [
+          "source",
+          "bronze"
+        ],
+        "ingest.reverse-etl@ingest": "unmapped",
+        "ingest.stream-ingest@ingest": [
+          "source",
+          "bronze"
+        ],
+        "observe.cost-visibility@ingest": "unmapped",
+        "observe.cost-visibility@orchestrate": "unmapped",
+        "observe.cost-visibility@serve": "unmapped",
+        "observe.cost-visibility@source": "unmapped",
+        "observe.cost-visibility@store": "unmapped",
+        "observe.cost-visibility@transform": "unmapped",
+        "observe.lineage@ingest": [
+          "source",
+          "bronze"
+        ],
+        "observe.lineage@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "observe.lineage@serve": [
+          "consume"
+        ],
+        "observe.lineage@source": [
+          "source"
+        ],
+        "observe.lineage@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "observe.lineage@transform": [
+          "silver",
+          "gold"
+        ],
+        "observe.monitoring@ingest": [
+          "source",
+          "bronze"
+        ],
+        "observe.monitoring@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "observe.monitoring@serve": [
+          "consume"
+        ],
+        "observe.monitoring@source": [
+          "source"
+        ],
+        "observe.monitoring@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "observe.monitoring@transform": [
+          "silver",
+          "gold"
+        ],
+        "orchestrate.ci-cd@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "orchestrate.dependency-dag@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "orchestrate.event-triggers@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "orchestrate.scheduling@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "platform.dev-experience@ingest": [
+          "source",
+          "bronze"
+        ],
+        "platform.dev-experience@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "platform.dev-experience@serve": [
+          "consume"
+        ],
+        "platform.dev-experience@source": [
+          "source"
+        ],
+        "platform.dev-experience@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "platform.dev-experience@transform": [
+          "silver",
+          "gold"
+        ],
+        "platform.environments@ingest": [
+          "source",
+          "bronze"
+        ],
+        "platform.environments@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "platform.environments@serve": [
+          "consume"
+        ],
+        "platform.environments@source": [
+          "source"
+        ],
+        "platform.environments@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "platform.environments@transform": [
+          "silver",
+          "gold"
+        ],
+        "platform.infra@ingest": [
+          "source",
+          "bronze"
+        ],
+        "platform.infra@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "platform.infra@serve": [
+          "consume"
+        ],
+        "platform.infra@source": [
+          "source"
+        ],
+        "platform.infra@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "platform.infra@transform": [
+          "silver",
+          "gold"
+        ],
+        "quality.anomaly-detection@ingest": [
+          "source",
+          "bronze"
+        ],
+        "quality.anomaly-detection@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "quality.anomaly-detection@serve": [
+          "consume"
+        ],
+        "quality.anomaly-detection@source": [
+          "source"
+        ],
+        "quality.anomaly-detection@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "quality.anomaly-detection@transform": [
+          "silver",
+          "gold"
+        ],
+        "quality.contracts@ingest": [
+          "source",
+          "bronze"
+        ],
+        "quality.contracts@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "quality.contracts@serve": [
+          "consume"
+        ],
+        "quality.contracts@source": [
+          "source"
+        ],
+        "quality.contracts@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "quality.contracts@transform": [
+          "silver",
+          "gold"
+        ],
+        "quality.tests@ingest": [
+          "source",
+          "bronze"
+        ],
+        "quality.tests@orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "quality.tests@serve": [
+          "consume"
+        ],
+        "quality.tests@source": [
+          "source"
+        ],
+        "quality.tests@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "quality.tests@transform": [
+          "silver",
+          "gold"
+        ],
+        "serve.bi-viz@serve": [
+          "consume"
+        ],
+        "serve.data-apps@serve": [
+          "consume"
+        ],
+        "serve.ml-serving@serve": [
+          "consume"
+        ],
+        "serve.query-engine@serve": [
+          "consume"
+        ],
+        "serve.semantic-layer@serve": [
+          "consume"
+        ],
+        "source.event-stream@source": [
+          "source"
+        ],
+        "source.file-drop@source": [
+          "source"
+        ],
+        "source.oltp@source": [
+          "source"
+        ],
+        "source.saas-api@source": [
+          "source"
+        ],
+        "store.object-store@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "store.olap-serving@store": [
+          "gold"
+        ],
+        "store.table-format@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "store.warehouse@store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "transform.code-transform@transform": [
+          "silver",
+          "gold"
+        ],
+        "transform.feature-eng@transform": [
+          "silver",
+          "gold"
+        ],
+        "transform.sql-transform@transform": [
+          "silver",
+          "gold"
+        ],
+        "transform.stream-processing@transform": [
+          "bronze",
+          "silver"
+        ]
+      },
+      "stage_placement": {
+        "ingest": [
+          "source",
+          "bronze"
+        ],
+        "orchestrate": [
+          "source",
+          "bronze",
+          "silver",
+          "gold",
+          "consume"
+        ],
+        "serve": [
+          "consume"
+        ],
+        "source": [
+          "source"
+        ],
+        "store": [
+          "bronze",
+          "silver",
+          "gold"
+        ],
+        "transform": [
+          "silver",
+          "gold"
+        ]
+      },
+      "tools": {
+        "fx-alt": {
+          "bands": {},
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "silver",
+            "gold"
+          ],
+          "zones": {
+            "gold": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            },
+            "silver": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-catalog": {
+          "bands": {
+            "bronze": {
+              "govern": 3
+            },
+            "gold": {
+              "govern": 3
+            },
+            "silver": {
+              "govern": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [],
+          "zones": {}
+        },
+        "fx-cloud": {
+          "bands": {
+            "bronze": {
+              "govern": 3
+            },
+            "consume": {
+              "govern": 2
+            },
+            "gold": {
+              "govern": 3,
+              "observe": 2,
+              "quality": 3
+            },
+            "silver": {
+              "govern": 3,
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [
+            "ingest.reverse-etl@ingest"
+          ],
+          "span": [
+            "source",
+            "bronze",
+            "silver",
+            "gold",
+            "consume"
+          ],
+          "zones": {
+            "bronze": {
+              "cells": [
+                "ingest.batch-extract@ingest",
+                "ingest.cdc@ingest",
+                "ingest.stream-ingest@ingest",
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "store.object-store@store",
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            },
+            "consume": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "serve.query-engine@serve"
+              ],
+              "intensity": 3
+            },
+            "gold": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "store.object-store@store",
+                "store.warehouse@store",
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            },
+            "silver": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "store.object-store@store",
+                "store.warehouse@store",
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            },
+            "source": {
+              "cells": [
+                "ingest.batch-extract@ingest",
+                "ingest.cdc@ingest",
+                "ingest.stream-ingest@ingest",
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-modeller": {
+          "bands": {
+            "gold": {
+              "observe": 2,
+              "quality": 3
+            },
+            "silver": {
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "silver",
+            "gold"
+          ],
+          "zones": {
+            "gold": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            },
+            "silver": {
+              "cells": [
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-mover": {
+          "bands": {},
+          "overridden": false,
+          "rail": [
+            "ingest.reverse-etl@ingest"
+          ],
+          "span": [
+            "source",
+            "bronze"
+          ],
+          "zones": {
+            "bronze": {
+              "cells": [
+                "ingest.batch-extract@ingest",
+                "ingest.cdc@ingest",
+                "ingest.stream-ingest@ingest"
+              ],
+              "intensity": 3
+            },
+            "source": {
+              "cells": [
+                "ingest.batch-extract@ingest",
+                "ingest.cdc@ingest",
+                "ingest.stream-ingest@ingest"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-orchestrator": {
+          "bands": {},
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "source",
+            "bronze",
+            "silver",
+            "gold",
+            "consume"
+          ],
+          "zones": {
+            "bronze": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            },
+            "consume": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            },
+            "gold": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            },
+            "silver": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            },
+            "source": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-override": {
+          "bands": {},
+          "overridden": true,
+          "rail": [],
+          "span": [
+            "gold"
+          ],
+          "zones": {
+            "gold": {
+              "cells": [
+                "store.object-store@store"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-sentinel": {
+          "bands": {
+            "bronze": {
+              "quality": 3
+            },
+            "gold": {
+              "quality": 3
+            },
+            "silver": {
+              "quality": 3
+            },
+            "source": {
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [
+            "observe.cost-visibility@store"
+          ],
+          "span": [],
+          "zones": {}
+        },
+        "fx-suite": {
+          "bands": {
+            "bronze": {
+              "govern": 3
+            },
+            "consume": {
+              "govern": 2
+            },
+            "gold": {
+              "govern": 3,
+              "observe": 2,
+              "quality": 3
+            },
+            "silver": {
+              "govern": 3,
+              "observe": 2,
+              "quality": 3
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "bronze",
+            "silver",
+            "gold",
+            "consume"
+          ],
+          "zones": {
+            "bronze": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            },
+            "consume": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "serve.query-engine@serve"
+              ],
+              "intensity": 3
+            },
+            "gold": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "store.warehouse@store",
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            },
+            "silver": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate",
+                "store.warehouse@store",
+                "transform.feature-eng@transform",
+                "transform.sql-transform@transform"
+              ],
+              "intensity": 3
+            },
+            "source": {
+              "cells": [
+                "orchestrate.ci-cd@orchestrate",
+                "orchestrate.dependency-dag@orchestrate",
+                "orchestrate.scheduling@orchestrate"
+              ],
+              "intensity": 3
+            }
+          }
+        },
+        "fx-warehouse": {
+          "bands": {
+            "bronze": {
+              "govern": 2
+            },
+            "consume": {
+              "govern": 2
+            },
+            "gold": {
+              "govern": 2
+            },
+            "silver": {
+              "govern": 2
+            }
+          },
+          "overridden": false,
+          "rail": [],
+          "span": [
+            "bronze",
+            "silver",
+            "gold",
+            "consume"
+          ],
+          "zones": {
+            "bronze": {
+              "cells": [
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            },
+            "consume": {
+              "cells": [
+                "serve.query-engine@serve"
+              ],
+              "intensity": 3
+            },
+            "gold": {
+              "cells": [
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            },
+            "silver": {
+              "cells": [
+                "store.warehouse@store"
+              ],
+              "intensity": 3
+            }
+          }
+        }
+      },
+      "unmapped": "rail",
+      "zones": [
+        "source",
+        "bronze",
+        "silver",
+        "gold",
+        "consume"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "description": "Moves data between systems: extraction, replication, streaming intake, reverse ETL.",
+      "id": "mover"
+    },
+    {
+      "description": "Computes over data: warehouses, query engines, general-purpose and streaming compute.",
+      "id": "engine"
+    },
+    {
+      "description": "Holds data: operational databases, object stores, table formats, the layer underneath.",
+      "id": "substrate"
+    },
+    {
+      "description": "Reshapes data into modelled datasets: SQL transformation and feature engineering.",
+      "id": "modeller"
+    },
+    {
+      "description": "Decides when and in what order work runs, and how changes are shipped.",
+      "id": "conductor"
+    },
+    {
+      "description": "Controls who can see and do what: catalogs, access control, masking, policy.",
+      "id": "gatekeeper"
+    },
+    {
+      "description": "Watches the data and the system: quality checks, monitoring, lineage, cost.",
+      "id": "sentinel"
+    },
+    {
+      "description": "Where people and applications meet the data: BI, apps, semantic layers, IDEs, ML endpoints.",
+      "id": "surface"
+    }
+  ],
+  "stages": [
+    {
+      "criticality": 0,
+      "description": "Where data originates: the operational systems, applications and feeds that produce it.",
+      "id": "source",
+      "name": "Source",
+      "rationale": "The systems data comes from usually sit outside the stack, so having no source tool is normal and never a gap."
+    },
+    {
+      "criticality": 4,
+      "description": "Moving data from sources into the platform.",
+      "id": "ingest",
+      "name": "Ingest",
+      "rationale": "Data has to arrive somewhere, though a stack that works inside its own platform can do without."
+    },
+    {
+      "criticality": 5,
+      "description": "Where data rests and how it is laid out for analytical use.",
+      "id": "store",
+      "name": "Store",
+      "rationale": "Nothing works without somewhere to keep the data."
+    },
+    {
+      "criticality": 4,
+      "description": "Reshaping raw data into modelled, trustworthy datasets.",
+      "id": "transform",
+      "name": "Transform",
+      "rationale": "Raw data is rarely fit to use, though simple reporting can skip it."
+    },
+    {
+      "criticality": 3,
+      "description": "Deciding when work runs, in what order, and how changes are shipped.",
+      "id": "orchestrate",
+      "name": "Orchestrate",
+      "rationale": "Work can be started by hand or by scripts, which is painful but not fatal."
+    },
+    {
+      "criticality": 5,
+      "description": "Getting data to the people, applications and models that use it.",
+      "id": "serve",
+      "name": "Serve",
+      "rationale": "Data nobody can reach has no value."
+    }
+  ],
+  "taxonomy_version": "1.0.1",
+  "tools": [
+    {
+      "archetype": "specialist",
+      "cells": [
+        {
+          "capability": "transform.feature-eng",
+          "conditional": [],
+          "delivery": "partner",
+          "evidence": [
+            {
+              "delivery": "partner",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.feature-eng",
+              "source": "https://example.com/golden",
+              "tool": "fx-alt"
+            }
+          ],
+          "key": "transform.feature-eng@transform",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-alt"
+          ]
+        },
+        {
+          "capability": "transform.sql-transform",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.sql-transform",
+              "source": "https://example.com/golden",
+              "tool": "fx-alt"
+            }
+          ],
+          "key": "transform.sql-transform@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-alt"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "modeller",
+      "id": "fx-alt",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-alt",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "modeller",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "specialist",
+      "cells": [
+        {
+          "capability": "govern.catalog",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "source": "https://example.com/golden",
+              "tool": "fx-catalog"
+            }
+          ],
+          "key": "govern.catalog@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-catalog"
+          ]
+        },
+        {
+          "capability": "govern.masking",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "source": "https://example.com/golden",
+              "tool": "fx-catalog"
+            }
+          ],
+          "key": "govern.masking@store",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-catalog"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "gatekeeper",
+      "id": "fx-catalog",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-catalog",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "gatekeeper",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "end-to-end",
+      "bundling": "a-la-carte",
+      "cells": [
+        {
+          "capability": "govern.access-control",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.access-control@serve",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "serve",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "govern.access-control",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.access-control@store",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "govern.catalog",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-catalog"
+            }
+          ],
+          "key": "govern.catalog@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-catalog"
+          ]
+        },
+        {
+          "capability": "govern.masking",
+          "conditional": [
+            {
+              "constraint": [
+                "enterprise-tier"
+              ],
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "via": [
+                "fx-warehouse"
+              ]
+            }
+          ],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "constraint": [
+                "enterprise-tier"
+              ],
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            },
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-catalog"
+            }
+          ],
+          "key": "govern.masking@store",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-catalog"
+          ]
+        },
+        {
+          "capability": "ingest.batch-extract",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.batch-extract",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.batch-extract@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "ingest.cdc",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.cdc",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.cdc@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "ingest.reverse-etl",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.reverse-etl",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.reverse-etl@ingest",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "ingest.stream-ingest",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.stream-ingest",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.stream-ingest@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "observe.lineage",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "observe.lineage@transform",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "orchestrate.ci-cd",
+          "conditional": [],
+          "delivery": "partner",
+          "evidence": [
+            {
+              "delivery": "partner",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.ci-cd",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.ci-cd@orchestrate",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "orchestrate.dependency-dag",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.dependency-dag",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.dependency-dag@orchestrate",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "orchestrate.scheduling",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.scheduling",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.scheduling@orchestrate",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "quality.tests",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "quality.tests@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "serve.query-engine",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/serve.query-engine",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "serve.query-engine@serve",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "serve",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "store.object-store",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/store.object-store",
+              "source": "https://example.com/golden",
+              "tool": "fx-override"
+            }
+          ],
+          "key": "store.object-store@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-override"
+          ]
+        },
+        {
+          "capability": "store.warehouse",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/store.warehouse",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "store.warehouse@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "transform.feature-eng",
+          "conditional": [],
+          "delivery": "partner",
+          "evidence": [
+            {
+              "delivery": "partner",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.feature-eng",
+              "source": "https://example.com/golden",
+              "tool": "fx-alt"
+            },
+            {
+              "delivery": "community",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.feature-eng",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "transform.feature-eng@transform",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-alt"
+          ]
+        },
+        {
+          "capability": "transform.sql-transform",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.sql-transform",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-alt"
+            },
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.sql-transform",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "transform.sql-transform@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-alt",
+            "fx-modeller"
+          ]
+        }
+      ],
+      "deployment": [
+        "cloud-managed"
+      ],
+      "derived_role": "mover",
+      "id": "fx-cloud",
+      "includes": [
+        "fx-suite",
+        "fx-mover",
+        "fx-override"
+      ],
+      "interfaces": [],
+      "kind": "portfolio",
+      "license": "open-source",
+      "name": "fx-cloud",
+      "needs_review": false,
+      "pricing_model": "usage",
+      "role": "mover",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "specialist",
+      "cells": [
+        {
+          "capability": "observe.lineage",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "observe.lineage@transform",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "quality.tests",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "quality.tests@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "transform.feature-eng",
+          "conditional": [],
+          "delivery": "community",
+          "evidence": [
+            {
+              "delivery": "community",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.feature-eng",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "transform.feature-eng@transform",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "transform.sql-transform",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.sql-transform",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "transform.sql-transform@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "modeller",
+      "id": "fx-modeller",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-modeller",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "modeller",
+      "role_source": "derived",
+      "tagline": "A modelling tool.",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "stage-platform",
+      "cells": [
+        {
+          "capability": "ingest.batch-extract",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.batch-extract",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.batch-extract@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "ingest.cdc",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.cdc",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.cdc@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "ingest.reverse-etl",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.reverse-etl",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.reverse-etl@ingest",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        },
+        {
+          "capability": "ingest.stream-ingest",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/ingest.stream-ingest",
+              "source": "https://example.com/golden",
+              "tool": "fx-mover"
+            }
+          ],
+          "key": "ingest.stream-ingest@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-mover"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "mover",
+      "id": "fx-mover",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-mover",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "mover",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "specialist",
+      "cells": [
+        {
+          "capability": "orchestrate.ci-cd",
+          "conditional": [],
+          "delivery": "partner",
+          "evidence": [
+            {
+              "delivery": "partner",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.ci-cd",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.ci-cd@orchestrate",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "orchestrate.dependency-dag",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.dependency-dag",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.dependency-dag@orchestrate",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "orchestrate.scheduling",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.scheduling",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.scheduling@orchestrate",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "conductor",
+      "id": "fx-orchestrator",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-orchestrator",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "conductor",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "specialist",
+      "cells": [
+        {
+          "capability": "store.object-store",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/store.object-store",
+              "source": "https://example.com/golden",
+              "tool": "fx-override"
+            }
+          ],
+          "key": "store.object-store@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-override"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "substrate",
+      "id": "fx-override",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-override",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "substrate",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "specialist",
+      "cells": [
+        {
+          "capability": "observe.cost-visibility",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "preview",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "source": "https://example.com/golden",
+              "tool": "fx-sentinel"
+            }
+          ],
+          "key": "observe.cost-visibility@store",
+          "level": 2,
+          "maturity": "preview",
+          "stage": "store",
+          "via": [
+            "fx-sentinel"
+          ]
+        },
+        {
+          "capability": "quality.anomaly-detection",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "source": "https://example.com/golden",
+              "tool": "fx-sentinel"
+            }
+          ],
+          "key": "quality.anomaly-detection@ingest",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "ingest",
+          "via": [
+            "fx-sentinel"
+          ]
+        },
+        {
+          "capability": "quality.anomaly-detection",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "source": "https://example.com/golden",
+              "tool": "fx-sentinel"
+            }
+          ],
+          "key": "quality.anomaly-detection@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-sentinel"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "sentinel",
+      "id": "fx-sentinel",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-sentinel",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "sentinel",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "end-to-end",
+      "bundling": "single-contract",
+      "cells": [
+        {
+          "capability": "govern.access-control",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.access-control@serve",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "serve",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "govern.access-control",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.access-control@store",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "govern.catalog",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-catalog"
+            }
+          ],
+          "key": "govern.catalog@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-catalog"
+          ]
+        },
+        {
+          "capability": "govern.masking",
+          "conditional": [
+            {
+              "constraint": [
+                "enterprise-tier"
+              ],
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "via": [
+                "fx-warehouse"
+              ]
+            }
+          ],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "constraint": [
+                "enterprise-tier"
+              ],
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            },
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-catalog"
+            }
+          ],
+          "key": "govern.masking@store",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-catalog"
+          ]
+        },
+        {
+          "capability": "observe.lineage",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "observe.lineage@transform",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "orchestrate.ci-cd",
+          "conditional": [],
+          "delivery": "partner",
+          "evidence": [
+            {
+              "delivery": "partner",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.ci-cd",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.ci-cd@orchestrate",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "orchestrate.dependency-dag",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.dependency-dag",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.dependency-dag@orchestrate",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "orchestrate.scheduling",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/orchestrate.scheduling",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-orchestrator"
+            }
+          ],
+          "key": "orchestrate.scheduling@orchestrate",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "orchestrate",
+          "via": [
+            "fx-orchestrator"
+          ]
+        },
+        {
+          "capability": "quality.tests",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "quality.tests@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-modeller"
+          ]
+        },
+        {
+          "capability": "serve.query-engine",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/serve.query-engine",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "serve.query-engine@serve",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "serve",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "store.warehouse",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/store.warehouse",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "store.warehouse@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "transform.feature-eng",
+          "conditional": [],
+          "delivery": "partner",
+          "evidence": [
+            {
+              "delivery": "partner",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.feature-eng",
+              "source": "https://example.com/golden",
+              "tool": "fx-alt"
+            },
+            {
+              "delivery": "community",
+              "level": 1,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.feature-eng",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "transform.feature-eng@transform",
+          "level": 1,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-alt"
+          ]
+        },
+        {
+          "capability": "transform.sql-transform",
+          "conditional": [],
+          "delivery": "bundled",
+          "evidence": [
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.sql-transform",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-alt"
+            },
+            {
+              "delivery": "bundled",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/transform.sql-transform",
+              "scored_delivery": "native",
+              "source": "https://example.com/golden",
+              "tool": "fx-modeller"
+            }
+          ],
+          "key": "transform.sql-transform@transform",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "transform",
+          "via": [
+            "fx-alt",
+            "fx-modeller"
+          ]
+        }
+      ],
+      "deployment": [
+        "saas"
+      ],
+      "derived_role": "engine",
+      "id": "fx-suite",
+      "includes": [
+        "fx-modeller",
+        "fx-alt",
+        "fx-warehouse",
+        "fx-orchestrator",
+        "fx-catalog"
+      ],
+      "interfaces": [],
+      "kind": "bundle",
+      "license": "open-source",
+      "name": "fx-suite",
+      "needs_review": false,
+      "pricing_model": "subscription",
+      "role": "engine",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    },
+    {
+      "archetype": "stage-platform",
+      "cells": [
+        {
+          "capability": "govern.access-control",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.access-control@serve",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "serve",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "govern.access-control",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 2,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/0",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.access-control@store",
+          "level": 2,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "govern.masking",
+          "conditional": [
+            {
+              "constraint": [
+                "enterprise-tier"
+              ],
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "via": [
+                "fx-warehouse"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "constraint": [
+                "enterprise-tier"
+              ],
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/bands/1",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "govern.masking@store",
+          "level": 0,
+          "stage": "store",
+          "via": []
+        },
+        {
+          "capability": "serve.query-engine",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/serve.query-engine",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "serve.query-engine@serve",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "serve",
+          "via": [
+            "fx-warehouse"
+          ]
+        },
+        {
+          "capability": "store.warehouse",
+          "conditional": [],
+          "delivery": "native",
+          "evidence": [
+            {
+              "delivery": "native",
+              "level": 3,
+              "maturity": "ga",
+              "note": "Golden fixture note.",
+              "ref": "/coverage/store.warehouse",
+              "source": "https://example.com/golden",
+              "tool": "fx-warehouse"
+            }
+          ],
+          "key": "store.warehouse@store",
+          "level": 3,
+          "maturity": "ga",
+          "stage": "store",
+          "via": [
+            "fx-warehouse"
+          ]
+        }
+      ],
+      "deployment": [
+        "self-hosted"
+      ],
+      "derived_role": "engine",
+      "id": "fx-warehouse",
+      "interfaces": [],
+      "kind": "tool",
+      "license": "open-source",
+      "name": "fx-warehouse",
+      "needs_review": false,
+      "pricing_model": "free",
+      "role": "engine",
+      "role_source": "derived",
+      "taxonomy_version": "1.0.0",
+      "vendor": "Fixture Co"
+    }
+  ]
+}

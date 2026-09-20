@@ -1,0 +1,116 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dbt-core",
+  "name": "dbt OSS (dbt Core)",
+  "vendor": "dbt Labs",
+  "kind": "tool",
+  "sku": "The Apache 2.0 open-source distribution of the dbt framework, called dbt Core until dbt Core 2.0 renamed it dbt OSS. Excludes the proprietary dbt distribution's extras and the dbt platform's scheduler, Catalog, Mesh and hosted features.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["sql", "yaml", "cli", "python"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "transform.sql-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The reason the product exists: models are SQL SELECT statements that dbt compiles, orders and materialises in the warehouse.",
+      "source": "https://docs.getdbt.com/docs/introduction"
+    },
+    "transform.code-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Python models run remotely on Snowflake (Snowpark), BigQuery or Databricks, not locally. Only some adapters support them, and only table and incremental materialisations.",
+      "source": "https://docs.getdbt.com/docs/build/python-models"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "ref() calls build the dependency graph automatically so models deploy in the right order. It orders dbt's own nodes only; it is not a general task DAG.",
+      "source": "https://docs.getdbt.com/reference/dbt-jinja-functions/ref"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "state:modified selection plus --defer enable slim CI, running only changed models and their dependents. dbt supplies the comparison logic; a separate runner still has to execute it.",
+      "source": "https://docs.getdbt.com/reference/node-selection/state-selection"
+    },
+    "serve.semantic-layer": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Metrics and semantic models are defined in YAML (MetricFlow, Apache 2.0) and can be queried from the CLI. The Semantic Layer API and BI integrations need the dbt platform.",
+      "source": "https://docs.getdbt.com/docs/build/about-metricflow"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.tests",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Generic tests (unique, not_null, accepted_values, relationships), singular SQL tests and unit tests ship in the box and run as part of the build.",
+      "source": "https://docs.getdbt.com/docs/build/data-tests"
+    },
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Tests can also be declared on sources and run against raw tables (dbt test --select source:*), but only after the data has landed. Nothing is checked in flight.",
+      "source": "https://docs.getdbt.com/docs/build/data-tests"
+    },
+    {
+      "band": "quality.contracts",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Model contracts fix column names, types and constraints, and the build fails if the output drifts. How much the warehouse enforces varies: Postgres enforces most constraints, Snowflake and Redshift enforce only not_null.",
+      "source": "https://docs.getdbt.com/docs/mesh/govern/model-contracts"
+    },
+    {
+      "band": "quality.anomaly-detection",
+      "level": 1,
+      "delivery": "partner",
+      "scope": ["transform"],
+      "note": "Not part of dbt. Elementary's Apache-2.0 dbt package adds volume, freshness and column-distribution anomaly tests, and is maintained by a separate company.",
+      "source": "https://github.com/elementary-data/dbt-data-reliability"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "The docs site includes a DAG of the project, and dbt Docs v2 adds column-level lineage. Covers dbt-managed nodes only.",
+      "source": "https://docs.getdbt.com/docs/build/documentation"
+    },
+    {
+      "band": "govern.catalog",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "dbt docs generate builds a static, searchable site of models, sources, descriptions and column metadata that can be hosted anywhere. It covers dbt assets only; the richer Catalog is a paid platform feature.",
+      "source": "https://docs.getdbt.com/docs/build/documentation"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "The grants config makes dbt issue grant and revoke statements so each model's permissions match configuration. Supported on adapters including Snowflake, Databricks, Redshift and BigQuery.",
+      "source": "https://docs.getdbt.com/reference/resource-configs/grants"
+    },
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "A profile holds multiple targets, typically dev and prod, selected per command with --target.",
+      "source": "https://docs.getdbt.com/docs/local/profiles.yml"
+    }
+  ],
+  "presentation": {
+    "tagline": "SQL-first transformation framework: models, tests and docs kept in version control."
+  },
+  "pairs_with": ["databricks", "postgres"],
+  "updated": "2026-09-20"
+}

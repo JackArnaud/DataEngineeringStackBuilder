@@ -1,0 +1,84 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "unity-catalog",
+  "name": "Unity Catalog",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Unity Catalog as included in the Databricks platform. Documentation reviewed on the AWS docs site.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "ui"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "serve.semantic-layer": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Metric views define measures and dimensions once and are queried at runtime from SQL editors, notebooks, dashboards, Genie and alerts, and from external BI tools including Power BI and Tableau.",
+      "source": "https://docs.databricks.com/aws/en/uc-semantics/metric-views/"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "The unified governance layer for data and AI, with discovery of governed objects through Catalog Explorer. It governs assets registered with it, not data outside Databricks.",
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Privileges, attribute-based policies, row and column filters and workspace bindings, enforced beneath every data interaction in a workspace.",
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/"
+    },
+    {
+      "band": "govern.masking",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Column masks are SQL functions evaluated at query time that return the original or a masked value, and users cannot see base values before masking applies. Databricks now recommends ABAC policies over per-table masks.",
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Attribute-based access control applies policies automatically by governed tag at catalog, schema or table level. Metastore-level policies and DENY policies are still Beta.",
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac/"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Lineage is captured down to the column level across notebooks, jobs, dashboards, queries and pipelines. It is not captured when sources are referenced by path, is not preserved through renames, and has no data before 1 September 2024.",
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-lineage"
+    },
+    {
+      "band": "observe.cost-visibility",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "The billing usage system table attributes spend to jobs, pipelines, notebooks, clusters, warehouses and custom tags. Records arrive within about 12 hours.",
+      "source": "https://docs.databricks.com/aws/en/admin/system-tables/billing"
+    },
+    {
+      "band": "quality.anomaly-detection",
+      "level": 2,
+      "delivery": "native",
+      "maturity": "preview",
+      "scope": ["store"],
+      "note": "Monitors every table in a schema for freshness and completeness by learning from historical patterns. It is in Public Preview, and the percent-null and slicing extensions are Beta.",
+      "source": "https://docs.databricks.com/aws/en/data-quality-monitoring/anomaly-detection/"
+    }
+  ],
+  "presentation": {
+    "tagline": "Governance layer for data and AI: access, lineage, masking and metrics in one catalog."
+  },
+  "updated": "2026-09-20"
+}

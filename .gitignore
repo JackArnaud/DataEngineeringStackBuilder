@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+# Written by `npm run compile`; the site reads it as static JSON
+apps/web/public/render-model.json
+
+# Generated from data/*.schema.json by `npm run gen:types`
+packages/compile/src/generated/

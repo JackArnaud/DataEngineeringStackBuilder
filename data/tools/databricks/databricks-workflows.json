@@ -1,0 +1,61 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "databricks-workflows",
+  "name": "Lakeflow Jobs (Databricks Workflows)",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Lakeflow Jobs as included in the Databricks platform. Documentation reviewed on the AWS docs site. Renamed from Workflows; the record ID is kept because IDs are immutable.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli", "yaml"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Jobs run at scheduled times as a core trigger type.",
+      "source": "https://docs.databricks.com/aws/en/jobs/"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A job is a DAG of tasks with dependencies and conditional execution, with branching and looping supported through a visual editor.",
+      "source": "https://docs.databricks.com/aws/en/jobs/"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A job can start when new data arrives in cloud storage instead of on a clock.",
+      "source": "https://docs.databricks.com/aws/en/jobs/"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Declarative Automation Bundles (formerly Asset Bundles) define jobs and pipelines as source files and deploy them with the Databricks CLI as a single bundle. A separate runner still has to invoke it.",
+      "source": "https://docs.databricks.com/aws/en/dev-tools/bundles/"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Reports run success and logs and metrics for each task, with notifications by email, Slack and webhooks.",
+      "source": "https://docs.databricks.com/aws/en/jobs/"
+    },
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "A bundle is deployed to a target environment, giving consistent dev, staging and production deployments of jobs and pipelines.",
+      "source": "https://docs.databricks.com/aws/en/dev-tools/bundles/"
+    }
+  ],
+  "presentation": {
+    "tagline": "Task-graph orchestration for jobs and pipelines inside Databricks."
+  },
+  "updated": "2026-09-20"
+}

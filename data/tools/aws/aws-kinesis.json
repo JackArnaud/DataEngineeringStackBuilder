@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-kinesis",
+  "name": "Amazon Kinesis Data Streams",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Kinesis Data Streams only. Firehose, Managed Service for Apache Flink and Kinesis Video Streams are separate services and are not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "source.event-stream": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Hosts continuous streams of records such as application logs, clickstream and market data feeds. Producers push records straight into a stream.",
+      "source": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    },
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Rapid, continuous intake with a typical put-to-get delay under one second, and several independent applications can consume the same stream at once. Processing is left to consumer applications you write.",
+      "source": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    }
+  },
+  "presentation": {
+    "tagline": "Durable managed streams that decouple event producers from consumers."
+  },
+  "updated": "2026-09-20"
+}

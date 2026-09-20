@@ -1,0 +1,16 @@
+{
+  "$schema": "../lens.schema.json",
+  "id": "grid",
+  "name": "Audit grid",
+  "zones": ["source", "ingest", "store", "transform", "orchestrate", "serve"],
+  "defaults": {
+    "source": ["source"],
+    "ingest": ["ingest"],
+    "store": ["store"],
+    "transform": ["transform"],
+    "orchestrate": ["orchestrate"],
+    "serve": ["serve"]
+  },
+  "overrides": [],
+  "unmapped": "rail"
+}

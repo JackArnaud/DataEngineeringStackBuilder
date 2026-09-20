@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://data-engineering-stack-builder/schemas/derivation.schema.json",
+  "title": "Derivation rules",
+  "description": "The rules that turn scored coverage into a role and an archetype. Role and archetype are computed from these, never assigned per tool. Structural rules only; the validator checks that every capability resolves to a role.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["derivation_version", "roles", "band_weight", "role_affinity", "archetype"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "derivation_version": { "$ref": "#/$defs/semver" },
+    "roles": {
+      "description": "The closed role vocabulary, in tie-break order: when two roles score equally the earlier one wins. Must match the role enum in tool.schema.json.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description"],
+        "properties": {
+          "id": { "$ref": "#/$defs/slug" },
+          "description": { "type": "string", "minLength": 10 }
+        }
+      }
+    },
+    "band_weight": {
+      "description": "How much a band capability counts toward a role, relative to 1 for a spine capability. Below 1 so a tool's pipeline job outweighs its cross-cutting extras.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "role_affinity": {
+      "description": "Capability -> the role it suggests. An exact capability ID beats a <stage-or-band>.* pattern. Every capability must resolve to a role.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["match", "role"],
+        "properties": {
+          "match": { "$ref": "#/$defs/match" },
+          "role": { "$ref": "#/$defs/slug" },
+          "note": { "type": "string", "minLength": 10 }
+        }
+      }
+    },
+    "archetype": {
+      "description": "Thresholds on level-3 spine coverage. specialist: at most specialist_max_stages stages and specialist_max_capabilities capabilities. end-to-end: at least end_to_end_min_stages stages. Anything between is a stage-platform.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specialist_max_stages", "specialist_max_capabilities", "end_to_end_min_stages"],
+      "properties": {
+        "specialist_max_stages": { "type": "integer", "minimum": 0 },
+        "specialist_max_capabilities": { "type": "integer", "minimum": 0 },
+        "end_to_end_min_stages": { "type": "integer", "minimum": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$" },
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "match": {
+      "description": "An exact capability ID, or <stage-or-band>.* for every capability under it.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.([a-z][a-z0-9]*(-[a-z0-9]+)*|\\*)$"
+    }
+  }
+}

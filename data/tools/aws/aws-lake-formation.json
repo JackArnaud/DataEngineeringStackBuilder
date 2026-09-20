@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-lake-formation",
+  "name": "AWS Lake Formation",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "AWS Lake Formation permissions layer over the AWS Glue Data Catalog.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.0",
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "Its own permissions model on top of IAM, enforced at database, table, column, row and cell level across Athena, Redshift Spectrum, EMR and Glue ETL. It governs data cataloged in Glue, not data outside the catalog.",
+      "source": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform", "serve"],
+      "note": "LF-Tags are labels attached to databases, tables or columns, so a few tag-based policies replace per-resource permissions across thousands of resources.",
+      "source": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    },
+    {
+      "band": "govern.catalog",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Adds text-based search over cataloged metadata and labels, and federates external sources such as Redshift and S3 Tables into the Glue Data Catalog. The catalog itself is AWS Glue's.",
+      "source": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Central permissions and tag-based governance for data lakes on S3."
+  },
+  "pairs_with": ["aws-glue", "aws-athena"],
+  "updated": "2026-09-20"
+}

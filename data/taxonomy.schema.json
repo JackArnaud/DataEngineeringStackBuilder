@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://data-engineering-stack-builder/schemas/taxonomy.schema.json",
+  "title": "Taxonomy",
+  "description": "Stages, bands, capabilities and criticality weights. Structural rules only; cross-reference checks (prefixes, successors, matrix completeness) live in the validator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["taxonomy_version", "stages", "bands", "capabilities", "criticality"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "taxonomy_version": { "$ref": "#/$defs/semver" },
+    "stages": {
+      "description": "Sequential pipeline stages. Array order is pipeline order.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/stage" }
+    },
+    "bands": {
+      "description": "Cross-cutting concerns, scored per stage.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/group" }
+    },
+    "capabilities": {
+      "description": "Keyed by immutable ID of the form <stage-or-band>.<slug>. IDs are never reused or repurposed; retire them with status instead of deleting.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/capabilityId" },
+      "additionalProperties": { "$ref": "#/$defs/capability" }
+    },
+    "criticality": { "$ref": "#/$defs/criticality" }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$" },
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "capabilityId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "stage": {
+      "description": "A pipeline stage. Its criticality is how much a stack with nothing at all in this stage is missing, on the same 0-5 scale as band cells.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "description", "criticality", "rationale"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 10 },
+        "criticality": { "$ref": "#/$defs/weight" },
+        "rationale": { "type": "string", "minLength": 10 }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "description"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 10 }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "required": ["name", "description", "status"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 10 },
+        "status": { "enum": ["active", "deprecated", "superseded_by"] },
+        "successors": {
+          "description": "Capabilities that replace this one. Only for status superseded_by.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/capabilityId" }
+        },
+        "migration": {
+          "description": "How tool records move to the successors. fan-out copies the old score onto every successor and marks it inherited until re-scored.",
+          "enum": ["fan-out"]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "superseded_by" } }, "required": ["status"] },
+          "then": { "required": ["successors", "migration"] },
+          "else": { "not": { "anyOf": [{ "required": ["successors"] }, { "required": ["migration"] }] } }
+        }
+      ]
+    },
+    "weight": { "type": "integer", "minimum": 0, "maximum": 5 },
+    "criticality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scale", "bands", "overrides"],
+      "properties": {
+        "scale": { "type": "string", "minLength": 10 },
+        "bands": {
+          "description": "Band id -> weight per stage. Every band x stage cell must be present.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/slug" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rationale", "stages"],
+            "properties": {
+              "rationale": { "type": "string", "minLength": 10 },
+              "stages": {
+                "type": "object",
+                "minProperties": 1,
+                "propertyNames": { "$ref": "#/$defs/slug" },
+                "additionalProperties": { "$ref": "#/$defs/weight" }
+              }
+            }
+          }
+        },
+        "overrides": {
+          "description": "Capability-level exceptions to the band x stage weight. Keep rare.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["capability", "stage", "weight", "rationale"],
+            "properties": {
+              "capability": { "$ref": "#/$defs/capabilityId" },
+              "stage": { "$ref": "#/$defs/slug" },
+              "weight": { "$ref": "#/$defs/weight" },
+              "rationale": { "type": "string", "minLength": 10 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

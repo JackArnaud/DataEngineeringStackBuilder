@@ -1,0 +1,49 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-redshift",
+  "name": "Amazon Redshift",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Redshift, provisioned clusters and Redshift Serverless.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "store.warehouse": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed, petabyte-scale data warehouse, available as provisioned clusters or as Redshift Serverless, which scales capacity automatically and charges nothing when idle.",
+      "source": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "SQL queries run from the built-in query editor v2 or from existing BI tools and SQL clients.",
+      "source": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "serve"],
+      "note": "Role-based access control grants permissions to roles rather than individual objects, and can delegate tasks that used to need a superuser.",
+      "source": "https://docs.aws.amazon.com/redshift/latest/dg/t_Roles.html"
+    },
+    {
+      "band": "govern.masking",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "serve"],
+      "note": "Dynamic data masking policies hide, obfuscate or pseudonymise column values at query time for specific users or roles, including conditional cell-level masking, without changing the stored data.",
+      "source": "https://docs.aws.amazon.com/redshift/latest/dg/t_ddm.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed columnar data warehouse with a serverless option."
+  },
+  "updated": "2026-09-20"
+}

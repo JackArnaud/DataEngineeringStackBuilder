@@ -1,0 +1,31 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-sagemaker",
+  "name": "Amazon SageMaker AI (inference and Feature Store)",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "SageMaker AI inference endpoints and SageMaker Feature Store only. Training, notebooks and the rest of SageMaker AI are not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "serve.ml-serving": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Deploys trained models to real-time endpoints for low-latency inference, serverless endpoints with automatic scaling, and asynchronous endpoints for large or long-running requests.",
+      "source": "https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html"
+    },
+    "transform.feature-eng": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Feature Store keeps features in feature groups with an online store for millisecond reads and an append-only offline store on S3 for training, and supports point-in-time extraction. Features are ingested by streaming or batch, which reduces training-serving skew.",
+      "source": "https://docs.aws.amazon.com/sagemaker/latest/dg/feature-store.html"
+    }
+  },
+  "presentation": {
+    "tagline": "Managed model endpoints and a feature store with online and offline modes."
+  },
+  "updated": "2026-09-20"
+}

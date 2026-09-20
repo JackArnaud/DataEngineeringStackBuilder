@@ -1,0 +1,93 @@
+{
+  "$schema": "../tool.schema.json",
+  "id": "postgres",
+  "name": "PostgreSQL",
+  "vendor": "PostgreSQL Global Development Group",
+  "kind": "tool",
+  "sku": "PostgreSQL 18 community distribution. Scores delivered by an extension name it and are not part of core.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["sql", "cli"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A general-purpose relational database used as an application's primary datastore, which makes it the origin of data for many pipelines.",
+      "source": "https://www.postgresql.org/about/"
+    },
+    "serve.query-engine": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Full SQL, with parallel plans for scans, joins and aggregates. Parallel query uses several CPUs on one node; it is not a distributed engine, so it suits modest analytical loads.",
+      "source": "https://www.postgresql.org/docs/current/parallel-query.html"
+    },
+    "transform.sql-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Views and materialised views persist SQL transformations, and a materialised view is refreshed on demand. Ordering and scheduling of the refreshes are left to other tools.",
+      "source": "https://www.postgresql.org/docs/current/sql-creatematerializedview.html"
+    },
+    "store.warehouse": {
+      "level": 1,
+      "delivery": "community",
+      "note": "Only through the pg_duckdb extension, which adds DuckDB's columnar engine and reads and writes Parquet, Iceberg and Delta Lake on object storage. Maintained under the DuckDB organisation with Hydra and MotherDuck, MIT licensed, and its 1.0 release notes call it production ready.",
+      "source": "https://github.com/duckdb/pg_duckdb"
+    },
+    "orchestrate.scheduling": {
+      "level": 1,
+      "delivery": "community",
+      "note": "Only through the pg_cron extension, maintained by Citus Data, which runs SQL on cron schedules inside the database. It is not part of core and must be preloaded in postgresql.conf.",
+      "source": "https://github.com/citusdata/pg_cron"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "store", "serve"],
+      "note": "SQL GRANT privileges plus row security policies that restrict which rows each user can read or change.",
+      "source": "https://www.postgresql.org/docs/current/ddl-rowsecurity.html"
+    },
+    {
+      "band": "govern.masking",
+      "level": 1,
+      "delivery": "community",
+      "scope": ["source", "store", "serve"],
+      "note": "Only through the PostgreSQL Anonymizer extension from Dalibo, which offers dynamic masking that hides values from masked users, plus static masking and masked dumps. Not part of core.",
+      "source": "https://postgresql-anonymizer.readthedocs.io/en/stable/"
+    },
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "store"],
+      "note": "CHECK, NOT NULL, UNIQUE, primary key, foreign key and exclusion constraints are enforced on write and reject bad rows. Enforcement happens at write time, not as a test run over data already loaded.",
+      "source": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "store", "serve"],
+      "note": "The cumulative statistics system exposes table, index and I/O activity and current sessions through pg_stat_* views. It gives visibility only; alerting needs external tooling.",
+      "source": "https://www.postgresql.org/docs/current/monitoring-stats.html"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "CDC source interface",
+      "description": "Exposes row-level changes from the database for an external tool to consume, through replication slots and output plugins. This is the source side of change data capture, distinct from a tool that captures those changes and lands them elsewhere.",
+      "home": "source",
+      "nearest_existing": "ingest.cdc",
+      "source": "https://www.postgresql.org/docs/current/logicaldecoding.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Open-source relational database, and the system of record behind many applications."
+  },
+  "pairs_with": ["dbt-core", "aws-dms"],
+  "updated": "2026-09-20"
+}

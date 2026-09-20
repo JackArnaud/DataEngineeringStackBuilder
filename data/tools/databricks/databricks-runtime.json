@@ -1,0 +1,61 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "databricks-runtime",
+  "name": "Databricks Runtime and Delta Lake",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Databricks Runtime as included in the Databricks platform. Documentation reviewed on the AWS docs site.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "scala", "notebook"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Notebooks and jobs run Python, Scala, R and SQL on the Databricks Runtime, which is the compute engine the rest of the platform is built on.",
+      "source": "https://docs.databricks.com/aws/en/notebooks/"
+    },
+    "transform.stream-processing": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Structured Streaming provides stateful aggregations, stream-stream joins, deduplication, watermarks and exactly-once processing, plus a real-time mode with latency as low as five milliseconds.",
+      "source": "https://docs.databricks.com/aws/en/structured-streaming/"
+    },
+    "store.table-format": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Delta Lake is the default format for every table on Databricks, adding ACID transactions, time travel and schema evolution over Parquet files.",
+      "source": "https://docs.databricks.com/aws/en/delta/"
+    },
+    "ingest.batch-extract": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Auto Loader incrementally ingests new files as they arrive in cloud storage, with schema inference and evolution. It covers files only; extraction from databases and SaaS applications is a different product.",
+      "source": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform"],
+      "note": "Databricks maintains an open-source Terraform provider that provisions workspaces, clusters, jobs, notebooks and Unity Catalog resources, and aims to cover every Databricks REST API. It manages the platform's resources, not the cloud storage beneath them.",
+      "source": "https://docs.databricks.com/aws/en/dev-tools/terraform/"
+    },
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Notebooks offer real-time coauthoring in several languages, automatic versioning and built-in visualisations.",
+      "source": "https://docs.databricks.com/aws/en/notebooks/"
+    }
+  ],
+  "presentation": {
+    "tagline": "Spark compute with Delta Lake tables as the default storage layer."
+  },
+  "updated": "2026-09-20"
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-dms",
+  "name": "AWS Database Migration Service",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "AWS DMS replication instances and tasks.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "After a migration, DMS can replicate ongoing changes to keep source and target in sync, using a replication server that reads from a source endpoint and writes to a target.",
+      "source": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    "ingest.batch-extract": {
+      "level": 2,
+      "delivery": "native",
+      "note": "One-time full loads move relational databases, data warehouses and NoSQL stores into AWS. It is built for migration and replication rather than general-purpose extraction.",
+      "source": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "Data validation compares each source row with its target row after a full load and as CDC changes arrive, and reports mismatches. It checks that data arrived intact, not user-defined business rules, and needs a primary key or unique index.",
+      "source": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed database replication: full load plus ongoing change capture."
+  },
+  "pairs_with": ["postgres"],
+  "updated": "2026-09-20"
+}

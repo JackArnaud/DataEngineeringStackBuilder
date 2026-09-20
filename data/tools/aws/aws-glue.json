@@ -1,0 +1,89 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-glue",
+  "name": "AWS Glue",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "AWS Glue ETL jobs, Data Catalog, workflows and Data Quality.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli", "python"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A data integration service that connects to more than 70 data sources on premises and on AWS and loads them into data lakes.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "ETL jobs run on a serverless, Apache Spark-based engine, authored visually in Glue Studio, in notebooks, or as edited scripts.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    "transform.stream-processing": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Streaming ETL cleans and transforms data in transit so it is available in the target store within seconds.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Workflows can start on a schedule, including custom cron expressions, or on demand.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Triggers chain jobs and crawlers into dependency graphs that the console displays as a workflow graph with per-step run status. It orchestrates Glue components only.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A workflow can start on an Amazon EventBridge event or a batch of events, such as a new object arriving in S3.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "The Data Catalog is a centralised metadata repository, populated by crawlers that infer schemas, and queryable by Athena, EMR and Redshift Spectrum.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    {
+      "band": "quality.tests",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "store"],
+      "note": "Glue Data Quality evaluates rules written in DQDL, with 25+ built-in rule types, recommended rules and a quality score. It runs inside ETL jobs to filter bad data before it loads and against cataloged tables at rest.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/glue-data-quality.html"
+    },
+    {
+      "band": "quality.anomaly-detection",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "store"],
+      "note": "Machine learning detects anomalies and hard-to-spot quality issues from statistics gathered over time. Anomaly detection reached general availability in August 2024, and support for cataloged tables was added in July 2026.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/glue-data-quality.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform"],
+      "note": "Jobs are monitored with automated tooling, job run insights, CloudTrail and the Spark UI.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Serverless data integration: Spark ETL jobs, a metadata catalog and workflows."
+  },
+  "updated": "2026-09-20"
+}

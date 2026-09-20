@@ -1,0 +1,32 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "databricks-lakebase",
+  "name": "Lakebase (Databricks Postgres)",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Lakebase Postgres as included in the Databricks platform. Documentation reviewed on the AWS docs site. The feature that stores Postgres changes as Delta tables is in Public Preview and is not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed Postgres database inside the Databricks platform, for building transactional applications that sit next to the lakehouse.",
+      "source": "https://docs.databricks.com/aws/en/oltp/"
+    },
+    "ingest.reverse-etl": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Synced tables copy Unity Catalog tables into Postgres for low-latency application reads. The target is Lakebase only, not arbitrary SaaS or operational systems.",
+      "source": "https://docs.databricks.com/aws/en/oltp/"
+    }
+  },
+  "presentation": {
+    "tagline": "Managed Postgres inside Databricks, with lakehouse tables synced in for apps."
+  },
+  "pairs_with": ["postgres"],
+  "updated": "2026-09-20"
+}

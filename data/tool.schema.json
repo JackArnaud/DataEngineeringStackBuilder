@@ -1,0 +1,582 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://data-engineering-stack-builder/schemas/tool.schema.json",
+  "title": "Tool record",
+  "description": "One product, bundle or portfolio. Structural rules only; whether a capability ID exists in the taxonomy, whether includes resolve, and whether scopes overlap are checked by the validator.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/tool"
+    },
+    {
+      "$ref": "#/$defs/bundle"
+    },
+    {
+      "$ref": "#/$defs/portfolio"
+    }
+  ],
+  "$defs": {
+    "tool": {
+      "title": "Tool",
+      "description": "A single scored product. Must carry spine coverage, band coverage, or both.",
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "tool"
+            },
+            "coverage": {
+              "description": "Spine capability ID -> score. Sparse: absence means 0. Never hand-write for a bundle or portfolio.",
+              "type": "object",
+              "propertyNames": {
+                "$ref": "#/$defs/capabilityId"
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/score"
+              }
+            },
+            "bands": {
+              "description": "Band capability scores, per stage. One entry may cover several stages via scope.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/bandScore"
+              }
+            }
+          }
+        },
+        {
+          "anyOf": [
+            {
+              "required": [
+                "coverage"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "object",
+                  "minProperties": 1
+                }
+              }
+            },
+            {
+              "required": [
+                "bands"
+              ],
+              "properties": {
+                "bands": {
+                  "type": "array",
+                  "minItems": 1
+                }
+              }
+            }
+          ],
+          "if": {
+            "required": [
+              "coverage"
+            ],
+            "properties": {
+              "coverage": {
+                "type": "object",
+                "minProperties": 1
+              }
+            }
+          },
+          "else": {
+            "description": "Bands-only tool: with no spine coverage there are no occupied stages to default to, so scope is mandatory.",
+            "properties": {
+              "bands": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "scope"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "bundle": {
+      "title": "Bundle",
+      "description": "Parts sold under one contract (Databricks, Snowflake). Coverage derives from the parts as max level with a delivery downgrade, never hand-written.",
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "includes",
+            "bundling"
+          ],
+          "properties": {
+            "kind": {
+              "const": "bundle"
+            },
+            "includes": {
+              "$ref": "#/$defs/includes"
+            },
+            "bundling": {
+              "const": "single-contract"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio": {
+      "title": "Portfolio",
+      "description": "Independently purchasable parts under one brand (AWS, GCP, Azure). Derived coverage is for comparison views only; the stack builder composes the parts, not the portfolio.",
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "includes",
+            "bundling"
+          ],
+          "properties": {
+            "kind": {
+              "const": "portfolio"
+            },
+            "includes": {
+              "$ref": "#/$defs/includes"
+            },
+            "bundling": {
+              "const": "a-la-carte"
+            }
+          }
+        }
+      ]
+    },
+    "common": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "vendor",
+        "kind",
+        "license",
+        "deployment",
+        "pricing_model",
+        "taxonomy_version",
+        "updated"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/toolId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vendor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "tool",
+            "bundle",
+            "portfolio"
+          ]
+        },
+        "sku": {
+          "description": "The edition or SKU that was scored. Capability only available in a higher tier gets a separate record or an enterprise-tier constraint, never a free upgrade.",
+          "type": "string",
+          "minLength": 1
+        },
+        "license": {
+          "enum": [
+            "open-source",
+            "source-available",
+            "proprietary"
+          ]
+        },
+        "deployment": {
+          "description": "saas: vendor-run. cloud-managed: provider-run service in your own cloud account. self-hosted: you run it. desktop: installed on a user's machine.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "saas",
+              "cloud-managed",
+              "self-hosted",
+              "desktop"
+            ]
+          }
+        },
+        "pricing_model": {
+          "enum": [
+            "free",
+            "per-seat",
+            "usage",
+            "capacity",
+            "subscription",
+            "hybrid"
+          ]
+        },
+        "interfaces": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "taxonomy_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "proposed_capabilities": {
+          "description": "Capabilities this tool has that the taxonomy cannot express. They do not score and do not render; they feed the taxonomy backlog. Never cram them into the nearest existing ID.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/proposal"
+          }
+        },
+        "presentation": {
+          "$ref": "#/$defs/presentation"
+        },
+        "lens_overrides": {
+          "description": "Per-tool zone placement where lens derivation is wrong. Keep rare; each needs a note.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/lensOverride"
+          }
+        },
+        "pairs_with": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/toolId"
+          }
+        },
+        "updated": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
+    "score": {
+      "description": "A spine coverage score.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "delivery",
+        "note",
+        "source"
+      ],
+      "properties": {
+        "level": {
+          "$ref": "#/$defs/scoreLevel"
+        },
+        "delivery": {
+          "$ref": "#/$defs/scoreDelivery"
+        },
+        "maturity": {
+          "$ref": "#/$defs/scoreMaturity"
+        },
+        "constraint": {
+          "$ref": "#/$defs/scoreConstraint"
+        },
+        "inherited": {
+          "$ref": "#/$defs/scoreInherited"
+        },
+        "note": {
+          "$ref": "#/$defs/scoreNote"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceUrl"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/scoreRules"
+        }
+      ]
+    },
+    "bandScore": {
+      "description": "A band capability score, optionally spanning several stages.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "band",
+        "level",
+        "delivery",
+        "note",
+        "source"
+      ],
+      "properties": {
+        "band": {
+          "$ref": "#/$defs/capabilityId"
+        },
+        "scope": {
+          "description": "Stages this score applies to. Shorthand for repeating the same score per stage. Required for a tool with no spine coverage; otherwise defaults to the stages the tool occupies.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "level": {
+          "$ref": "#/$defs/scoreLevel"
+        },
+        "delivery": {
+          "$ref": "#/$defs/scoreDelivery"
+        },
+        "maturity": {
+          "$ref": "#/$defs/scoreMaturity"
+        },
+        "constraint": {
+          "$ref": "#/$defs/scoreConstraint"
+        },
+        "inherited": {
+          "$ref": "#/$defs/scoreInherited"
+        },
+        "note": {
+          "$ref": "#/$defs/scoreNote"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceUrl"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/scoreRules"
+        }
+      ]
+    },
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "home",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10
+        },
+        "home": {
+          "description": "Stage or band the capability would belong to.",
+          "$ref": "#/$defs/slug"
+        },
+        "nearest_existing": {
+          "description": "The existing capability it would otherwise be crammed into. Shows which ID is under stress.",
+          "$ref": "#/$defs/capabilityId"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceUrl"
+        }
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "description": "Manual override of the derived role. Omit unless derivation is wrong. Role drives icon, colour and shape; lens drives position and span.",
+          "enum": [
+            "mover",
+            "substrate",
+            "engine",
+            "modeller",
+            "conductor",
+            "gatekeeper",
+            "sentinel",
+            "surface"
+          ]
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "lensOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lens",
+        "zones",
+        "note"
+      ],
+      "properties": {
+        "lens": {
+          "$ref": "#/$defs/slug"
+        },
+        "zones": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "includes": {
+      "description": "IDs of the member records. A member may itself be a bundle or portfolio.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/toolId"
+      }
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "toolId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "pattern": "^https://\\S+$"
+    },
+    "scoreLevel": {
+      "description": "3 core: a primary reason the product exists, first-class, no add-ons. 2 native: genuinely built in but secondary. 1 extended: only via plugin, partner, marketplace or real custom work. Zero is never recorded; absence means 0.",
+      "enum": [
+        1,
+        2,
+        3
+      ]
+    },
+    "scoreDelivery": {
+      "description": "native: the product's own code. bundled: a sibling product under the same contract. partner: a third party's product or marketplace listing. community: open-source extension or custom work.",
+      "enum": [
+        "native",
+        "bundled",
+        "partner",
+        "community"
+      ]
+    },
+    "scoreMaturity": {
+      "description": "Defaults to ga when omitted.",
+      "enum": [
+        "ga",
+        "preview",
+        "beta"
+      ]
+    },
+    "scoreConstraint": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "own-cloud-only",
+          "region-limited",
+          "enterprise-tier"
+        ]
+      }
+    },
+    "scoreInherited": {
+      "description": "Set by a fan-out taxonomy migration. Copied from a superseded capability and not yet re-scored.",
+      "type": "boolean"
+    },
+    "scoreNote": {
+      "type": "string",
+      "minLength": 10
+    },
+    "scoreRules": {
+      "description": "Delivery must agree with the level. Shared by spine and band scores.",
+      "type": "object",
+      "allOf": [
+        {
+          "description": "Level 2 and 3 mean built in, so they cannot be delivered by a partner or the community.",
+          "if": {
+            "properties": {
+              "level": {
+                "enum": [
+                  2,
+                  3
+                ]
+              }
+            },
+            "required": [
+              "level"
+            ]
+          },
+          "then": {
+            "properties": {
+              "delivery": {
+                "enum": [
+                  "native",
+                  "bundled"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "Level 1 means extended, so it cannot be the product's own native code.",
+          "if": {
+            "properties": {
+              "level": {
+                "const": 1
+              }
+            },
+            "required": [
+              "level"
+            ]
+          },
+          "then": {
+            "properties": {
+              "delivery": {
+                "enum": [
+                  "bundled",
+                  "partner",
+                  "community"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

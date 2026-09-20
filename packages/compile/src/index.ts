@@ -1,0 +1,15 @@
+export { compileDataset, compileRenderModel, CompileError } from "./compile.js";
+export type { CompileInput } from "./compile.js";
+export { loadDataset } from "./dataset.js";
+export type { Dataset } from "./dataset.js";
+export type { Cell, ConditionalLevel, Delivery, Evidence, Maturity } from "./derive.js";
+export { computeGaps, projectGaps, NEEDED_CAPABILITY_CRITICALITY } from "./gaps.js";
+export type { Gap, GapKind, GapReport, GapsInLens, PlacedGap, StackCell, StackInput, StageSummary } from "./gaps.js";
+export { suggestTools } from "./suggest.js";
+export type { Suggestion } from "./suggest.js";
+export { stackBands } from "./stack-bands.js";
+export type { ToolLensView, ZoneView } from "./project.js";
+export type { RenderCapability, RenderLens, RenderModel, RenderTool } from "./render-model.js";
+export type { Archetype } from "./roles.js";
+export { stableStringify } from "./stable.js";
+export { validateDataset } from "./validate.js";

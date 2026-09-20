@@ -1,0 +1,41 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-athena",
+  "name": "Amazon Athena",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Athena SQL and Apache Spark on Athena.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "api", "ui"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "An interactive query service that runs standard SQL directly on data in S3 with no infrastructure to manage, scaling automatically and charging only for the queries you run.",
+      "source": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+    },
+    "transform.code-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Apache Spark applications can be developed in Python in a notebook in the Athena console, or through the Athena Spark APIs.",
+      "source": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.cost-visibility",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Workgroups carry per-query and per-workgroup limits on data scanned. A query over its limit is cancelled, and workgroup thresholds can raise Amazon SNS alerts. This controls query spend but does not attribute cost to datasets.",
+      "source": "https://docs.aws.amazon.com/athena/latest/ug/workgroups-setting-control-limits-cloudwatch.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Serverless SQL over data in S3, billed per query."
+  },
+  "updated": "2026-09-20"
+}

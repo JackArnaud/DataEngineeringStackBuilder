@@ -1,0 +1,27 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-cloudformation",
+  "name": "AWS CloudFormation",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "AWS CloudFormation.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["yaml", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.0",
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest", "store", "transform", "orchestrate", "serve"],
+      "note": "Templates describe AWS resources and CloudFormation provisions and configures them as a stack, repeatably across Regions, with changes tracked as template diffs and rolled back by reusing an earlier template. It provisions the resources, not the data in them.",
+      "source": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Infrastructure as code for AWS resources, in repeatable stacks."
+  },
+  "updated": "2026-09-20"
+}

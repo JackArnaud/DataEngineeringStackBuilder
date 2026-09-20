@@ -1,0 +1,29 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws",
+  "name": "Amazon Web Services",
+  "vendor": "Amazon Web Services",
+  "kind": "portfolio",
+  "sku": "Nine data-path services only. This is a sample of the AWS catalogue, so derived coverage understates it (no EMR, Step Functions, Quick, Firehose, Managed Service for Apache Flink and others).",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.0",
+  "includes": [
+    "aws-s3",
+    "aws-glue",
+    "aws-redshift",
+    "aws-dms",
+    "aws-athena",
+    "aws-lake-formation",
+    "aws-kinesis",
+    "aws-sagemaker",
+    "aws-cloudformation"
+  ],
+  "bundling": "a-la-carte",
+  "presentation": {
+    "tagline": "Independently purchased cloud services; compose the ones you use."
+  },
+  "updated": "2026-09-20"
+}

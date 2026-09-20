@@ -1,0 +1,37 @@
+{
+  "$schema": "../lens.schema.json",
+  "id": "medallion",
+  "name": "Medallion architecture",
+  "zones": ["source", "bronze", "silver", "gold", "consume"],
+  "defaults": {
+    "source": ["source"],
+    "ingest": ["source", "bronze"],
+    "store": ["bronze", "silver", "gold"],
+    "transform": ["silver", "gold"],
+    "orchestrate": "all",
+    "serve": ["consume"]
+  },
+  "overrides": [
+    {
+      "match": "transform.stream-processing",
+      "zones": ["bronze", "silver"],
+      "note": "Streaming jobs typically clean and enrich events on their way into silver, rarely producing gold."
+    },
+    {
+      "match": "store.olap-serving",
+      "zones": ["gold"],
+      "note": "OLAP serving stores hold pre-shaped aggregates, which is what gold is."
+    },
+    {
+      "match": "ingest.reverse-etl",
+      "zones": "unmapped",
+      "note": "Reverse ETL flows out of gold into operational systems, a direction medallion has no zone for."
+    },
+    {
+      "match": "observe.cost-visibility",
+      "zones": "unmapped",
+      "note": "Spend attribution cuts across every layer and belongs to none of them."
+    }
+  ],
+  "unmapped": "rail"
+}

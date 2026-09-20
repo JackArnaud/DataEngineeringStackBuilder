@@ -1,0 +1,2541 @@
+{
+  "a mover and an orchestrator that need an object store": {
+    "gaps": [
+      {
+        "capability": "store.object-store",
+        "conditional": [],
+        "criticality": 5,
+        "id": "needed-capability:store.object-store@store",
+        "kind": "needed-capability",
+        "stage": "store"
+      },
+      {
+        "conditional": [],
+        "criticality": 5,
+        "id": "empty-stage:serve",
+        "kind": "empty-stage",
+        "stage": "serve"
+      },
+      {
+        "conditional": [],
+        "criticality": 5,
+        "id": "empty-stage:store",
+        "kind": "empty-stage",
+        "stage": "store"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:observe.monitoring@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:quality.anomaly-detection@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:quality.contracts@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:quality.tests@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "conditional": [],
+        "criticality": 4,
+        "id": "empty-stage:transform",
+        "kind": "empty-stage",
+        "stage": "transform"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.cost-visibility@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.lineage@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.monitoring@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.access-control",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.access-control@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.catalog@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.masking",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.masking@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.policy@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.dev-experience@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.environments@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.infra@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:observe.lineage@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.dev-experience@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.environments@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.infra@ingest",
+        "kind": "band",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.access-control",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:govern.access-control@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:govern.catalog@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:govern.policy@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:observe.cost-visibility@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:quality.anomaly-detection@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:quality.contracts@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:quality.tests@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      }
+    ],
+    "lenses": {
+      "grid": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "needed-capability:store.object-store@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "empty-stage:serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "empty-stage:store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:quality.tests@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "empty-stage:transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.masking@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.policy@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.environments@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.infra@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:platform.environments@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:platform.infra@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:govern.policy@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.tests@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          }
+        ],
+        "rail": []
+      },
+      "medallion": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "needed-capability:store.object-store@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "empty-stage:serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "empty-stage:store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:quality.tests@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "empty-stage:transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.masking@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.policy@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.environments@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.infra@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:platform.environments@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:platform.infra@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.policy@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.tests@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          }
+        ],
+        "rail": [
+          "band:observe.cost-visibility@ingest",
+          "band:observe.cost-visibility@orchestrate"
+        ]
+      }
+    },
+    "stack": {
+      "name": "a mover and an orchestrator that need an object store",
+      "needs": [
+        "store.object-store"
+      ],
+      "tools": [
+        "fx-mover",
+        "fx-orchestrator"
+      ]
+    },
+    "stages": [
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "source"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-mover"
+        ],
+        "stage": "ingest"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "store"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "transform"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-orchestrator"
+        ],
+        "stage": "orchestrate"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "serve"
+      }
+    ]
+  },
+  "a warehouse that needs CDC": {
+    "gaps": [
+      {
+        "capability": "ingest.cdc",
+        "conditional": [],
+        "criticality": 5,
+        "id": "needed-capability:ingest.cdc@ingest",
+        "kind": "needed-capability",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:govern.catalog@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "govern.masking",
+        "conditional": [
+          {
+            "constraint": [
+              "enterprise-tier"
+            ],
+            "delivery": "native",
+            "level": 3,
+            "maturity": "ga",
+            "via": [
+              "fx-warehouse"
+            ]
+          }
+        ],
+        "criticality": 5,
+        "id": "band:govern.masking@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:govern.policy@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "conditional": [],
+        "criticality": 4,
+        "id": "empty-stage:ingest",
+        "kind": "empty-stage",
+        "stage": "ingest"
+      },
+      {
+        "conditional": [],
+        "criticality": 4,
+        "id": "empty-stage:transform",
+        "kind": "empty-stage",
+        "stage": "transform"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:govern.catalog@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "govern.masking",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:govern.masking@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:govern.policy@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.cost-visibility@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "conditional": [],
+        "criticality": 3,
+        "id": "empty-stage:orchestrate",
+        "kind": "empty-stage",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.cost-visibility@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.lineage@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.lineage@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.monitoring@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.monitoring@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.dev-experience@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.environments@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.infra@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.anomaly-detection@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.anomaly-detection@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.contracts@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.contracts@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.tests@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.tests@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.dev-experience@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.environments@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.infra@serve",
+        "kind": "band",
+        "stage": "serve"
+      }
+    ],
+    "lenses": {
+      "grid": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "needed-capability:ingest.cdc@ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:govern.masking@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:govern.policy@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "empty-stage:ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "empty-stage:transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:govern.masking@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:govern.policy@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "empty-stage:orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.environments@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.infra@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:quality.tests@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:quality.tests@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:platform.environments@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:platform.infra@serve",
+            "zones": [
+              "serve"
+            ]
+          }
+        ],
+        "rail": []
+      },
+      "medallion": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "needed-capability:ingest.cdc@ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.masking@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.policy@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "empty-stage:ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "empty-stage:transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.masking@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.policy@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "empty-stage:orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.environments@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.infra@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.tests@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.tests@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.environments@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.infra@serve",
+            "zones": [
+              "consume"
+            ]
+          }
+        ],
+        "rail": [
+          "band:observe.cost-visibility@store",
+          "band:observe.cost-visibility@serve"
+        ]
+      }
+    },
+    "stack": {
+      "name": "a warehouse that needs CDC",
+      "needs": [
+        "ingest.cdc"
+      ],
+      "tools": [
+        "fx-warehouse"
+      ]
+    },
+    "stages": [
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "source"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "ingest"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-warehouse"
+        ],
+        "stage": "store"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "transform"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "orchestrate"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-warehouse"
+        ],
+        "stage": "serve"
+      }
+    ]
+  },
+  "nothing selected": {
+    "gaps": [
+      {
+        "conditional": [],
+        "criticality": 5,
+        "id": "empty-stage:serve",
+        "kind": "empty-stage",
+        "stage": "serve"
+      },
+      {
+        "conditional": [],
+        "criticality": 5,
+        "id": "empty-stage:store",
+        "kind": "empty-stage",
+        "stage": "store"
+      },
+      {
+        "conditional": [],
+        "criticality": 4,
+        "id": "empty-stage:ingest",
+        "kind": "empty-stage",
+        "stage": "ingest"
+      },
+      {
+        "conditional": [],
+        "criticality": 4,
+        "id": "empty-stage:transform",
+        "kind": "empty-stage",
+        "stage": "transform"
+      },
+      {
+        "conditional": [],
+        "criticality": 3,
+        "id": "empty-stage:orchestrate",
+        "kind": "empty-stage",
+        "stage": "orchestrate"
+      }
+    ],
+    "lenses": {
+      "grid": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "empty-stage:serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "empty-stage:store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "empty-stage:ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "empty-stage:transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "empty-stage:orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          }
+        ],
+        "rail": []
+      },
+      "medallion": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "empty-stage:serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "empty-stage:store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "empty-stage:ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "empty-stage:transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "empty-stage:orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          }
+        ],
+        "rail": []
+      }
+    },
+    "stack": {
+      "name": "nothing selected",
+      "tools": []
+    },
+    "stages": [
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "source"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "ingest"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "store"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "transform"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "orchestrate"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "serve"
+      }
+    ]
+  },
+  "the whole suite": {
+    "gaps": [
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:govern.policy@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 5,
+        "id": "band:observe.monitoring@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "conditional": [],
+        "criticality": 4,
+        "id": "empty-stage:ingest",
+        "kind": "empty-stage",
+        "stage": "ingest"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:govern.catalog@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "govern.masking",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:govern.masking@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:govern.policy@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.cost-visibility@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.cost-visibility@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:observe.monitoring@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:platform.dev-experience@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:platform.environments@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:platform.infra@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:quality.anomaly-detection@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 4,
+        "id": "band:quality.contracts@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "govern.access-control",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.access-control@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.catalog@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "govern.masking",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.masking@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:govern.policy@transform",
+        "kind": "band",
+        "stage": "transform"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.cost-visibility@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.lineage@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.lineage@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.monitoring@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "observe.monitoring",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:observe.monitoring@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.dev-experience@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.dev-experience@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.environments@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.environments@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.infra@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:platform.infra@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.anomaly-detection@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.anomaly-detection@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.contracts@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.contracts@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.tests@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 3,
+        "id": "band:quality.tests@store",
+        "kind": "band",
+        "stage": "store"
+      },
+      {
+        "capability": "observe.lineage",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:observe.lineage@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "platform.dev-experience",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.dev-experience@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "platform.environments",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.environments@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "platform.infra",
+        "conditional": [],
+        "criticality": 2,
+        "id": "band:platform.infra@serve",
+        "kind": "band",
+        "stage": "serve"
+      },
+      {
+        "capability": "govern.access-control",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:govern.access-control@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "govern.catalog",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:govern.catalog@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "govern.policy",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:govern.policy@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:observe.cost-visibility@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:quality.anomaly-detection@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.contracts",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:quality.contracts@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      },
+      {
+        "capability": "quality.tests",
+        "conditional": [],
+        "criticality": 1,
+        "id": "band:quality.tests@orchestrate",
+        "kind": "band",
+        "stage": "orchestrate"
+      }
+    ],
+    "lenses": {
+      "grid": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "band:govern.policy@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "empty-stage:ingest",
+            "zones": [
+              "ingest"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:govern.masking@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:govern.policy@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:platform.environments@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:platform.infra@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:govern.masking@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:govern.policy@transform",
+            "zones": [
+              "transform"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.environments@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.environments@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:platform.infra@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.infra@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:quality.tests@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:quality.tests@store",
+            "zones": [
+              "store"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:platform.environments@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:platform.infra@serve",
+            "zones": [
+              "serve"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:govern.policy@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:observe.cost-visibility@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          },
+          {
+            "id": "band:quality.tests@orchestrate",
+            "zones": [
+              "orchestrate"
+            ]
+          }
+        ],
+        "rail": []
+      },
+      "medallion": {
+        "dropped": [],
+        "placed": [
+          {
+            "id": "band:govern.policy@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "empty-stage:ingest",
+            "zones": [
+              "source",
+              "bronze"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.masking@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.policy@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.environments@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.infra@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.masking@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:govern.policy@transform",
+            "zones": [
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:observe.monitoring@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.environments@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.environments@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:platform.infra@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.infra@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:quality.tests@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.tests@store",
+            "zones": [
+              "bronze",
+              "silver",
+              "gold"
+            ]
+          },
+          {
+            "id": "band:observe.lineage@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.dev-experience@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.environments@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:platform.infra@serve",
+            "zones": [
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.access-control@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.catalog@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:govern.policy@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.anomaly-detection@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.contracts@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          },
+          {
+            "id": "band:quality.tests@orchestrate",
+            "zones": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ]
+          }
+        ],
+        "rail": [
+          "band:observe.cost-visibility@store",
+          "band:observe.cost-visibility@transform",
+          "band:observe.cost-visibility@serve",
+          "band:observe.cost-visibility@orchestrate"
+        ]
+      }
+    },
+    "stack": {
+      "name": "the whole suite",
+      "tools": [
+        "fx-suite"
+      ]
+    },
+    "stages": [
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "source"
+      },
+      {
+        "best_level": 0,
+        "covered_by": [],
+        "stage": "ingest"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-suite"
+        ],
+        "stage": "store"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-suite"
+        ],
+        "stage": "transform"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-suite"
+        ],
+        "stage": "orchestrate"
+      },
+      {
+        "best_level": 3,
+        "covered_by": [
+          "fx-suite"
+        ],
+        "stage": "serve"
+      }
+    ]
+  }
+}

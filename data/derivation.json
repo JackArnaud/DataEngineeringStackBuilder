@@ -1,0 +1,125 @@
+{
+  "$schema": "./derivation.schema.json",
+  "derivation_version": "1.0.0",
+  "roles": [
+    {
+      "id": "mover",
+      "description": "Moves data between systems: extraction, replication, streaming intake, reverse ETL."
+    },
+    {
+      "id": "engine",
+      "description": "Computes over data: warehouses, query engines, general-purpose and streaming compute."
+    },
+    {
+      "id": "substrate",
+      "description": "Holds data: operational databases, object stores, table formats, the layer underneath."
+    },
+    {
+      "id": "modeller",
+      "description": "Reshapes data into modelled datasets: SQL transformation and feature engineering."
+    },
+    {
+      "id": "conductor",
+      "description": "Decides when and in what order work runs, and how changes are shipped."
+    },
+    {
+      "id": "gatekeeper",
+      "description": "Controls who can see and do what: catalogs, access control, masking, policy."
+    },
+    {
+      "id": "sentinel",
+      "description": "Watches the data and the system: quality checks, monitoring, lineage, cost."
+    },
+    {
+      "id": "surface",
+      "description": "Where people and applications meet the data: BI, apps, semantic layers, IDEs, ML endpoints."
+    }
+  ],
+  "band_weight": 0.5,
+  "role_affinity": [
+    {
+      "match": "source.*",
+      "role": "substrate"
+    },
+    {
+      "match": "ingest.*",
+      "role": "mover"
+    },
+    {
+      "match": "store.*",
+      "role": "substrate"
+    },
+    {
+      "match": "store.warehouse",
+      "role": "engine",
+      "note": "A warehouse is storage plus the SQL engine that runs on it, and the engine is why people pick one."
+    },
+    {
+      "match": "store.olap-serving",
+      "role": "engine",
+      "note": "Built to answer aggregate queries fast, which is an engine's job more than storage's."
+    },
+    {
+      "match": "transform.*",
+      "role": "modeller"
+    },
+    {
+      "match": "transform.code-transform",
+      "role": "engine",
+      "note": "General-purpose compute such as Spark is an engine, not a modelling framework."
+    },
+    {
+      "match": "transform.stream-processing",
+      "role": "engine",
+      "note": "Stateful stream compute is an engine."
+    },
+    {
+      "match": "orchestrate.*",
+      "role": "conductor"
+    },
+    {
+      "match": "serve.*",
+      "role": "surface"
+    },
+    {
+      "match": "serve.query-engine",
+      "role": "engine"
+    },
+    {
+      "match": "serve.ml-serving",
+      "role": "engine",
+      "note": "A model endpoint is compute that answers requests, closer to an engine than to a place people browse data."
+    },
+    {
+      "match": "govern.*",
+      "role": "gatekeeper"
+    },
+    {
+      "match": "quality.*",
+      "role": "sentinel"
+    },
+    {
+      "match": "observe.*",
+      "role": "sentinel"
+    },
+    {
+      "match": "platform.*",
+      "role": "surface"
+    },
+    {
+      "match": "platform.infra",
+      "role": "substrate",
+      "note": "Infrastructure provisioning is the layer underneath everything else."
+    },
+    {
+      "match": "platform.environments",
+      "role": "conductor",
+      "note": "Promoting work between environments is orchestration of change."
+    }
+  ],
+  "archetype": {
+    "specialist_max_stages": 1,
+    "specialist_max_capabilities": 2,
+    "end_to_end_min_stages": 4
+  }
+}

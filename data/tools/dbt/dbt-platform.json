@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dbt-platform",
+  "name": "dbt platform",
+  "vendor": "dbt Labs",
+  "kind": "bundle",
+  "sku": "dbt platform Starter plan. Its engine is not scored separately: the dbt OSS record stands in for the dbt framework, which both implement.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "hybrid",
+  "interfaces": ["ui", "api", "sql", "yaml", "cli"],
+  "taxonomy_version": "1.0.0",
+  "includes": ["dbt-core", "dbt-platform-services"],
+  "bundling": "single-contract",
+  "presentation": {
+    "tagline": "The dbt framework plus a hosted scheduler, CI, catalog, semantic layer and IDE."
+  },
+  "pairs_with": ["databricks", "postgres"],
+  "updated": "2026-09-20"
+}

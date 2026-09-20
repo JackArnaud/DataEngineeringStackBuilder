@@ -1,0 +1,53 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dlt",
+  "name": "Lakeflow Spark Declarative Pipelines (DLT)",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Lakeflow pipelines as included in the Databricks platform. Documentation reviewed on the AWS docs site. Formerly Delta Live Tables; the record ID is kept because IDs are immutable.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "transform.sql-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A declarative framework for batch and streaming pipelines written in SQL, built from streaming tables and materialised views.",
+      "source": "https://docs.databricks.com/aws/en/ldp/"
+    },
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The same declarative pipelines can be written in Python, on equal footing with SQL.",
+      "source": "https://docs.databricks.com/aws/en/ldp/"
+    },
+    "transform.stream-processing": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Pipelines apply incremental batch and streaming transformations through streaming tables.",
+      "source": "https://docs.databricks.com/aws/en/ldp/"
+    },
+    "ingest.stream-ingest": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Pipelines ingest from message buses as well as cloud storage.",
+      "source": "https://docs.databricks.com/aws/en/ldp/"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.tests",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest", "transform"],
+      "note": "Expectations are SQL boolean checks on every record flowing through a pipeline, with a choice to warn, drop the record or fail the update.",
+      "source": "https://docs.databricks.com/aws/en/ldp/expectations"
+    }
+  ],
+  "presentation": {
+    "tagline": "Declarative batch and streaming pipelines with built-in quality checks."
+  },
+  "updated": "2026-09-20"
+}

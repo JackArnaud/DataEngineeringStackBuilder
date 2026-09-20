@@ -1,0 +1,308 @@
+{
+  "$schema": "./taxonomy.schema.json",
+  "taxonomy_version": "1.0.1",
+  "stages": [
+    {
+      "id": "source",
+      "name": "Source",
+      "description": "Where data originates: the operational systems, applications and feeds that produce it.",
+      "criticality": 0,
+      "rationale": "The systems data comes from usually sit outside the stack, so having no source tool is normal and never a gap."
+    },
+    {
+      "id": "ingest",
+      "name": "Ingest",
+      "description": "Moving data from sources into the platform.",
+      "criticality": 4,
+      "rationale": "Data has to arrive somewhere, though a stack that works inside its own platform can do without."
+    },
+    {
+      "id": "store",
+      "name": "Store",
+      "description": "Where data rests and how it is laid out for analytical use.",
+      "criticality": 5,
+      "rationale": "Nothing works without somewhere to keep the data."
+    },
+    {
+      "id": "transform",
+      "name": "Transform",
+      "description": "Reshaping raw data into modelled, trustworthy datasets.",
+      "criticality": 4,
+      "rationale": "Raw data is rarely fit to use, though simple reporting can skip it."
+    },
+    {
+      "id": "orchestrate",
+      "name": "Orchestrate",
+      "description": "Deciding when work runs, in what order, and how changes are shipped.",
+      "criticality": 3,
+      "rationale": "Work can be started by hand or by scripts, which is painful but not fatal."
+    },
+    {
+      "id": "serve",
+      "name": "Serve",
+      "description": "Getting data to the people, applications and models that use it.",
+      "criticality": 5,
+      "rationale": "Data nobody can reach has no value."
+    }
+  ],
+  "bands": [
+    { "id": "govern", "name": "Govern", "description": "Knowing what data exists and controlling who can do what with it." },
+    { "id": "quality", "name": "Quality", "description": "Detecting and preventing incorrect, late or malformed data." },
+    { "id": "observe", "name": "Observe", "description": "Seeing what the system is doing, where data came from, and what it costs." },
+    { "id": "platform", "name": "Platform", "description": "The infrastructure, environments and developer workflow the work happens in." }
+  ],
+  "capabilities": {
+    "source.oltp": {
+      "name": "Transactional database",
+      "description": "Can act as the operational system of record behind an application. Scored when the tool is itself such an origin, not when it merely connects to one.",
+      "status": "active"
+    },
+    "source.saas-api": {
+      "name": "SaaS application data",
+      "description": "Holds business data in a hosted application and exposes it through an API or export.",
+      "status": "active"
+    },
+    "source.file-drop": {
+      "name": "File drop",
+      "description": "Receives or exposes files (CSV, JSON, Parquet, partner extracts) by upload, SFTP or shared storage.",
+      "status": "active"
+    },
+    "source.event-stream": {
+      "name": "Event stream",
+      "description": "Emits or hosts a continuous feed of application, device or clickstream events.",
+      "status": "active"
+    },
+
+    "ingest.batch-extract": {
+      "name": "Batch extract",
+      "description": "Scheduled or on-demand bulk extraction from source systems into the platform.",
+      "status": "active"
+    },
+    "ingest.cdc": {
+      "name": "Change data capture",
+      "description": "Log-based or incremental capture of row-level changes from databases.",
+      "status": "active"
+    },
+    "ingest.stream-ingest": {
+      "name": "Stream ingest",
+      "description": "Continuous ingestion of event streams with defined delivery semantics.",
+      "status": "active"
+    },
+    "ingest.reverse-etl": {
+      "name": "Reverse ETL",
+      "description": "Pushing modelled data back into operational and SaaS systems.",
+      "status": "active"
+    },
+
+    "store.object-store": {
+      "name": "Object store",
+      "description": "Durable, cheap, schema-less storage for files and blobs.",
+      "status": "active"
+    },
+    "store.table-format": {
+      "name": "Table format",
+      "description": "Transactional table layer over files (Iceberg, Delta, Hudi style): ACID, schema evolution, time travel.",
+      "status": "active"
+    },
+    "store.warehouse": {
+      "name": "Warehouse",
+      "description": "Managed analytical store with SQL access, separating modelled data from raw files.",
+      "status": "active"
+    },
+    "store.olap-serving": {
+      "name": "OLAP serving",
+      "description": "Low-latency analytical store built to answer many concurrent aggregate queries.",
+      "status": "active"
+    },
+
+    "transform.sql-transform": {
+      "name": "SQL transformation",
+      "description": "Modelling and reshaping data by authoring SQL.",
+      "status": "active"
+    },
+    "transform.code-transform": {
+      "name": "Code transformation",
+      "description": "Modelling and reshaping data in a general-purpose language (Python, Scala, Spark).",
+      "status": "active"
+    },
+    "transform.stream-processing": {
+      "name": "Stream processing",
+      "description": "Stateful transformation of events as they arrive: windows, joins, aggregations.",
+      "status": "active"
+    },
+    "transform.feature-eng": {
+      "name": "Feature engineering",
+      "description": "Producing, storing and reusing model features, including point-in-time correctness.",
+      "status": "active"
+    },
+
+    "orchestrate.scheduling": {
+      "name": "Scheduling",
+      "description": "Running work on a time-based schedule.",
+      "status": "active"
+    },
+    "orchestrate.dependency-dag": {
+      "name": "Dependency DAG",
+      "description": "Expressing and executing task dependencies, retries and backfills.",
+      "status": "active"
+    },
+    "orchestrate.event-triggers": {
+      "name": "Event triggers",
+      "description": "Starting work in response to data arrival or external events rather than the clock.",
+      "status": "active"
+    },
+    "orchestrate.ci-cd": {
+      "name": "CI/CD",
+      "description": "Testing and promoting pipeline code and definitions across environments.",
+      "status": "active"
+    },
+
+    "serve.query-engine": {
+      "name": "Query engine",
+      "description": "Interactive SQL access for analysts, tools and applications.",
+      "status": "active"
+    },
+    "serve.semantic-layer": {
+      "name": "Semantic layer",
+      "description": "Governed, reusable metric and dimension definitions that sit between data and consumers.",
+      "status": "active"
+    },
+    "serve.bi-viz": {
+      "name": "BI and visualisation",
+      "description": "Dashboards, reports and exploratory analysis for business users.",
+      "status": "active"
+    },
+    "serve.data-apps": {
+      "name": "Data apps",
+      "description": "Building interactive applications on top of data.",
+      "status": "active"
+    },
+    "serve.ml-serving": {
+      "name": "ML serving",
+      "description": "Deploying trained models and exposing predictions to consumers.",
+      "status": "active"
+    },
+
+    "govern.catalog": {
+      "name": "Catalog",
+      "description": "Inventory of data assets with ownership, descriptions and search.",
+      "status": "active"
+    },
+    "govern.access-control": {
+      "name": "Access control",
+      "description": "Deciding who can read or change which data.",
+      "status": "active"
+    },
+    "govern.masking": {
+      "name": "Masking",
+      "description": "Obscuring or tokenising sensitive values while keeping data usable.",
+      "status": "active"
+    },
+    "govern.policy": {
+      "name": "Policy",
+      "description": "Defining and enforcing data-handling rules such as retention, residency and classification.",
+      "status": "active"
+    },
+
+    "quality.tests": {
+      "name": "Data tests",
+      "description": "Assertions on data that pass or fail: uniqueness, nulls, referential integrity, custom rules.",
+      "status": "active"
+    },
+    "quality.contracts": {
+      "name": "Data contracts",
+      "description": "Agreed, enforceable schema and semantics at a producer-consumer boundary.",
+      "status": "active"
+    },
+    "quality.anomaly-detection": {
+      "name": "Anomaly detection",
+      "description": "Detecting unexpected change in volume, freshness, distribution or schema without hand-written rules.",
+      "status": "active"
+    },
+
+    "observe.monitoring": {
+      "name": "Monitoring",
+      "description": "Health, freshness and failure visibility, with alerting.",
+      "status": "active"
+    },
+    "observe.lineage": {
+      "name": "Lineage",
+      "description": "Tracing where data came from and what depends on it.",
+      "status": "active"
+    },
+    "observe.cost-visibility": {
+      "name": "Cost visibility",
+      "description": "Attributing spend to workloads, teams and datasets.",
+      "status": "active"
+    },
+
+    "platform.infra": {
+      "name": "Infrastructure",
+      "description": "Provisioning and running the compute and storage underneath, including infrastructure as code.",
+      "status": "active"
+    },
+    "platform.environments": {
+      "name": "Environments",
+      "description": "Separate dev, test and production spaces with safe promotion between them.",
+      "status": "active"
+    },
+    "platform.dev-experience": {
+      "name": "Developer experience",
+      "description": "Tooling that makes authoring, running and debugging work productive: editors, IDEs, local runs, CLIs.",
+      "status": "active"
+    }
+  },
+  "criticality": {
+    "scale": "0 = not applicable, never surfaces as a gap. 1 = nice to have. 2 = useful. 3 = expected in a mature stack. 4 = important. 5 = a gap here undermines the stack.",
+    "bands": {
+      "govern": {
+        "rationale": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
+        "stages": { "source": 2, "ingest": 3, "store": 5, "transform": 3, "orchestrate": 1, "serve": 4 }
+      },
+      "quality": {
+        "rationale": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
+        "stages": { "source": 2, "ingest": 5, "store": 3, "transform": 4, "orchestrate": 1, "serve": 3 }
+      },
+      "observe": {
+        "rationale": "Peaks where jobs run and fail, and where spend accrues.",
+        "stages": { "source": 1, "ingest": 4, "store": 3, "transform": 4, "orchestrate": 5, "serve": 3 }
+      },
+      "platform": {
+        "rationale": "Environments and workflow matter most where code is written and deployed.",
+        "stages": { "source": 1, "ingest": 2, "store": 3, "transform": 4, "orchestrate": 3, "serve": 2 }
+      }
+    },
+    "overrides": [
+      {
+        "capability": "observe.cost-visibility",
+        "stage": "orchestrate",
+        "weight": 1,
+        "rationale": "Orchestrators rarely own the spend. Cost shows up in the engine that runs the work."
+      },
+      {
+        "capability": "observe.cost-visibility",
+        "stage": "store",
+        "weight": 4,
+        "rationale": "Storage and warehouse compute are usually the dominant cost lines."
+      },
+      {
+        "capability": "quality.contracts",
+        "stage": "source",
+        "weight": 4,
+        "rationale": "Contracts exist to fix the one thing quality checks can't: defects that originate upstream."
+      },
+      {
+        "capability": "govern.masking",
+        "stage": "orchestrate",
+        "weight": 0,
+        "rationale": "Orchestration passes no data values through, so there is nothing to mask."
+      },
+      {
+        "capability": "observe.lineage",
+        "stage": "orchestrate",
+        "weight": 2,
+        "rationale": "Lineage traces data, and data moves through the engines that do the work, not the scheduler. Monitoring is what matters at this stage."
+      }
+    ]
+  }
+}

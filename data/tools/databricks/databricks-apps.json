@@ -1,0 +1,25 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "databricks-apps",
+  "name": "Databricks Apps",
+  "vendor": "Databricks",
+  "kind": "tool",
+  "sku": "Databricks Apps as included in the Databricks platform. Documentation reviewed on the AWS docs site.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "api", "ui"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "serve.data-apps": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Builds and hosts data and AI applications on the platform's serverless compute, with Streamlit, Dash and Gradio for Python and React, Angular, Svelte and Express for Node.js. Apps use Unity Catalog for governance, Databricks SQL for queries and OAuth for authentication, and are billed per hour while running.",
+      "source": "https://docs.databricks.com/aws/en/dev-tools/databricks-apps/"
+    }
+  },
+  "presentation": {
+    "tagline": "Host interactive data and AI apps next to the data, governed by Unity Catalog."
+  },
+  "updated": "2026-09-20"
+}

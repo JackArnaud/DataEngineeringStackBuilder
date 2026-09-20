@@ -1,0 +1,30 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "databricks",
+  "name": "Databricks",
+  "vendor": "Databricks",
+  "kind": "bundle",
+  "sku": "Databricks platform. Documentation reviewed on the AWS docs site. Other products, such as Genie and agent tooling, are not scored, so derived coverage may understate the platform.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "scala", "notebook", "api", "cli"],
+  "taxonomy_version": "1.0.0",
+  "includes": [
+    "databricks-runtime",
+    "databricks-sql",
+    "databricks-workflows",
+    "unity-catalog",
+    "dlt",
+    "databricks-lakeflow-connect",
+    "databricks-ml",
+    "databricks-apps",
+    "databricks-lakebase"
+  ],
+  "bundling": "single-contract",
+  "presentation": {
+    "tagline": "Lakehouse platform: Spark compute, warehouse SQL, orchestration and governance under one contract."
+  },
+  "pairs_with": ["dbt-core"],
+  "updated": "2026-09-20"
+}

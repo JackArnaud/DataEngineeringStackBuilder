@@ -1,0 +1,36 @@
+{
+  "$schema": "../tool.schema.json",
+  "id": "ssms",
+  "name": "SQL Server Management Studio",
+  "vendor": "Microsoft",
+  "kind": "tool",
+  "sku": "SQL Server Management Studio 22. Free, Windows only, closed source.",
+  "license": "proprietary",
+  "deployment": ["desktop"],
+  "pricing_model": "free",
+  "interfaces": ["ui", "sql"],
+  "taxonomy_version": "1.0.0",
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store", "transform"],
+      "note": "An integrated environment for developing against and managing the SQL Database Engine: a query editor with IntelliSense and snippets, Object Explorer, execution plans and Git integration. It works on SQL Server, Azure SQL, Fabric SQL and Synapse.",
+      "source": "https://learn.microsoft.com/en-us/ssms/faq"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Database administration console",
+      "description": "A graphical console for operating one database engine: managing logins and roles, backup and restore, availability groups, and performance dashboards. The underlying capabilities belong to the engine, but the console is how administrators use them, and no existing capability captures that.",
+      "home": "platform",
+      "nearest_existing": "platform.dev-experience",
+      "source": "https://learn.microsoft.com/en-us/ssms/faq"
+    }
+  ],
+  "presentation": {
+    "tagline": "Windows IDE for writing T-SQL and administering SQL Server and Azure SQL."
+  },
+  "updated": "2026-09-20"
+}

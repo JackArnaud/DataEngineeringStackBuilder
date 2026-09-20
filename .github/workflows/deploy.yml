@@ -1,0 +1,45 @@
+name: Deploy site
+
+# Manual for now. Before switching this to `push` on main:
+#   1. In the repo's Settings > Pages, set the source to "GitHub Actions".
+#   2. For a custom domain, add a repository variable BASE_PATH set to "/".
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # The site is plain static files. BASE_PATH is the only thing that depends on where it is
+      # hosted: "/<repo>/" on a GitHub Pages project page, "/" on a custom domain or any other host.
+      - run: npm run ci
+        env:
+          BASE_PATH: ${{ vars.BASE_PATH || format('/{0}/', github.event.repository.name) }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

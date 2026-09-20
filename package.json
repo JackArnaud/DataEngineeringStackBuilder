@@ -1,0 +1,40 @@
+{
+  "name": "data-engineering-stack-builder",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "gen:types": "tsx packages/compile/scripts/gen-types.ts",
+    "validate": "npm run gen:types --silent && tsx packages/compile/src/cli.ts",
+    "compile": "npm run gen:types --silent && tsx packages/compile/src/compile-cli.ts",
+    "dev": "npm run compile --silent && vite --config apps/web/vite.config.ts",
+    "build": "npm run compile --silent && vite build --config apps/web/vite.config.ts",
+    "preview": "vite preview --config apps/web/vite.config.ts",
+    "typecheck": "npm run gen:types --silent && tsc --noEmit && tsc --noEmit -p apps/web",
+    "test": "npm run gen:types --silent && vitest run",
+    "ci": "npm run typecheck && npm run test && npm run validate && npm run build"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "ajv": "^8.17.1",
+    "axe-core": "^4.13.0",
+    "jsdom": "^30.1.0",
+    "json-schema-to-typescript": "^15.0.4",
+    "playwright-core": "^1.63.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

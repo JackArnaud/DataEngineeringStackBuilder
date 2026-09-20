@@ -1,0 +1,84 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dbt-platform-services",
+  "name": "dbt platform (hosted services)",
+  "vendor": "dbt Labs",
+  "kind": "tool",
+  "sku": "dbt platform Starter plan. Capability that needs the Enterprise or Enterprise+ plan carries an enterprise-tier constraint. Excludes the dbt framework itself, which the dbt-platform bundle takes from the dbt OSS record.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "hybrid",
+  "interfaces": ["ui", "api", "sql", "yaml"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Deploy jobs run dbt commands on intervals, at set times of day or on cron schedules. The Developer plan is limited to a 10-minute minimum interval.",
+      "source": "https://docs.getdbt.com/docs/deploy/deploy-jobs"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A job can run when another job finishes, which chains work by event rather than clock. Chaining needs the Starter plan or above.",
+      "source": "https://docs.getdbt.com/docs/deploy/deploy-jobs"
+    },
+    "orchestrate.ci-cd": {
+      "level": 3,
+      "delivery": "native",
+      "note": "CI jobs run when a pull request opens and by default build only new or changed models and their dependents against a deferred environment. GitHub and GitLab are native on all plans; concurrent checks and SQL linting need Starter or above.",
+      "source": "https://docs.getdbt.com/docs/deploy/ci-jobs"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "constraint": ["enterprise-tier"],
+      "note": "Cross-project references let ref() work across dbt projects, so one dependency graph spans several projects. Needs the Enterprise or Enterprise+ plan. Within a single project, the dbt OSS record covers ordering.",
+      "source": "https://docs.getdbt.com/best-practices/how-we-mesh/mesh-1-intro"
+    },
+    "serve.semantic-layer": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The Semantic Layer defines metrics once on top of models and serves them to downstream tools through its APIs and partner integrations. Needs the Starter plan or above; the Developer plan does not include it.",
+      "source": "https://docs.getdbt.com/docs/use-dbt-semantic-layer/dbt-sl"
+    }
+  },
+  "bands": [
+    {
+      "band": "govern.catalog",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "dbt Catalog is a hosted discovery tool with keyword search, filters, an interactive lineage graph and data health signals across projects' models, sources and exposures. Model performance, column-level lineage and multi-project lineage need Enterprise. It covers dbt resources only.",
+      "source": "https://docs.getdbt.com/docs/explore/explore-projects"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform", "orchestrate"],
+      "note": "Every job run keeps a history with trigger type, commit SHA, environment, timing and artifacts, plus step-by-step logs.",
+      "source": "https://docs.getdbt.com/docs/deploy/deploy-jobs"
+    },
+    {
+      "band": "platform.dev-experience",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "The Studio IDE is a browser-based environment to build, test, run and version dbt projects, with autocomplete, formatting and linting, DAG view and the dbt Copilot assistant. It is available on every plan, including the free Developer plan.",
+      "source": "https://docs.getdbt.com/docs/cloud/studio-ide/develop-in-studio"
+    },
+    {
+      "band": "platform.environments",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform", "orchestrate"],
+      "note": "Managed deployment environments come in production, staging and general types, each with its own warehouse location, and each needs a connection profile before jobs can run.",
+      "source": "https://docs.getdbt.com/docs/deploy/deploy-environments"
+    }
+  ],
+  "presentation": {
+    "tagline": "Hosted scheduler, CI, catalog, semantic layer and IDE for dbt projects."
+  },
+  "updated": "2026-09-20"
+}
