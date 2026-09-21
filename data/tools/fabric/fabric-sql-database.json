@@ -28,9 +28,18 @@
       "source": "https://learn.microsoft.com/en-us/fabric/database/sql/overview"
     }
   ],
+  "proposed_capabilities": [
+    {
+      "name": "Vector search for retrieval",
+      "description": "Vector data types and search inside the transactional database, with integration into frameworks such as LangChain and Semantic Kernel, so retrieval-augmented generation reads live operational data.",
+      "home": "store",
+      "nearest_existing": "store.olap-serving",
+      "source": "https://learn.microsoft.com/en-us/fabric/database/sql/overview"
+    }
+  ],
   "presentation": {
     "tagline": "Transactional SQL database inside Fabric, mirrored to OneLake."
   },
   "pairs_with": ["azure-sql-database"],
-  "updated": "2026-09-20"
+  "updated": "2026-09-21"
 }

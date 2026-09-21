@@ -1,6 +1,6 @@
 {
   "$schema": "./taxonomy.schema.json",
-  "taxonomy_version": "1.0.1",
+  "taxonomy_version": "1.0.2",
   "stages": [
     {
       "id": "source",
@@ -14,242 +14,459 @@
       "name": "Ingest",
       "description": "Moving data from sources into the platform.",
       "criticality": 4,
-      "rationale": "Data has to arrive somewhere, though a stack that works inside its own platform can do without."
+      "rationale": "Data has to arrive somewhere, though a stack that works inside its own platform can do without.",
+      "impact": {
+        "matters": "Data reaches the platform late, by hand, or not at all.",
+        "example": "Someone exports a CSV from the CRM every Monday and pastes it into the warehouse. When they are away, every report stays a week out of date.",
+        "ai": "An assistant or model answers from whatever was last loaded. If loading is manual, its answers are as old as the last upload.",
+        "skip_when": "Your platform reads from the source systems directly, or the data already lives inside it."
+      }
     },
     {
       "id": "store",
       "name": "Store",
       "description": "Where data rests and how it is laid out for analytical use.",
       "criticality": 5,
-      "rationale": "Nothing works without somewhere to keep the data."
+      "rationale": "Nothing works without somewhere to keep the data.",
+      "impact": {
+        "matters": "There is nowhere durable and queryable to keep the data, so it is recomputed, lost or scattered.",
+        "example": "Results live in spreadsheets and one analyst's laptop. When the laptop is replaced, three months of history goes with it.",
+        "ai": "Models and retrieval systems need a governed, queryable copy to read from. Without one they are fed files that nobody owns.",
+        "skip_when": "Nothing you build needs to keep data; everything is read live from the source."
+      }
     },
     {
       "id": "transform",
       "name": "Transform",
       "description": "Reshaping raw data into modelled, trustworthy datasets.",
       "criticality": 4,
-      "rationale": "Raw data is rarely fit to use, though simple reporting can skip it."
+      "rationale": "Raw data is rarely fit to use, though simple reporting can skip it.",
+      "impact": {
+        "matters": "Raw data is used as it arrives, so every analyst cleans and interprets it their own way.",
+        "example": "Two dashboards define an active customer differently, so the same question gets two answers in the same meeting.",
+        "ai": "A model trained or prompted on raw data learns its mistakes, duplicates and quirks as if they were facts.",
+        "skip_when": "Reporting is simple and reads clean tables straight from a system that already models them."
+      }
     },
     {
       "id": "orchestrate",
       "name": "Orchestrate",
       "description": "Deciding when work runs, in what order, and how changes are shipped.",
       "criticality": 3,
-      "rationale": "Work can be started by hand or by scripts, which is painful but not fatal."
+      "rationale": "Work can be started by hand or by scripts, which is painful but not fatal.",
+      "impact": {
+        "matters": "Work starts by hand or from scripts on someone's machine, so it stops when they do and nothing ships safely.",
+        "example": "A nightly refresh is a script on a colleague's laptop. It stops on the day they go on leave and no one notices for a week.",
+        "ai": "Retrieval indexes, feature tables and model refreshes need to run on time and in order. Without scheduling they drift out of date silently.",
+        "skip_when": "The work is run rarely and on purpose, by the person who wrote it."
+      }
     },
     {
       "id": "serve",
       "name": "Serve",
       "description": "Getting data to the people, applications and models that use it.",
       "criticality": 5,
-      "rationale": "Data nobody can reach has no value."
+      "rationale": "Data nobody can reach has no value.",
+      "impact": {
+        "matters": "Nobody outside the pipeline can use the result: no dashboards, applications or models consume the data.",
+        "example": "The warehouse is full of clean tables, but the business still asks for spreadsheets because there is no way to explore them.",
+        "ai": "This is where AI meets the data: assistants that answer questions, applications that retrieve from it, models that predict from it. Without a serving layer the pipeline's value never reaches them.",
+        "skip_when": "The output is a file or feed that another system collects, so this stack has no consumers of its own."
+      }
     }
   ],
   "bands": [
-    { "id": "govern", "name": "Govern", "description": "Knowing what data exists and controlling who can do what with it." },
-    { "id": "quality", "name": "Quality", "description": "Detecting and preventing incorrect, late or malformed data." },
-    { "id": "observe", "name": "Observe", "description": "Seeing what the system is doing, where data came from, and what it costs." },
-    { "id": "platform", "name": "Platform", "description": "The infrastructure, environments and developer workflow the work happens in." }
+    {
+      "id": "govern",
+      "name": "Govern",
+      "description": "Knowing what data exists and controlling who can do what with it."
+    },
+    {
+      "id": "quality",
+      "name": "Quality",
+      "description": "Detecting and preventing incorrect, late or malformed data."
+    },
+    {
+      "id": "observe",
+      "name": "Observe",
+      "description": "Seeing what the system is doing, where data came from, and what it costs."
+    },
+    {
+      "id": "platform",
+      "name": "Platform",
+      "description": "The infrastructure, environments and developer workflow the work happens in."
+    }
   ],
   "capabilities": {
     "source.oltp": {
       "name": "Transactional database",
       "description": "Can act as the operational system of record behind an application. Scored when the tool is itself such an origin, not when it merely connects to one.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "The system that creates the data is not in the picture, so how fresh, complete and changeable it is stays a guess.",
+        "example": "A reporting stack reads an application database directly. A schema change in the app breaks reports and nobody planned for it."
+      }
     },
     "source.saas-api": {
       "name": "SaaS application data",
       "description": "Holds business data in a hosted application and exposes it through an API or export.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Business data locked in a hosted application cannot reach the rest of the stack.",
+        "example": "Sales figures live in a CRM that only exposes a nightly export, so the dashboard is always a day behind."
+      }
     },
     "source.file-drop": {
       "name": "File drop",
       "description": "Receives or exposes files (CSV, JSON, Parquet, partner extracts) by upload, SFTP or shared storage.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Files from partners and uploads have no agreed place to arrive.",
+        "example": "A partner emails a spreadsheet each month and someone saves it into a shared folder by hand."
+      }
     },
     "source.event-stream": {
       "name": "Event stream",
       "description": "Emits or hosts a continuous feed of application, device or clickstream events.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Continuous events from applications and devices have nothing to publish to or read from.",
+        "example": "Clickstream data is written to log files and processed once a day, so live features cannot exist."
+      }
     },
-
     "ingest.batch-extract": {
       "name": "Batch extract",
       "description": "Scheduled or on-demand bulk extraction from source systems into the platform.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Bulk data cannot be pulled from source systems on a schedule.",
+        "example": "An analyst runs a manual query each morning and pastes the result into the warehouse."
+      }
     },
     "ingest.cdc": {
       "name": "Change data capture",
       "description": "Log-based or incremental capture of row-level changes from databases.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Row-level changes cannot be followed, so copies are either stale or expensive full reloads.",
+        "example": "Nightly full copies of a large orders table take six hours and still miss deletions made during the day."
+      }
     },
     "ingest.stream-ingest": {
       "name": "Stream ingest",
       "description": "Continuous ingestion of event streams with defined delivery semantics.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Events cannot be loaded continuously, so anything needing fresh data waits for the next batch.",
+        "example": "A fraud check runs on data that is an hour old, after the transaction has already cleared."
+      }
     },
     "ingest.reverse-etl": {
       "name": "Reverse ETL",
       "description": "Pushing modelled data back into operational and SaaS systems.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Modelled data cannot be pushed back into the tools where people work.",
+        "example": "Analysts compute a churn score, but the sales team cannot see it in their CRM, so it is never used."
+      }
     },
-
     "store.object-store": {
       "name": "Object store",
       "description": "Durable, cheap, schema-less storage for files and blobs.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "There is no cheap, durable home for raw files and blobs.",
+        "example": "Raw exports pile up on a file server that runs out of space every quarter."
+      }
     },
     "store.table-format": {
       "name": "Table format",
       "description": "Transactional table layer over files (Iceberg, Delta, Hudi style): ACID, schema evolution, time travel.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Files in the lake have no transactions or history, so concurrent writes corrupt them and mistakes cannot be undone.",
+        "example": "Two jobs write to the same folder at once and leave half a table behind, with no way to roll back."
+      }
     },
     "store.warehouse": {
       "name": "Warehouse",
       "description": "Managed analytical store with SQL access, separating modelled data from raw files.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "There is no governed, modelled analytical store behind the reports.",
+        "example": "Every dashboard queries raw files directly and each one is slow and slightly different."
+      }
     },
     "store.olap-serving": {
       "name": "OLAP serving",
       "description": "Low-latency analytical store built to answer many concurrent aggregate queries.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Many users or applications cannot get fast answers to aggregate questions at once.",
+        "example": "A customer-facing dashboard freezes when fifty people open it at the same time."
+      }
     },
-
     "transform.sql-transform": {
       "name": "SQL transformation",
       "description": "Modelling and reshaping data by authoring SQL.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Data cannot be modelled by writing SQL under version control.",
+        "example": "Business logic lives in views edited directly in the console, with no history and no review."
+      }
     },
     "transform.code-transform": {
       "name": "Code transformation",
       "description": "Modelling and reshaping data in a general-purpose language (Python, Scala, Spark).",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Work that needs a general-purpose language, such as Python or Spark, has nowhere to run.",
+        "example": "A machine-learning preparation step is too complex for SQL and runs by hand on a laptop."
+      }
     },
     "transform.stream-processing": {
       "name": "Stream processing",
       "description": "Stateful transformation of events as they arrive: windows, joins, aggregations.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Events cannot be windowed, joined or aggregated as they arrive.",
+        "example": "A live count of active users has to wait for the nightly batch."
+      }
     },
     "transform.feature-eng": {
       "name": "Feature engineering",
       "description": "Producing, storing and reusing model features, including point-in-time correctness.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Model features are rebuilt for each project and cannot be reused or made point-in-time correct.",
+        "example": "A model looks great in testing because its features accidentally used data from after the prediction date."
+      }
     },
-
     "orchestrate.scheduling": {
       "name": "Scheduling",
       "description": "Running work on a time-based schedule.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Work cannot be run on a reliable time-based schedule.",
+        "example": "A refresh depends on someone remembering to run it before the Monday meeting."
+      }
     },
     "orchestrate.dependency-dag": {
       "name": "Dependency DAG",
       "description": "Expressing and executing task dependencies, retries and backfills.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Tasks cannot be ordered by their dependencies, with retries and backfills.",
+        "example": "A report job starts before the load it needs has finished and publishes half-empty numbers."
+      }
     },
     "orchestrate.event-triggers": {
       "name": "Event triggers",
       "description": "Starting work in response to data arrival or external events rather than the clock.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Work cannot start when data arrives or something happens; it only runs on a clock.",
+        "example": "A pipeline runs at 6am whether or not the file has landed, and fails on the days it is late."
+      }
     },
     "orchestrate.ci-cd": {
       "name": "CI/CD",
       "description": "Testing and promoting pipeline code and definitions across environments.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Pipeline changes are not tested and promoted automatically, so they go live by hand.",
+        "example": "A fix is copied to production by hand on a Friday and overwrites a colleague's change."
+      }
     },
-
     "serve.query-engine": {
       "name": "Query engine",
       "description": "Interactive SQL access for analysts, tools and applications.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Analysts and applications have no interactive SQL access to the data.",
+        "example": "Analysts request extracts because they cannot query the tables themselves."
+      }
     },
     "serve.semantic-layer": {
       "name": "Semantic layer",
       "description": "Governed, reusable metric and dimension definitions that sit between data and consumers.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Each tool defines its own metrics, so the same measure differs between dashboards.",
+        "example": "Revenue in the sales dashboard and revenue in the finance report differ by four percent and nobody knows why.",
+        "ai": "An assistant answering questions in natural language needs governed metric definitions. Without them it invents its own version of revenue."
+      }
     },
     "serve.bi-viz": {
       "name": "BI and visualisation",
       "description": "Dashboards, reports and exploratory analysis for business users.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Business users have no dashboards or reports to explore the data.",
+        "example": "Managers rely on spreadsheets that analysts refresh by hand."
+      }
     },
     "serve.data-apps": {
       "name": "Data apps",
       "description": "Building interactive applications on top of data.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Interactive applications cannot be built on top of the data.",
+        "example": "A simple pricing tool needs its own database copy and a separate team to maintain it."
+      }
     },
     "serve.ml-serving": {
       "name": "ML serving",
       "description": "Deploying trained models and exposing predictions to consumers.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Trained models cannot be deployed to give predictions to applications.",
+        "example": "A churn model lives in a notebook, and scores are emailed as a spreadsheet each month.",
+        "ai": "Serving is how model predictions and AI features reach users. Without it a trained model never leaves the notebook."
+      }
     },
-
     "govern.catalog": {
       "name": "Catalog",
       "description": "Inventory of data assets with ownership, descriptions and search.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "People cannot find the data that exists, or tell which copy to trust, so they rebuild it or use the wrong one.",
+        "example": "Two teams each build a customers table with different definitions. A director sees two revenue figures and nobody can say which is official.",
+        "ai": "An assistant picking tables to answer a question has only names and columns to go on. Without descriptions and owners it guesses, and answers with confidence from the wrong table.",
+        "skip_when": "One small team owns every table and can list them from memory."
+      }
     },
     "govern.access-control": {
       "name": "Access control",
       "description": "Deciding who can read or change which data.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Anyone who can reach the platform can read or change data they should not.",
+        "example": "A shared analyst login can read payroll and delete a finance table, and nothing records who did it.",
+        "ai": "An AI agent acts with the permissions of whoever runs it. Without fine-grained access it can read, summarise and repeat data the person asking was never meant to see.",
+        "skip_when": "A single-user or throwaway stack that holds nothing sensitive."
+      }
     },
     "govern.masking": {
       "name": "Masking",
       "description": "Obscuring or tokenising sensitive values while keeping data usable.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Sensitive values such as emails, card numbers and health data are readable in plain text by everyone with access to the table.",
+        "example": "A developer copies production data into a test schema and now has customers' real phone numbers on their laptop.",
+        "ai": "Models and assistants can memorise and repeat what they read. Masking keeps personal data out of prompts, embeddings and training sets.",
+        "skip_when": "The data holds no personal, financial or otherwise regulated values."
+      }
     },
     "govern.policy": {
       "name": "Policy",
       "description": "Defining and enforcing data-handling rules such as retention, residency and classification.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Rules for keeping, locating and classifying data exist on paper, but nothing enforces them.",
+        "example": "A rule says customer data must be deleted after twelve months. It is still in three tables, and nobody finds out until an audit.",
+        "ai": "Policy decides what may be used to train or ground a model. Without classification, restricted data can end up in an AI system unnoticed.",
+        "skip_when": "No retention, residency or classification rules apply to your data."
+      }
     },
-
     "quality.tests": {
       "name": "Data tests",
       "description": "Assertions on data that pass or fail: uniqueness, nulls, referential integrity, custom rules.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Bad data reaches dashboards and models before anyone notices, so problems are found from a wrong number.",
+        "example": "A source starts sending nulls in an ID column. A join drops half the orders and the weekly revenue report is quietly 30 percent low.",
+        "ai": "A model cannot tell wrong data from right data. It repeats a bad figure with the same confidence as a good one.",
+        "skip_when": "The data is small, hand-checked, and used for exploration rather than decisions."
+      }
     },
     "quality.contracts": {
       "name": "Data contracts",
       "description": "Agreed, enforceable schema and semantics at a producer-consumer boundary.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "A change to a source's columns or meaning breaks what is built on it, and the people affected hear last.",
+        "example": "An application team renames a field. The pipeline keeps running, but a downstream metric silently changes meaning.",
+        "ai": "AI applications depend on the shape of the tables they read. A silent schema change can break a feature pipeline or a prompt template without any error.",
+        "skip_when": "One team owns both the source and everything downstream of it."
+      }
     },
     "quality.anomaly-detection": {
       "name": "Anomaly detection",
       "description": "Detecting unexpected change in volume, freshness, distribution or schema without hand-written rules.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Problems nobody wrote a rule for, such as a sudden drop in volume or a table that stopped updating, go unseen.",
+        "example": "A feed stops on Friday. Every test still passes because the old rows are fine, and Monday's report shows last week's numbers.",
+        "ai": "Stale or drifting data quietly degrades a model's answers, with no error to catch.",
+        "skip_when": "You have few tables and someone looks at each of them daily."
+      }
     },
-
     "observe.monitoring": {
       "name": "Monitoring",
       "description": "Health, freshness and failure visibility, with alerting.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Failures and delays are found by users rather than by the team.",
+        "example": "A nightly job fails at 2am. The team learns at 9am when the executive dashboard is empty.",
+        "ai": "AI features that depend on fresh data fail quietly when a pipeline stalls: the answers just get older.",
+        "skip_when": "Runs are manual and occasional, and watched by the person who starts them."
+      }
     },
     "observe.lineage": {
       "name": "Lineage",
       "description": "Tracing where data came from and what depends on it.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Nobody can say where a number came from or what breaks when a table changes.",
+        "example": "A team wants to drop a column but cannot tell which dashboards and models use it, so it stays for years.",
+        "ai": "To trust or audit an AI answer you have to trace it back to the tables and sources it came from. Lineage is the map for that.",
+        "skip_when": "You have a handful of tables that one person understands end to end."
+      }
     },
     "observe.cost-visibility": {
       "name": "Cost visibility",
       "description": "Attributing spend to workloads, teams and datasets.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Spend grows and no one can say which team, job or dataset is causing it.",
+        "example": "A misconfigured job scans a large table every hour for a month. The bill triples and finding the cause takes a week.",
+        "ai": "Embeddings, training runs and model calls can be expensive and bursty, so untracked AI spend grows fast.",
+        "skip_when": "Spend is small and fixed on a flat plan."
+      }
     },
-
     "platform.infra": {
       "name": "Infrastructure",
       "description": "Provisioning and running the compute and storage underneath, including infrastructure as code.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Environments are built by hand, so they drift apart and cannot be rebuilt when something goes wrong.",
+        "example": "Production was set up through a console two years ago. After an accident, nobody can recreate it.",
+        "ai": "Teams add AI services and GPU capacity quickly. Infrastructure defined as code keeps that reviewable and repeatable.",
+        "skip_when": "You use a fully managed service where you configure almost nothing."
+      }
     },
     "platform.environments": {
       "name": "Environments",
       "description": "Separate dev, test and production spaces with safe promotion between them.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Changes are tried out on live data because there is nowhere else to test them.",
+        "example": "A new transformation is run directly against production and overwrites a table that finance depends on.",
+        "ai": "Prompts, models and pipelines all need a safe place to be tried before real users and real data see them.",
+        "skip_when": "It is a single-user project with no shared production."
+      }
     },
     "platform.dev-experience": {
       "name": "Developer experience",
       "description": "Tooling that makes authoring, running and debugging work productive: editors, IDEs, local runs, CLIs.",
-      "status": "active"
+      "status": "active",
+      "impact": {
+        "matters": "Building and debugging pipelines is slow and error-prone, so changes are rarer, riskier and rest on a few people.",
+        "example": "Testing a change means running the whole pipeline in the cloud and waiting an hour, so people avoid touching it.",
+        "ai": "Coding assistants and agents work best with fast local runs, clear errors and text-based definitions. A poor developer loop slows them as much as it slows people.",
+        "skip_when": "Pipelines rarely change."
+      }
     }
   },
   "criticality": {
@@ -257,19 +474,47 @@
     "bands": {
       "govern": {
         "rationale": "Peaks where data rests and where it is exposed. Little is controllable at origin, and orchestration moves no data values.",
-        "stages": { "source": 2, "ingest": 3, "store": 5, "transform": 3, "orchestrate": 1, "serve": 4 }
+        "stages": {
+          "source": 2,
+          "ingest": 3,
+          "store": 5,
+          "transform": 3,
+          "orchestrate": 1,
+          "serve": 4
+        }
       },
       "quality": {
         "rationale": "Cheapest to catch early. Peaks at ingest and transform where defects enter or are introduced, and tapers toward the edges.",
-        "stages": { "source": 2, "ingest": 5, "store": 3, "transform": 4, "orchestrate": 1, "serve": 3 }
+        "stages": {
+          "source": 2,
+          "ingest": 5,
+          "store": 3,
+          "transform": 4,
+          "orchestrate": 1,
+          "serve": 3
+        }
       },
       "observe": {
         "rationale": "Peaks where jobs run and fail, and where spend accrues.",
-        "stages": { "source": 1, "ingest": 4, "store": 3, "transform": 4, "orchestrate": 5, "serve": 3 }
+        "stages": {
+          "source": 1,
+          "ingest": 4,
+          "store": 3,
+          "transform": 4,
+          "orchestrate": 5,
+          "serve": 3
+        }
       },
       "platform": {
         "rationale": "Environments and workflow matter most where code is written and deployed.",
-        "stages": { "source": 1, "ingest": 2, "store": 3, "transform": 4, "orchestrate": 3, "serve": 2 }
+        "stages": {
+          "source": 1,
+          "ingest": 2,
+          "store": 3,
+          "transform": 4,
+          "orchestrate": 3,
+          "serve": 2
+        }
       }
     },
     "overrides": [

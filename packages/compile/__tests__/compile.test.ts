@@ -19,7 +19,7 @@ const view = (lensId: string, toolId: string) => model.lenses.find((l) => l.id =
 
 describe("the render model of the real dataset", () => {
   it("has the expected envelope", () => {
-    expect(model).toMatchObject({ format: "render-model", format_version: 1, taxonomy_version: "1.0.1", derivation_version: "1.0.0" });
+    expect(model).toMatchObject({ format: "render-model", format_version: 1, taxonomy_version: "1.0.2", derivation_version: "1.0.0" });
     expect(model.stages.map((s) => s.id)).toEqual(["source", "ingest", "store", "transform", "orchestrate", "serve"]);
     expect(model.stages.map((s) => s.criticality)).toEqual([0, 4, 5, 4, 3, 5]);
     expect(model.bands.map((b) => b.id)).toEqual(["govern", "quality", "observe", "platform"]);
@@ -196,3 +196,34 @@ describe("stableStringify", () => {
     expect(stableStringify({ a: undefined, b: 1 }, 0)).toBe('{"b":1}\n');
   });
 });
+
+describe("why it matters", () => {
+  const stages = model.stages.filter((s) => s.criticality > 0);
+  const capabilities = model.capabilities.filter((c) => c.status === "active");
+
+  it("is written for every stage and capability that can surface as a gap", () => {
+    for (const s of stages) expect(s.impact, s.id).toBeDefined();
+    for (const c of capabilities) expect(c.impact, c.id).toBeDefined();
+  });
+
+  it("says what goes wrong in one short sentence and backs it with an example", () => {
+    for (const { id, impact } of [...stages, ...capabilities]) {
+      expect(impact!.matters.length, id).toBeLessThanOrEqual(200);
+      expect(impact!.matters, id).toMatch(/[.]$/);
+      expect(impact!.example.length, id).toBeGreaterThanOrEqual(40);
+    }
+  });
+
+  it("covers AI for every cross-cutting capability and every stage that can be a gap, and only where it changes something", () => {
+    for (const s of stages) expect(s.impact!.ai, s.id).toBeDefined();
+    for (const c of capabilities.filter((c) => c.kind === "band")) expect(c.impact!.ai, c.id).toBeDefined();
+    // Spine capabilities mention AI only where serving or features make it true, so the text stays honest.
+    const spineWithAi = capabilities.filter((c) => c.kind === "spine" && c.impact!.ai).map((c) => c.id).sort();
+    expect(spineWithAi).toEqual(["serve.ml-serving", "serve.semantic-layer"]);
+  });
+
+  it("explains when a cross-cutting capability can reasonably be skipped", () => {
+    for (const c of capabilities.filter((c) => c.kind === "band")) expect(c.impact!.skip_when, c.id).toBeDefined();
+  });
+});
+

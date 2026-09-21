@@ -9,5 +9,5 @@ export type { Suggestion } from "./suggest.js";
 export { stackBands } from "./stack-bands.js";
 export type { Cell, ConditionalLevel, Delivery, Evidence, Maturity } from "./derive.js";
 export type { ToolLensView, ZoneView } from "./project.js";
-export type { RenderCapability, RenderLens, RenderModel, RenderTool } from "./render-model.js";
+export type { Impact, RenderCapability, RenderLens, RenderModel, RenderTool } from "./render-model.js";
 export type { Archetype } from "./roles.js";

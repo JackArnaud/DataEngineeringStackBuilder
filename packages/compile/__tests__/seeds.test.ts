@@ -68,14 +68,20 @@ describe("seed dataset structure", () => {
 
   it("carries proposed capabilities as evidence for taxonomy growth", () => {
     const proposals = records.flatMap((r) => (r.proposed_capabilities ?? []).map((p) => ({ id: r.id, ...p })));
-    expect(proposals.map((p) => p.id).sort()).toEqual([
+    expect([...new Set(proposals.map((p) => p.id))].sort()).toEqual([
+      "aws-quick-sight",
       "azure-api-management",
       "azure-cosmos-db",
       "azure-data-factory",
+      "azure-devops",
+      "dbt-platform-services",
       "fabric-data-factory",
+      "fabric-sql-database",
       "gcp-bigtable",
       "gcp-data-fusion",
       "gcp-spanner",
+      "github",
+      "gitlab",
       "postgres",
       "power-bi",
       "ssms",

@@ -34,6 +34,18 @@
     "semver": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$" },
     "slug": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
     "capabilityId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "impact": {
+      "description": "Plain-language account of why a stage or capability matters, for the people reading a gap. Not scored and not used to rank; ranking comes from criticality.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matters", "example"],
+      "properties": {
+        "matters": { "description": "One sentence: what goes wrong without it.", "type": "string", "minLength": 20, "maxLength": 200 },
+        "example": { "description": "A concrete story of it going wrong.", "type": "string", "minLength": 40 },
+        "ai": { "description": "How using the data for AI (assistants, retrieval, model training and serving) changes the stakes.", "type": "string", "minLength": 20 },
+        "skip_when": { "description": "When it is reasonable not to have it.", "type": "string", "minLength": 10 }
+      }
+    },
     "stage": {
       "description": "A pipeline stage. Its criticality is how much a stack with nothing at all in this stage is missing, on the same 0-5 scale as band cells.",
       "type": "object",
@@ -44,7 +56,8 @@
         "name": { "type": "string", "minLength": 1 },
         "description": { "type": "string", "minLength": 10 },
         "criticality": { "$ref": "#/$defs/weight" },
-        "rationale": { "type": "string", "minLength": 10 }
+        "rationale": { "type": "string", "minLength": 10 },
+        "impact": { "$ref": "#/$defs/impact" }
       }
     },
     "group": {
@@ -65,6 +78,7 @@
         "name": { "type": "string", "minLength": 1 },
         "description": { "type": "string", "minLength": 10 },
         "status": { "enum": ["active", "deprecated", "superseded_by"] },
+        "impact": { "$ref": "#/$defs/impact" },
         "successors": {
           "description": "Capabilities that replace this one. Only for status superseded_by.",
           "type": "array",

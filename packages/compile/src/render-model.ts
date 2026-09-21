@@ -12,7 +12,7 @@ export interface RenderModel {
   taxonomy_version: string;
   derivation_version: string;
   /** In pipeline order. Criticality 0-5 is how much a stack with nothing in the stage is missing. */
-  stages: { id: string; name: string; description: string; criticality: number; rationale: string }[];
+  stages: { id: string; name: string; description: string; criticality: number; rationale: string; impact?: Impact }[];
   bands: { id: string; name: string; rationale: string }[];
   /** The closed role vocabulary, with what each role means. */
   roles: { id: string; label: string; description: string }[];
@@ -25,6 +25,21 @@ export interface RenderModel {
   lenses: RenderLens[];
 }
 
+/**
+ * Why something matters, in plain words, for the person reading a gap. It explains and never ranks:
+ * ranking comes from criticality.
+ */
+export interface Impact {
+  /** One sentence: what goes wrong without it. */
+  matters: string;
+  /** A concrete story of it going wrong. */
+  example: string;
+  /** How using the data for AI changes the stakes. */
+  ai?: string;
+  /** When it is reasonable not to have it. */
+  skip_when?: string;
+}
+
 export interface RenderCapability {
   id: string;
   name: string;
@@ -33,6 +48,7 @@ export interface RenderCapability {
   /** The stage or band this capability belongs to. */
   parent: string;
   status: string;
+  impact?: Impact;
 }
 
 export interface RenderTool {

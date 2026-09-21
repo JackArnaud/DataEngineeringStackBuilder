@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { computeGaps, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
+import { ExampleGallery } from "./components/ExampleGallery";
 import { FilterRow } from "./components/FilterRow";
 import { GapList } from "./components/GapList";
 import { Legend } from "./components/Legend";
@@ -86,6 +87,8 @@ export function Builder({ model }: { model: RenderModel }) {
         </aside>
 
         <main className="main">
+          {state.tools.length === 0 && <ExampleGallery lookup={lookup} onLoad={(e) => change({ tools: [...e.tools], needs: e.needs ?? [], skip: [] })} />}
+
           <section aria-labelledby="coverage">
             <h2 id="coverage">Coverage by stage</h2>
             <StageStrip model={model} lookup={lookup} report={report} />

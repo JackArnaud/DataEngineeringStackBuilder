@@ -289,7 +289,19 @@ a { color: inherit; }
 .gap:hover { border-color: var(--axis); background: var(--wash); }
 .gap__body { display: grid; min-width: 0; }
 .gap__title { font-weight: 600; }
+.gap__why { display: block; margin-top: 2px; color: var(--ink-2); font-size: 12px; line-height: 1.4; }
+.aiwhy { border-left: 3px solid var(--axis); padding-left: 12px; }
 .gap__meta { font-size: 12px; color: var(--ink-2); }
+.examples-gallery { display: grid; gap: 14px; padding: 16px; background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; margin-bottom: 24px; }
+.exgroup h3 { font-size: 14px; }
+.exgroup__about { font-size: 13px; margin: 2px 0 8px; }
+.excards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.excard { display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 1px solid var(--ring); border-radius: 10px; background: var(--page); }
+.excard__title { text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--ink); }
+.excard__hint { color: var(--ink-2); }
+.excard__tools { font-size: 12px; }
+.excard__notice { font-size: 12px; color: var(--ink-2); }
+.excard .primary { margin-top: auto; align-self: flex-start; }
 .gaprow { display: flex; gap: 6px; align-items: stretch; }
 .gaprow .gap { flex: 1 1 auto; width: auto; min-width: 0; }
 .skip { flex: none; padding: 0 10px; background: none; border: 1px solid var(--ring); border-radius: 10px; color: var(--ink-2); font-size: 12px; cursor: pointer; }

@@ -1,0 +1,71 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "github",
+  "name": "GitHub (with Actions)",
+  "vendor": "GitHub",
+  "kind": "tool",
+  "sku": "GitHub with GitHub Actions, scored on the Team plan for private repositories. On the Free plan, private repositories cannot use deployment environments or branch restrictions. GitHub Enterprise Server, Copilot and Codespaces are not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "per-seat",
+  "interfaces": ["yaml", "cli", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.ci-cd": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A CI/CD platform that automates build, test and deployment. Workflows are YAML files in the repository, run on GitHub-hosted Linux, Windows and macOS runners or self-hosted ones, with reusable actions from a marketplace.",
+      "source": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Jobs run in parallel by default and can declare dependencies on each other, with matrix strategies to repeat a job across configurations. It orders CI jobs, not data tasks: no backfills and no awareness of data.",
+      "source": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A workflow can start on a schedule. Teams use this for routine tasks, but a schedule here is a clock on a CI runner, with no retries or backfill of missed runs.",
+      "source": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Workflows start on repository events such as a pull request or a commit, manually, or through the API. They react to changes in code, not to data arriving.",
+      "source": "https://docs.github.com/en/actions/get-started/understand-github-actions"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "orchestrate", "serve"],
+      "note": "Deployment environments can require up to six named reviewers, wait a set number of minutes, limit which branches or tags may deploy, and hold secrets that only jobs using the environment can read. Private repositories need the Team, Pro or Enterprise plan.",
+      "source": "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "orchestrate", "serve"],
+      "note": "Protected branches and rulesets can require approving reviews and passing status checks before a merge, restrict who can push, and require signed commits. It governs who can change code and pipeline definitions, not who can read data.",
+      "source": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Version control and change review",
+      "description": "Keeping every change to code and pipeline definitions in history, proposed as a pull request, reviewed, and merged only when checks pass. It is the base that CI/CD, environments and rollbacks stand on, and no capability in the taxonomy describes it.",
+      "home": "orchestrate",
+      "nearest_existing": "orchestrate.ci-cd",
+      "source": "https://docs.github.com/en/get-started/start-your-journey/what-is-github"
+    }
+  ],
+  "presentation": {
+    "tagline": "Git hosting, pull requests and CI/CD workflows for pipeline code."
+  },
+  "pairs_with": ["dbt", "snowflake", "databricks", "apache-airflow", "aws-mwaa"],
+  "updated": "2026-09-21"
+}

@@ -47,6 +47,7 @@ export function GapList({ model, lookup, lens, gaps, setAside, placement, hasToo
 
   const row = (g: GapGroup) => {
     const title = groupTitle(g, lookup);
+    const matters = lookup.impactOf(g.gaps[0]!)?.matters;
     const remedy = g.gaps.find((x) => x.conditional.length > 0)?.conditional[0];
     // A band group's title names its stages when there are few; with many, the row lists them instead.
     const where = g.kind === "band" ? (g.stages.length > NAMED_STAGES_MAX ? listNames(g.stages.map((x) => lookup.stageName(x))) : "") : whereText(g.gaps[0]!, placement, lens, model, lookup);
@@ -56,6 +57,7 @@ export function GapList({ model, lookup, lens, gaps, setAside, placement, hasToo
           <SeverityChip criticality={g.criticality} />
           <span className="gap__body">
             <span className="gap__title">{title}</span>
+            {matters && <span className="gap__why">{matters}</span>}
             <span className="gap__meta">
               {GAP_KIND_LABEL[g.kind]}
               {where && <> · {where}</>}

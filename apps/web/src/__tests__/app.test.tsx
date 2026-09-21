@@ -112,6 +112,30 @@ describe("building a stack", () => {
   });
 });
 
+describe("the example gallery", () => {
+  it("shows worked examples grouped by theme when nothing is picked, including one that ends in AI", () => {
+    setup();
+    const gallery = screen.getByRole("region", { name: "Start from an example" });
+    expect(within(gallery).getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toContain("Ending in AI");
+    expect(within(gallery).getAllByRole("button", { name: /^Load / }).length).toBeGreaterThan(10);
+  });
+
+  it("loads an example with its needs, and gets out of the way", async () => {
+    const user = setup();
+    await user.click(screen.getByRole("button", { name: "Load Features to a model on Google Cloud" }));
+    expect(screen.queryByRole("region", { name: "Start from an example" })).toBeNull();
+    expect(within(chips()).getByText("BigQuery")).toBeTruthy();
+    expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("ML serving")).toBeTruthy();
+  });
+
+  it("comes back after start over", async () => {
+    const user = setup("/?tools=github");
+    expect(screen.queryByRole("region", { name: "Start from an example" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Start over" }));
+    expect(screen.getByRole("region", { name: "Start from an example" })).toBeTruthy();
+  });
+});
+
 describe("finding a tool", () => {
   it("starts with vendors folded, so the list is short", () => {
     setup();
@@ -240,6 +264,40 @@ describe("the gap list", () => {
     await waitFor(() => expect(window.location.search).toBe(""));
   });
 
+  it("says on every row what goes wrong without it", () => {
+    setup(stack);
+    const rows = gapButtons();
+    expect(rows.length).toBeGreaterThan(0);
+    for (const b of rows) expect(b.querySelector(".gap__why")?.textContent?.length ?? 0, b.textContent ?? "").toBeGreaterThan(20);
+  });
+
+  it("explains a cross-cutting gap in plain words: consequence, example, AI, and when to skip it", async () => {
+    const user = setup(stack);
+    const masking = gapButtons().find((b) => /^Masking is missing/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
+    await user.click(masking);
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByRole("heading", { name: "What goes wrong without it" })).toBeTruthy();
+    expect(dialog.textContent).toContain("For example:");
+    expect(within(dialog).getByRole("heading", { name: "If AI uses this data" })).toBeTruthy();
+    expect(dialog.textContent).toContain("Reasonable to skip if:");
+    expect(within(dialog).getByRole("heading", { name: /^Why it ranks/ })).toBeTruthy();
+  });
+
+  it("explains an empty stage and a stated need, without offering to skip either", async () => {
+    const user = setup("/?tools=postgres&needs=serve.ml-serving");
+    const need = gapButtons().find((b) => /You need/.test(b.textContent ?? ""))!;
+    await user.click(need);
+    let dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByRole("heading", { name: "What goes wrong without it" })).toBeTruthy();
+    expect(dialog.textContent).not.toContain("Reasonable to skip if:");
+    expect(within(dialog).getByRole("heading", { name: "If AI uses this data" })).toBeTruthy();
+    await user.click(within(dialog).getByRole("button", { name: /close/i }));
+
+    await user.click(gapButtons().find((b) => /Nothing in your stack covers/.test(b.textContent ?? ""))!);
+    dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByRole("heading", { name: "What goes wrong without it" })).toBeTruthy();
+  });
+
   it("names the other stages in the detail of a gap that is missing at several", async () => {
     const user = setup(stack);
     const multi = gapButtons().find((b) => /is missing at (.+ and .+|\d+ stages)/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
@@ -363,7 +421,7 @@ describe("receipts", () => {
     const user = setup();
     await user.click(gapButtons()[0]!);
     const dialog = screen.getByRole("dialog");
-    expect(within(dialog).getByRole("heading", { name: "Why it matters" })).toBeTruthy();
+    expect(within(dialog).getByRole("heading", { name: "What goes wrong without it" })).toBeTruthy();
     expect(dialog.textContent).toContain("Criticality 5 of 5");
     expect(within(dialog).getByRole("heading", { name: "What would close it" })).toBeTruthy();
 

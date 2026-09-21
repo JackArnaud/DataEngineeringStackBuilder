@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { KeyboardEvent } from "react";
 import type { RenderModel } from "@compile";
-import { EXAMPLES } from "../examples";
 import type { Lookup } from "../lookup";
 import { toggle } from "../state";
 import type { StackState } from "../state";
@@ -42,19 +41,7 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
       <section aria-labelledby="mystack">
         <h2 id="mystack">Your stack</h2>
         {state.tools.length === 0 ? (
-          <>
-            <p className="muted">Pick the tools you use or say what you need below, or start from an example:</p>
-            <ul className="examples">
-              {EXAMPLES.map((e) => (
-                <li key={e.label}>
-                  <button type="button" className="example" title={e.hint} onClick={() => onChange({ tools: [...e.tools], needs: e.needs ?? [] })}>
-                    {e.label}
-                    <span className="sr-only">. {e.hint}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
+          <p className="muted">Pick the tools you use or say what you need below, or load an example stack from the main panel.</p>
         ) : (
           <ul className="chips" aria-label="Selected tools">
             {state.tools.map((id) => (

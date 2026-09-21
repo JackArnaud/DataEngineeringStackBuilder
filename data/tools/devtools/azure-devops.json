@@ -1,0 +1,66 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-devops",
+  "name": "Azure DevOps",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure DevOps Services: Azure Repos and Azure Pipelines. Free for up to five users, and private projects get one free parallel pipeline job of up to 60 minutes and 1,800 minutes a month. Azure Boards, Test Plans, Artifacts and Azure DevOps Server are not scored.",
+  "license": "proprietary",
+  "deployment": ["saas", "self-hosted"],
+  "pricing_model": "hybrid",
+  "interfaces": ["yaml", "cli", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.ci-cd": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Azure Pipelines combines continuous integration, testing and delivery to build, test and deploy code to any destination, with release approvals and deployment gates, on hosted or self-hosted agents. It deploys to Azure, AWS, Google Cloud or on-premises, and works with source in GitHub or Azure Repos.",
+      "source": "https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Builds trigger automatically on code commits. They react to changes in code, not to data arriving.",
+      "source": "https://learn.microsoft.com/en-us/azure/devops/user-guide/what-is-azure-devops"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "orchestrate", "serve"],
+      "note": "Multi-environment deployment across development, staging and production, with approval workflows and release gates before a build is promoted.",
+      "source": "https://learn.microsoft.com/en-us/azure/devops/user-guide/what-is-azure-devops"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "orchestrate", "serve"],
+      "note": "Azure Repos branch policies and approval policies gate what reaches the main branch, and Microsoft Entra ID handles sign-in. It governs who can change code and pipeline definitions, not who can read data.",
+      "source": "https://learn.microsoft.com/en-us/azure/devops/user-guide/what-is-azure-devops"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Version control and change review",
+      "description": "Keeping every change to code and pipeline definitions in history, proposed as a pull request, reviewed under branch policies, and merged only when they pass. It is the base that CI/CD, environments and rollbacks stand on, and no capability in the taxonomy describes it.",
+      "home": "orchestrate",
+      "nearest_existing": "orchestrate.ci-cd",
+      "source": "https://learn.microsoft.com/en-us/azure/devops/user-guide/what-is-azure-devops"
+    },
+    {
+      "name": "AI assistance for building and operating pipelines",
+      "description": "An assistant that can list pipelines, read run history, find failed builds and compare runs in natural language through a Model Context Protocol server, instead of a person clicking through the console.",
+      "home": "orchestrate",
+      "nearest_existing": "platform.dev-experience",
+      "source": "https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines"
+    }
+  ],
+  "presentation": {
+    "tagline": "Git repositories and CI/CD pipelines that deploy to Azure, AWS, Google Cloud or on-premises."
+  },
+  "pairs_with": ["azure", "dbt", "databricks", "microsoft-fabric"],
+  "updated": "2026-09-21"
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gitlab",
+  "name": "GitLab (with CI/CD)",
+  "vendor": "GitLab",
+  "kind": "tool",
+  "sku": "GitLab on the Free tier, on GitLab.com or self-managed. Code owner approval needs Premium and automatic rollback needs Ultimate; neither is scored, so a Premium or Ultimate customer has more than these scores show.",
+  "license": "proprietary",
+  "deployment": ["saas", "self-hosted"],
+  "pricing_model": "per-seat",
+  "interfaces": ["yaml", "cli", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.ci-cd": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A continuous method of building, testing, deploying and monitoring code changes. A .gitlab-ci.yml file defines the stages, jobs and scripts, run by GitLab-provided or self-registered runners, with reusable components.",
+      "source": "https://docs.gitlab.com/ci/"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Pipelines run jobs in ordered stages, and the configuration can declare job dependencies. It orders CI jobs, not data tasks: no backfills and no awareness of data.",
+      "source": "https://docs.gitlab.com/ci/"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Pipelines can be created on a schedule as well as by commits, merge requests or by hand. It is a clock on a CI runner, with no retries or backfill of missed runs.",
+      "source": "https://docs.gitlab.com/ci/"
+    },
+    "orchestrate.event-triggers": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Pipelines start on commits and merge requests. They react to changes in code, not to data arriving.",
+      "source": "https://docs.gitlab.com/ci/"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.environments",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "orchestrate", "serve"],
+      "note": "Environments are first-class deployment targets such as development, staging and production, static or created per pipeline for review apps. GitLab tracks what is deployed where, and protected environments restrict who can deploy to the sensitive ones.",
+      "source": "https://docs.gitlab.com/ci/environments/"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform", "orchestrate", "serve"],
+      "note": "Protected branches control who can push and who can merge, and the default branch is protected from the start. It governs who can change code and pipeline definitions, not who can read data.",
+      "source": "https://docs.gitlab.com/user/project/repository/branches/protected/"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Version control and change review",
+      "description": "Keeping every change to code and pipeline definitions in history, proposed as a merge request, reviewed, and merged only when the rules allow. It is the base that CI/CD, environments and rollbacks stand on, and no capability in the taxonomy describes it.",
+      "home": "orchestrate",
+      "nearest_existing": "orchestrate.ci-cd",
+      "source": "https://docs.gitlab.com/user/project/repository/branches/protected/"
+    }
+  ],
+  "presentation": {
+    "tagline": "One platform for Git hosting, merge requests and CI/CD pipelines."
+  },
+  "pairs_with": ["dbt", "snowflake", "databricks", "apache-airflow"],
+  "updated": "2026-09-21"
+}

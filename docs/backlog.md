@@ -21,6 +21,8 @@ list of unscored capabilities is empty, so a new capability with no score fails 
 - Azure: Synapse Analytics is scored from an overview page last updated in 2024; check it against the current docs. The ADF Workflow Orchestration Manager (managed Airflow) stopped accepting new instances on 1 January 2026, so it has no record.
 - Azure API Management and Data Fusion: which features belong to which tier or edition was not checked, so neither carries an enterprise-tier constraint.
 - dbt: dbt OSS 2.0 was scored from pages that describe dbt in general. Confirm Python models, MetricFlow and state selection against the v2 docs, and decide whether dbt v1 (Postgres and most other adapters) needs its own record.
+- AI: Snowflake Cortex, Databricks Genie and agent tooling, Vertex AI generative services and Azure AI services are not scored, so AI coverage is thinner than the platforms have.
+- Delivery tools: GitHub Copilot, Codespaces and GitHub Enterprise Server are not scored. GitLab Premium and Ultimate features (code owner approval, automatic rollback) and Azure Boards, Test Plans and Artifacts are not scored. Bitbucket and Jenkins have no record.
 - Astronomer: the pricing model and plan tiers were not checked. Only its overview page was read.
 - Oracle: `govern.masking` is scored 2 for Data Redaction with a note to check the licence, because the docs page states none.
 - AWS: EMR Serverless and EMR on EKS are not scored separately from EMR on EC2.
@@ -41,11 +43,14 @@ list of unscored capabilities is empty, so a new capability with no score fails 
 ## Tooling
 
 - **ID immutability check.** Diff the taxonomy ID set against `main` in CI.
-- **Taxonomy backlog report** built from `proposed_capabilities`. Eleven records carry proposals across
-  three ideas. "Visual self-service data preparation" comes from six (Power BI, Tableau, Azure and
-  Fabric Data Factory, Data Fusion, and by extension Dataflow Gen2), so it is the first candidate for a
-  real capability. "Source-side change stream" comes from Postgres, Spanner, Bigtable and Cosmos DB.
-  "API gateway for data access" comes from API Management alone.
+- **Taxonomy backlog report** built from `proposed_capabilities`. Seventeen records carry proposals.
+  Ranked by how many records ask: "Visual self-service data preparation" (six: Power BI, Tableau, Azure and
+  Fabric Data Factory, Data Fusion), "Source-side change stream" (four: Postgres, Spanner, Bigtable,
+  Cosmos DB), "Version control and change review" (three: GitHub, GitLab, Azure DevOps), "AI assistance
+  for building and operating pipelines" (three: Fabric Data Factory, dbt platform, Azure DevOps),
+  "Vector search for retrieval" (two: Cosmos DB, Fabric SQL database), "Natural-language access to
+  data" (one: Amazon Quick), and "API gateway for data access" (one: API Management). Turning any into
+  a capability is a minor taxonomy version and a re-score of the records it touches.
 
 ## For the stack builder UI
 

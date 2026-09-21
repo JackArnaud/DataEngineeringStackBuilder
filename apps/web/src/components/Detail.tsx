@@ -300,6 +300,7 @@ function GapDetail(props: Props & { gap: Gap }) {
 
   const stage = model.stages.find((s) => s.id === gap.stage)!;
   const capability = gap.capability ? lookup.capability(gap.capability) : undefined;
+  const impact = lookup.impactOf(gap);
   // A cross-cutting capability is usually missing at several stages; they share one row in the list.
   const others = gap.kind === "band" ? props.report.gaps.filter((g) => g.kind === "band" && g.capability === gap.capability && g.id !== gap.id) : [];
   const why =
@@ -315,18 +316,40 @@ function GapDetail(props: Props & { gap: Gap }) {
         <SeverityChip criticality={gap.criticality} />
       </p>
 
+      {impact && (
+        <section>
+          <h3>What goes wrong without it</h3>
+          <p>{impact.matters}</p>
+          <p className="muted">
+            <strong>For example:</strong> {impact.example}
+          </p>
+        </section>
+      )}
+
+      {impact?.ai && (
+        <section className="aiwhy">
+          <h3>If AI uses this data</h3>
+          <p>{impact.ai}</p>
+        </section>
+      )}
+
       <section>
-        <h3>Why it matters</h3>
+        <h3>Why it ranks {gap.criticality >= 4 ? "high" : gap.criticality === 3 ? "in the middle" : "low"}</h3>
         <p>{why}</p>
+        <p className="muted">
+          Criticality {gap.criticality} of 5{gap.kind === "band" && <> for this capability at {stage.name}</>}.
+        </p>
+        {impact?.skip_when && gap.kind !== "needed-capability" && (
+          <p className="muted">
+            <strong>Reasonable to skip if:</strong> {impact.skip_when}
+          </p>
+        )}
         {capability && (
           <p className="muted">
             <strong>{capability.name}:</strong> {capability.description}
           </p>
         )}
         {gap.kind === "empty-stage" && <p className="muted">{stage.description}</p>}
-        <p className="muted">
-          Criticality {gap.criticality} of 5{gap.kind === "band" && <> for this capability at {stage.name}</>}.
-        </p>
       </section>
 
       <p className="note">Where it shows: {whereText(gap, placement, lens, model, lookup) || "not drawn in this lens"}.</p>

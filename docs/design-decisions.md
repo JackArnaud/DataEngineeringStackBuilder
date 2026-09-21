@@ -237,4 +237,31 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
   "set aside" fold with one click to bring it back. Only cross-cutting capabilities can be set aside.
   Empty stages and stated needs cannot: the first is a fact, and the second the user can simply untick.
   This is a view filter. The report and every lens invariant are unchanged.
+- **Why a gap matters is written down, separate from how it ranks.** Every stage that can be a gap and
+  every capability carries an `impact` in the taxonomy: what goes wrong without it (one sentence, shown on
+  the row), a concrete example, how AI use changes the stakes, and when it is reasonable to skip. The
+  detail panel shows them in that order, then why it ranks where it does. Impact text never feeds the
+  ranking, and a validator rule (`impact-missing`) means a new capability cannot ship without it. Adding
+  or rewording it is a patch to the taxonomy (1.0.2), because it changes no capability and no weight.
+- **Version control is proposed, not scored.** GitHub, GitLab and Azure DevOps are scored where the
+  taxonomy has a place for them: CI/CD, scheduling and triggers at Orchestrate, and environments and
+  access control for the stages whose artefacts are pipeline code (Ingest, Transform, Orchestrate,
+  Serve). Keeping every change in reviewed history has no capability, and three records now ask for
+  one. Adding a capability would be a minor version, which marks every record as needing review until
+  it is scored against it, so it waits until the wider set of proposals is settled.
+- **How AI fits, and what is deliberately not modelled yet.** AI meets a pipeline in two ways. It reads
+  the output: features and training data for models, retrieval for applications, natural-language
+  questions from assistants. And it helps operate the pipeline: copilots that write and fix pipelines,
+  agents that read run history. The taxonomy covers the first only through `transform.feature-eng`,
+  `serve.ml-serving`, `serve.semantic-layer` and `serve.data-apps`. What it does now for AI: the impact
+  text names how each gap changes when AI uses the data (governance, quality and lineage matter more,
+  because a model repeats bad or restricted data with confidence), and three example stacks end in a
+  model or an assistant. Three ideas are recorded as proposals with sources, and not yet capabilities:
+  vector search for retrieval (Cosmos DB, Fabric SQL database), AI assistance for building and
+  operating pipelines (Fabric Data Factory, dbt platform, Azure DevOps through MCP), and natural-language
+  access to data (Amazon Quick). Making them capabilities is a minor taxonomy version and a re-score of
+  the AI-relevant records, so it needs a decision.
+- **Example stacks are checked against real gaps.** Each example's "notice" line was written from the gaps
+  the stack produces, and tests check that every example uses real tools, meets its own needs, fills at
+  least three stages and stays under twenty gap rows. A notice can still go stale when scores change.
 

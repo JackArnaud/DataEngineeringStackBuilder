@@ -18,6 +18,15 @@
       "source": "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html"
     }
   },
+  "proposed_capabilities": [
+    {
+      "name": "Natural-language access to data",
+      "description": "Asking questions of connected data in natural language and getting answers from AI agents, next to dashboards. Amazon Quick pairs Quick Sight with agents that work against connected data sources and applications.",
+      "home": "serve",
+      "nearest_existing": "serve.bi-viz",
+      "source": "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html"
+    }
+  ],
   "presentation": {
     "tagline": "Dashboards and embedded analytics inside Amazon Quick."
   },

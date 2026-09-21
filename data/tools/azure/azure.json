@@ -4,13 +4,13 @@
   "name": "Microsoft Azure",
   "vendor": "Microsoft Azure",
   "kind": "portfolio",
-  "sku": "Seventeen data-path and integration services. This is a sample of the Azure catalogue, so derived coverage understates it (no HDInsight, Analysis Services, Data Share, Key Vault, Service Bus and others). Microsoft Fabric is a separate bundle.",
+  "sku": "Eighteen data-path, integration and delivery services. This is a sample of the Azure catalogue, so derived coverage understates it (no HDInsight, GitHub, Analysis Services, Data Share, Key Vault, Service Bus and others). Microsoft Fabric is a separate bundle.",
   "license": "proprietary",
   "deployment": ["cloud-managed"],
   "pricing_model": "usage",
   "interfaces": ["api", "cli", "ui"],
   "taxonomy_version": "1.0.1",
-  "includes": ["azure-data-lake-storage", "azure-sql-database", "azure-data-factory", "azure-event-hubs", "azure-stream-analytics", "azure-purview", "azure-data-explorer", "azure-machine-learning", "azure-cost-management", "azure-synapse", "azure-cosmos-db", "azure-postgresql", "azure-monitor", "azure-api-management", "azure-event-grid", "azure-functions", "azure-logic-apps"],
+  "includes": ["azure-data-lake-storage", "azure-sql-database", "azure-data-factory", "azure-event-hubs", "azure-stream-analytics", "azure-purview", "azure-data-explorer", "azure-machine-learning", "azure-cost-management", "azure-synapse", "azure-cosmos-db", "azure-postgresql", "azure-monitor", "azure-api-management", "azure-event-grid", "azure-functions", "azure-logic-apps", "azure-devops"],
   "bundling": "a-la-carte",
   "presentation": {
     "tagline": "Independently purchased cloud services; compose the ones you use."

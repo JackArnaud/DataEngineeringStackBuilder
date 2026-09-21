@@ -84,6 +84,14 @@ function checkTaxonomy(t: Taxonomy, file: string, sink: Sink): void {
     });
   }
 
+  // Every stage and cross-cutting capability that can surface as a gap must say, in plain words, why it matters.
+  t.stages.forEach((s, i) => {
+    if (s.criticality > 0 && !s.impact) sink.error("impact-missing", file, `/stages/${i}/impact`, `stage "${s.id}" can be a gap, so it needs an impact: what goes wrong without it, and an example`);
+  });
+  for (const [id, cap] of Object.entries(t.capabilities)) {
+    if (cap.status === "active" && !cap.impact) sink.error("impact-missing", file, `/capabilities/${id}/impact`, `"${id}" can be a gap, so it needs an impact: what goes wrong without it, and an example`);
+  }
+
   for (const [id, cap] of Object.entries(t.capabilities)) {
     const ptr = `/capabilities/${id}`;
     const prefix = id.slice(0, id.indexOf("."));

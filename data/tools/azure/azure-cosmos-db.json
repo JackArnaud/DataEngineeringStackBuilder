@@ -35,6 +35,13 @@
       "home": "source",
       "nearest_existing": "ingest.cdc",
       "source": "https://learn.microsoft.com/en-us/azure/cosmos-db/overview"
+    },
+    {
+      "name": "Vector search for retrieval",
+      "description": "Storing embeddings next to operational data and searching them by similarity, so an AI application can retrieve the right records to ground an answer. Cosmos DB does this with integrated vector and hybrid search over the same store.",
+      "home": "store",
+      "nearest_existing": "store.olap-serving",
+      "source": "https://learn.microsoft.com/en-us/azure/cosmos-db/overview"
     }
   ],
   "presentation": {

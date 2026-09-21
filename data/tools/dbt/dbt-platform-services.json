@@ -77,6 +77,15 @@
       "source": "https://docs.getdbt.com/docs/deploy/deploy-environments"
     }
   ],
+  "proposed_capabilities": [
+    {
+      "name": "AI assistance for building and operating pipelines",
+      "description": "The dbt Copilot assistant in the browser IDE helps write, explain and fix dbt models. It changes how transformations are built, not what they do.",
+      "home": "transform",
+      "nearest_existing": "platform.dev-experience",
+      "source": "https://docs.getdbt.com/docs/platform/studio-ide/develop-in-studio"
+    }
+  ],
   "presentation": {
     "tagline": "Hosted scheduler, CI, catalog, semantic layer and IDE for dbt projects."
   },

@@ -49,6 +49,13 @@
       "home": "transform",
       "nearest_existing": "transform.code-transform",
       "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
+    },
+    {
+      "name": "AI assistance for building and operating pipelines",
+      "description": "Copilot for Data Factory designs, edits and manages pipelines and dataflows from plain-English prompts, summarises existing ones and explains errors. It changes how pipelines are built, not what they do.",
+      "home": "orchestrate",
+      "nearest_existing": "platform.dev-experience",
+      "source": "https://learn.microsoft.com/en-us/fabric/data-factory/data-factory-overview"
     }
   ],
   "presentation": {

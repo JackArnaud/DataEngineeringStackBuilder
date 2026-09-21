@@ -5,6 +5,7 @@ import { EXAMPLES } from "../examples";
 import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
 import { RAMP_ORDER, ROLE_RAMP, rampOf } from "../roles";
+import { computeGaps, groupGaps } from "@compile";
 import { add, defaultLens, emptyState, isSelectable, parseState, serializeState, toggle } from "../state";
 import { dataset, model } from "./fixture";
 
@@ -198,3 +199,38 @@ describe("grouping cells for receipts", () => {
     expect(joinNames(["Store", "Transform", "Serve"])).toBe("Store, Transform and Serve");
   });
 });
+
+describe("the example stacks", () => {
+  const spine = new Set(model.capabilities.filter((c) => c.kind === "spine").map((c) => c.id));
+
+  it("only use tools and needs that exist, and no portfolio", () => {
+    for (const e of EXAMPLES) {
+      for (const id of e.tools) expect(isSelectable(model, id), `${e.label}: ${id}`).toBe(true);
+      for (const id of e.needs ?? []) expect(spine.has(id), `${e.label}: ${id}`).toBe(true);
+    }
+  });
+
+  it("have distinct names, a story and something to notice", () => {
+    expect(new Set(EXAMPLES.map((e) => e.label)).size).toBe(EXAMPLES.length);
+    for (const e of EXAMPLES) {
+      expect(e.hint.length, e.label).toBeGreaterThan(10);
+      expect(e.notice.length, e.label).toBeGreaterThan(40);
+    }
+  });
+
+  it("produce a gap report without error, and none of them is an empty stack's worth of noise", () => {
+    for (const e of EXAMPLES) {
+      const report = computeGaps(model, { tools: e.tools, needs: e.needs });
+      expect(report.stages.filter((s) => s.best_level > 0).length, e.label).toBeGreaterThanOrEqual(3);
+      // The gap list is rolled up, so even a thin stack stays a page long.
+      expect(groupGaps(model, report.gaps).length, e.label).toBeLessThan(20);
+    }
+  });
+
+  it("include stacks with version control and CI/CD, with open-source engines, and ending in AI", () => {
+    const uses = (id: string) => EXAMPLES.some((e) => e.tools.includes(id));
+    for (const id of ["github", "gitlab", "azure-devops", "apache-spark-kubernetes", "apache-airflow-kubernetes", "gcp-vertex-ai", "aws-sagemaker"]) expect(uses(id), id).toBe(true);
+    expect(EXAMPLES.some((e) => e.needs?.includes("serve.ml-serving"))).toBe(true);
+  });
+});
+

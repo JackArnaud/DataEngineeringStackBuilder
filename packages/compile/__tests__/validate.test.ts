@@ -96,6 +96,8 @@ const one = (rec: Json): Record<string, Json> => ({ [rec.id]: rec });
 
 // ------------------------------------------------------------------ real data
 
+const IMPACT = { matters: "A capability added by a test that says what goes wrong.", example: "A story written by a test, long enough to satisfy the schema minimum." };
+
 describe("the real dataset", () => {
   it("validates with no errors or warnings", () => {
     expect(validateDataset(base)).toEqual([]);
@@ -355,7 +357,7 @@ describe("capability references", () => {
           migration: "fan-out",
         };
         for (const id of ["transform.sql-transform-v2", "transform.sql-transform-v3"]) {
-          t.capabilities[id] = { name: id, description: "Successor capability for the test.", status: "active" };
+          t.capabilities[id] = { name: id, description: "Successor capability for the test.", status: "active", impact: IMPACT };
         }
       },
       tools: one(specialist()),
@@ -593,7 +595,7 @@ describe("taxonomy rules", () => {
           migration: "fan-out",
         };
         for (const id of ["store.table-format-managed", "store.table-format-rest-catalog"]) {
-          t.capabilities[id] = { name: id, description: "Successor capability for the test.", status: "active" };
+          t.capabilities[id] = { name: id, description: "Successor capability for the test.", status: "active", impact: IMPACT };
         }
       },
     });
@@ -623,7 +625,7 @@ describe("taxonomy rules", () => {
 
   it("rejects a capability whose prefix is neither a stage nor a band", () => {
     const issues = run({
-      taxonomy: (t) => { t.capabilities["warehouse.compute"] = { name: "Compute", description: "Has no parent stage.", status: "active" }; },
+      taxonomy: (t) => { t.capabilities["warehouse.compute"] = { name: "Compute", description: "Has no parent stage.", status: "active", impact: IMPACT }; },
     });
     expect(has(issues, "capability-prefix-unknown", { path: "/capabilities/warehouse.compute" })).toBe(true);
   });
@@ -776,8 +778,8 @@ describe("lens invariants", () => {
   it("holds when a new capability is added: it lands in every lens with no lens edits", () => {
     const issues = run({
       taxonomy: (t) => {
-        t.capabilities["serve.notebooks"] = { name: "Notebooks", description: "New spine capability for the test.", status: "active" };
-        t.capabilities["quality.profiling"] = { name: "Profiling", description: "New band capability for the test.", status: "active" };
+        t.capabilities["serve.notebooks"] = { name: "Notebooks", description: "New spine capability for the test.", status: "active", impact: IMPACT };
+        t.capabilities["quality.profiling"] = { name: "Profiling", description: "New band capability for the test.", status: "active", impact: IMPACT };
       },
     });
     expect(issues).toEqual([]);
@@ -790,7 +792,7 @@ describe("derivation rules", () => {
   it("resolve every capability to a role, including one added later under an existing stage", () => {
     const issues = run({
       taxonomy: (t) => {
-        t.capabilities["serve.notebooks"] = { name: "Notebooks", description: "New spine capability for the test.", status: "active" };
+        t.capabilities["serve.notebooks"] = { name: "Notebooks", description: "New spine capability for the test.", status: "active", impact: IMPACT };
       },
     });
     expect(issues).toEqual([]);
@@ -897,3 +899,17 @@ describe("npm run validate", () => {
     }
   });
 });
+
+describe("impact text", () => {
+  it("is required for every stage that can be a gap and every active capability", () => {
+    const issues = run({ taxonomy: (t) => { delete t.capabilities["govern.masking"].impact; delete t.stages.find((s: { id: string }) => s.id === "store").impact; } });
+    const missing = issues.filter((i) => i.code === "impact-missing").map((i) => i.path).sort();
+    expect(missing).toEqual(["/capabilities/govern.masking/impact", "/stages/2/impact"]);
+  });
+
+  it("does not ask for impact on a stage that never surfaces as a gap", () => {
+    const issues = run({ taxonomy: (t) => { delete t.stages.find((s: { id: string }) => s.id === "source").impact; } });
+    expect(issues.filter((i) => i.code === "impact-missing")).toEqual([]);
+  });
+});
+
