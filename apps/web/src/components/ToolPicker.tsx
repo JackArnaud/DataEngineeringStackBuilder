@@ -35,17 +35,17 @@ export function ToolPicker({ model, lookup, state, onChange, onOpenTool }: Props
         <input type="search" placeholder="Find a tool or vendor" value={query} onChange={(e) => setQuery(e.target.value)} />
       </label>
 
-      <div className="stagefilter" role="group" aria-label="Show tools that cover">
+      <label className="stagefilter">
         <span className="stagefilter__label">Covers</span>
-        <button type="button" className="pill" aria-pressed={stage === null} onClick={() => setStage(null)}>
-          Any stage
-        </button>
-        {model.stages.map((s) => (
-          <button key={s.id} type="button" className="pill" aria-pressed={stage === s.id} onClick={() => setStage(stage === s.id ? null : s.id)}>
-            {s.name}
-          </button>
-        ))}
-      </div>
+        <select value={stage ?? ""} onChange={(e) => setStage(e.target.value || null)}>
+          <option value="">Any stage</option>
+          {model.stages.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       {narrowed && (
         <p className="muted picker__count" role="status">
@@ -75,7 +75,7 @@ export function ToolPicker({ model, lookup, state, onChange, onOpenTool }: Props
                   {plural(g.tools.length, "product")}
                   {chosen > 0 && <span className="count">{chosen} added</span>}
                 </span>
-                {g.portfolio && (
+                {g.portfolio && open && (
                   <button type="button" className="linkish vendor__all" disabled={allAdded} onClick={() => onChange({ tools: add(state.tools, ...serviceIds) })}>
                     {allAdded ? "All services added" : `Add all ${serviceIds.length} services`}
                   </button>

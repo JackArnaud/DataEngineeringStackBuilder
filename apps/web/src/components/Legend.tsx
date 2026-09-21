@@ -10,7 +10,8 @@ import { RoleGlyph } from "./glyphs";
  */
 export function Legend({ model }: { model: RenderModel }) {
   return (
-    <section className="legend" aria-label="Legend">
+    <details className="legend">
+      <summary>How to read the colours and marks</summary>
       <table>
         <thead>
           <tr>
@@ -50,8 +51,8 @@ export function Legend({ model }: { model: RenderModel }) {
         </tbody>
       </table>
       <p className="muted legend__note">
-        A tall mark is a tool’s core position; a short one means it also reaches that zone. Lighter steps are extended coverage, stronger steps are core.
+        Each row is a tool. A tall mark is a tool’s core position; a short one means it also reaches that zone. Lighter steps are extended coverage, stronger steps are core.
       </p>
-    </section>
+    </details>
   );
 }

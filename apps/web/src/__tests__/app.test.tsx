@@ -31,6 +31,10 @@ const showNeeds = (user: ReturnType<typeof userEvent.setup>) => user.click(scree
 const pickerCount = () => document.querySelector(".picker__count");
 /** How many services the AWS portfolio lists; the tests should not care as the catalogue grows. */
 const awsServices = model.tools.find((t) => t.id === "aws")!.includes!.length;
+/** The gap list and the overlaps each live on a tab; an address ending in one opens straight on it. */
+const missing = (url = "/") => `${url}#missing`;
+const overlapsTab = (url: string) => `${url}#overlaps`;
+const openTab = (user: ReturnType<typeof userEvent.setup>, name: RegExp) => user.click(screen.getByRole("tab", { name }));
 const gapButtons = () => screen.getAllByRole("button").filter((b) => b.classList.contains("gap"));
 
 beforeEach(() => window.history.replaceState(null, "", "/"));
@@ -41,7 +45,7 @@ afterEach(() => {
 
 describe("an empty stack", () => {
   it("flags every stage that matters, and points to the guided start", () => {
-    setup();
+    setup(missing());
     for (const stage of ["Serve", "Store", "Ingest", "Transform", "Orchestrate"]) {
       expect(screen.getByText(`Nothing in your stack covers ${stage}`)).toBeTruthy();
     }
@@ -51,15 +55,16 @@ describe("an empty stack", () => {
   });
 
   it("ranks the gaps: the two critical stages come first", () => {
-    setup();
+    setup(missing());
     const first = gapButtons().slice(0, 2).map((b) => b.textContent);
+    expect(first).toHaveLength(2);
     expect(first.every((t) => t?.includes("Critical"))).toBe(true);
   });
 });
 
 describe("building a stack", () => {
   it("adds a tool from the picker, updates coverage, and writes it to the address", async () => {
-    const user = setup();
+    const user = setup(missing());
     await openVendor(user, "Amazon Web Services");
     await user.click(screen.getByRole("checkbox", { name: /Amazon S3/ }));
 
@@ -71,6 +76,7 @@ describe("building a stack", () => {
 
   it("adds every service of a portfolio at once, and only its services", async () => {
     const user = setup();
+    await openVendor(user, "Amazon Web Services");
     await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: `Add all ${awsServices} services` }));
     expect(within(chips()).getAllByRole("listitem")).toHaveLength(awsServices);
     expect(within(chips()).queryByText("Amazon Web Services")).toBeNull();
@@ -82,6 +88,7 @@ describe("building a stack", () => {
     const user = userEvent.setup();
     const moved = { ...model, tools: model.tools.map((t) => (t.id === "aws-glue" ? { ...t, vendor: "Somebody Else" } : t)) };
     render(<Builder model={moved} />);
+    await openVendor(user, "Amazon Web Services");
     await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: `Add all ${awsServices} services` }));
     expect(within(chips()).getAllByRole("listitem")).toHaveLength(awsServices);
     expect(within(chips()).getByText("AWS Glue")).toBeTruthy();
@@ -102,12 +109,13 @@ describe("building a stack", () => {
     await waitFor(() => expect(window.location.search).toBe(""));
   });
 
-  it("restores a whole stack from the address", () => {
-    setup("/?tools=postgres,dbt-core&needs=ingest.cdc&lens=grid&view=table");
+  it("restores a whole stack from the address", async () => {
+    const user = setup("/?tools=postgres,dbt-core&needs=ingest.cdc&lens=grid&view=table");
     expect(within(chips()).getByText("PostgreSQL")).toBeTruthy();
     expect((screen.getByRole("radio", { name: "Audit grid" }) as HTMLInputElement).checked).toBe(true);
     expect((screen.getByRole("radio", { name: "Table" }) as HTMLInputElement).checked).toBe(true);
     expect(screen.getByRole("table", { name: /Where your tools sit in the Audit grid lens/ })).toBeTruthy();
+    await openTab(user, /What.s missing/);
     expect(screen.getByText("You need Change data capture, and nothing provides it")).toBeTruthy();
   });
 });
@@ -253,11 +261,12 @@ describe("the guided start", () => {
 
 describe("overlapping tools", () => {
   const stack = "/?tools=snowflake,dbt,github";
+  const atOverlaps = overlapsTab(stack);
   const section = () => screen.getByRole("region", { name: "Where your tools overlap" });
   const useFor = (name: RegExp) => within(section()).getByRole("combobox", { name }) as HTMLSelectElement;
 
   it("lists the tasks more than one of your tools can do, with who leads", () => {
-    setup(stack);
+    setup(atOverlaps);
     expect(within(section()).getByText(/can be done by more than one of your tools/)).toBeTruthy();
     // GitHub is native and Snowflake bundled, both level 2, so GitHub leads on scheduling.
     expect(useFor(/Used for Scheduling/).options[0]!.textContent).toMatch(/GitHub.*\(best score\)/);
@@ -265,14 +274,14 @@ describe("overlapping tools", () => {
   });
 
   it("says so, and flags it, when the best tools tie", () => {
-    setup(stack);
+    setup(atOverlaps);
     const sql = useFor(/Used for SQL transformation/);
     expect(sql.options[0]!.textContent).toMatch(/No clear lead/);
     expect(sql.closest("li")!.textContent).toContain("Choose one");
   });
 
   it("keeps your choice in the address, and takes it away with the tool", async () => {
-    const user = setup(stack);
+    const user = setup(atOverlaps);
     await user.selectOptions(useFor(/Used for SQL transformation/), "dbt");
     await waitFor(() => expect(window.location.search).toContain("use=transform.sql-transform:dbt"));
     expect(useFor(/Used for SQL transformation/).closest("li")!.textContent).not.toContain("Choose one");
@@ -284,8 +293,10 @@ describe("overlapping tools", () => {
   it("scores the task by the tool you use, and shows it in the tool's row", async () => {
     const user = setup("/?tools=aws-mwaa,github");
     expect(screen.getByRole("list", { name: "Coverage by stage" }).textContent).toContain("Amazon MWAA");
+    await openTab(user, /Overlaps/);
     await user.selectOptions(useFor(/Used for Scheduling/), "github");
     await waitFor(() => expect(window.location.search).toContain("use=orchestrate.scheduling:github"));
+    await openTab(user, /Coverage/);
     // Amazon MWAA still leads on other tasks but is no longer the one used for scheduling.
     const lane = screen.getAllByText(/not used for/).map((n) => n.textContent).join(" ");
     expect(lane).toContain("scheduling");
@@ -297,6 +308,7 @@ describe("overlapping tools", () => {
     await user.click(screen.getByRole("button", { name: "Start over" }));
     await waitFor(() => expect(window.location.search).toBe(""));
     expect(screen.queryByRole("region", { name: "Where your tools overlap" })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /Overlaps/ })).toBeNull();
   });
 
   it("shows nothing when no task is shared", () => {
@@ -370,10 +382,10 @@ describe("finding a tool", () => {
 
   it("narrows to tools that cover a stage, and back again", async () => {
     const user = setup();
-    await user.click(screen.getByRole("button", { name: "Orchestrate", pressed: false }));
+    await user.selectOptions(screen.getByRole("combobox", { name: /Covers/ }), "orchestrate");
     expect(screen.getByRole("checkbox", { name: /dbt OSS/ })).toBeTruthy();
     expect(screen.queryByRole("checkbox", { name: /Amazon S3/ })).toBeNull();
-    await user.click(screen.getByRole("button", { name: "Any stage" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: /Covers/ }), "");
     expect(pickerCount()).toBeNull();
   });
 
@@ -419,7 +431,7 @@ describe("saying what you need", () => {
 
 describe("needs", () => {
   it("flags something you said you need and your tools lack, ahead of everything else", async () => {
-    const user = setup("/?tools=postgres");
+    const user = setup(missing("/?tools=postgres"));
     await showNeeds(user);
     await user.click(screen.getByRole("checkbox", { name: /Change data capture/ }));
     const top = gapButtons()[0]!;
@@ -428,7 +440,7 @@ describe("needs", () => {
   });
 
   it("stops flagging a need once a tool provides it", async () => {
-    const user = setup("/?tools=postgres&needs=ingest.cdc");
+    const user = setup(missing("/?tools=postgres&needs=ingest.cdc"));
     expect(screen.getByText("You need Change data capture, and nothing provides it")).toBeTruthy();
     await openVendor(user, "Amazon Web Services");
     await user.click(screen.getByRole("checkbox", { name: /AWS Database Migration Service/ }));
@@ -437,7 +449,7 @@ describe("needs", () => {
 });
 
 describe("the gap list", () => {
-  const stack = "/?tools=aws-s3,aws-glue,aws-athena";
+  const stack = missing("/?tools=aws-s3,aws-glue,aws-athena");
 
   it("folds a capability missing at several stages into one row, so the list is short", () => {
     setup(stack);
@@ -476,7 +488,7 @@ describe("the gap list", () => {
   });
 
   it("restores set-aside capabilities from the address, and clears them on start over", async () => {
-    const user = setup(`${stack}&skip=govern.masking`);
+    const user = setup(missing("/?tools=aws-s3,aws-glue,aws-athena&skip=govern.masking"));
     expect(screen.getByText(/1 capability set aside as not relevant/)).toBeTruthy();
     await user.click(screen.getByRole("button", { name: "Start over" }));
     await waitFor(() => expect(window.location.search).toBe(""));
@@ -498,11 +510,11 @@ describe("the gap list", () => {
     expect(dialog.textContent).toContain("For example:");
     expect(within(dialog).getByRole("heading", { name: "If AI uses this data" })).toBeTruthy();
     expect(dialog.textContent).toContain("Reasonable to skip if:");
-    expect(within(dialog).getByRole("heading", { name: /^Why it ranks/ })).toBeTruthy();
+    expect(within(dialog).getByText(/^Why it ranks/)).toBeTruthy();
   });
 
   it("explains an empty stage and a stated need, without offering to skip either", async () => {
-    const user = setup("/?tools=postgres&needs=serve.ml-serving");
+    const user = setup(missing("/?tools=postgres&needs=serve.ml-serving"));
     const need = gapButtons().find((b) => /You need/.test(b.textContent ?? ""))!;
     await user.click(need);
     let dialog = screen.getByRole("dialog");
@@ -517,7 +529,7 @@ describe("the gap list", () => {
   });
 
   it("suggests tools from a vendor you already use first, and says so", async () => {
-    const user = setup("/?tools=aws-s3");
+    const user = setup(missing("/?tools=aws-s3"));
     const masking = gapButtons().find((b) => /^Masking is missing/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
     await user.click(masking);
     const dialog = screen.getByRole("dialog");
@@ -549,17 +561,18 @@ describe("lenses", () => {
   });
 
   it("shows a gap the lens has no zone for in its side rail, and still in the ranked list", async () => {
-    const user = setup("/?tools=postgres&needs=ingest.reverse-etl");
+    const user = setup(missing("/?tools=postgres&needs=ingest.reverse-etl"));
     const listed = gapButtons().find((b) => b.textContent?.includes("You need Reverse ETL"))!;
     expect(listed.textContent).toContain("side rail");
 
+    await openTab(user, /Coverage/);
     await user.click(screen.getByText(/Not shown in the Medallion architecture lens/));
     const rail = document.querySelector(".rail")!;
     expect(within(rail as HTMLElement).getByRole("button", { name: /You need Reverse ETL/ })).toBeTruthy();
   });
 
   it("places the same gap in a zone in the audit grid", async () => {
-    setup("/?tools=postgres&needs=ingest.reverse-etl&lens=grid");
+    setup(missing("/?tools=postgres&needs=ingest.reverse-etl&lens=grid"));
     const listed = gapButtons().find((b) => b.textContent?.includes("You need Reverse ETL"))!;
     expect(listed.textContent).toContain("Needed · Ingest");
   });
@@ -646,7 +659,7 @@ describe("receipts", () => {
   });
 
   it("open a gap to why it matters and what would close it, and let you add a fix", async () => {
-    const user = setup();
+    const user = setup(missing());
     await user.click(gapButtons()[0]!);
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByRole("heading", { name: "What goes wrong without it" })).toBeTruthy();
@@ -707,5 +720,85 @@ describe("loading the data", () => {
     vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ format: "something-else" }) })));
     render(<Root />);
     expect((await screen.findByRole("alert")).textContent).toContain("not a render model");
+  });
+});
+
+describe("one thing at a time", () => {
+  const tabNamed = (name: RegExp) => screen.getByRole("tab", { name });
+
+  it("opens on coverage, with the gaps and overlaps a tab away and counted", () => {
+    setup("/?tools=snowflake,dbt,github");
+    expect(tabNamed(/Coverage/).getAttribute("aria-selected")).toBe("true");
+    expect(tabNamed(/What.s missing/).textContent).toMatch(/\d+/);
+    expect(tabNamed(/Overlaps/).textContent).toMatch(/\d+/);
+    expect(screen.queryByRole("region", { name: "What’s missing" })).toBeNull();
+    expect(document.querySelector(".gaplist")).toBeNull();
+  });
+
+  it("opens on the tab an address names, and writes the tab back to it", async () => {
+    const user = setup("/?tools=postgres#missing");
+    expect(tabNamed(/What.s missing/).getAttribute("aria-selected")).toBe("true");
+    expect(document.querySelector(".gaplist")).toBeTruthy();
+
+    await user.click(tabNamed(/Coverage/));
+    expect(window.location.hash).toBe("");
+    expect(document.querySelector(".matrix")).toBeTruthy();
+    await user.click(tabNamed(/What.s missing/));
+    expect(window.location.hash).toBe("#missing");
+  });
+
+  it("falls back to coverage when the tab asked for has nothing to show", () => {
+    setup("/?tools=aws-s3#overlaps");
+    expect(tabNamed(/Coverage/).getAttribute("aria-selected")).toBe("true");
+    expect(screen.queryByRole("tab", { name: /Overlaps/ })).toBeNull();
+  });
+
+  it("moves between the tabs with the arrow keys", async () => {
+    const user = setup("/?tools=postgres");
+    tabNamed(/Coverage/).focus();
+    await user.keyboard("{ArrowRight}");
+    expect(tabNamed(/What.s missing/).getAttribute("aria-selected")).toBe("true");
+    expect(document.activeElement).toBe(tabNamed(/What.s missing/));
+  });
+
+  it("puts the ties that need a decision first, and folds the tasks where one tool clearly leads", () => {
+    setup(overlapsTab("/?tools=snowflake,dbt,github"));
+    const open = document.querySelectorAll('.overlap[data-tie="true"]');
+    expect(open.length).toBeGreaterThan(0);
+    const fold = document.querySelector(".overlaps details.fold") as HTMLDetailsElement;
+    expect(fold.open).toBe(false);
+    expect(fold.querySelector("summary")!.textContent).toMatch(/more tasks? where one tool clearly leads/);
+    expect(fold.querySelectorAll('.overlap[data-tie="true"]').length).toBe(0);
+  });
+
+  it("keeps the colour key behind a fold on the chart", () => {
+    setup("/?tools=dbt-core");
+    const legend = document.querySelector("details.legend") as HTMLDetailsElement;
+    expect(legend.open).toBe(false);
+    expect(legend.querySelector("summary")!.textContent).toMatch(/How to read/);
+  });
+
+  it("keeps each example's notice behind a fold, with the way to load it in plain view", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
+    const cards = document.querySelectorAll(".excard");
+    expect(cards.length).toBeGreaterThan(10);
+    for (const c of Array.from(cards)) {
+      expect((c.querySelector("details.fold") as HTMLDetailsElement).open).toBe(false);
+      expect(c.querySelector("button.primary")).toBeTruthy();
+    }
+  });
+
+  it("keeps the reasoning behind a rank behind a fold, and the way to close the gap in view", async () => {
+    const user = setup(missing("/?tools=aws-s3"));
+    await user.click(gapButtons().find((b) => /^Masking is missing/.test(b.querySelector(".gap__title")?.textContent ?? ""))!);
+    const dialog = screen.getByRole("dialog");
+    const fold = dialog.querySelector("details.fold") as HTMLDetailsElement;
+    expect(fold.open).toBe(false);
+    expect(fold.textContent).toContain("Criticality");
+    expect(within(dialog).getByRole("heading", { name: "What would close it" })).toBeTruthy();
+    // What to do about it comes before why it ranks where it does.
+    const order = Array.from(dialog.querySelectorAll("h3, summary")).map((n) => n.textContent);
+    expect(order.findIndex((t) => t === "What would close it")).toBeLessThan(order.findIndex((t) => /^Why it ranks/.test(t ?? "")));
   });
 });

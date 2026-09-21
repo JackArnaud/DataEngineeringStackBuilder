@@ -95,7 +95,7 @@ export function GapList({ model, lookup, lens, gaps, setAside, placement, hasToo
     <div className="gaplist">
       <p className="muted gaplist__intro">
         {first.length > 0 ? `${first.length} to fix first` : "Nothing urgent"}
-        {rest.length > 0 && `, ${rest.length} more worth checking`}. Criticality is how much a stack loses without it, from 1 to 5. Where a capability is missing at several stages, they share one row.
+        {rest.length > 0 && `, ${rest.length} more worth checking`}. Criticality runs from 1 to 5: how much a stack loses without it.
       </p>
 
       {first.length > 0 && (

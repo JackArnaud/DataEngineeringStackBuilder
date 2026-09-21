@@ -1,20 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
-import { computeGaps, projectGaps, stackBands } from "@compile";
+import { computeGaps, groupGaps, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
 import { Landing } from "./components/Landing";
 import { OverlapList } from "./components/OverlapList";
-import { FilterRow } from "./components/FilterRow";
+import { Actions, ViewControls } from "./components/FilterRow";
 import { GapList } from "./components/GapList";
 import { Legend } from "./components/Legend";
 import { LensMatrix } from "./components/LensMatrix";
 import { StackPanel } from "./components/StackPanel";
 import { StageStrip } from "./components/StageStrip";
+import { TabBar, panelId, tabId } from "./components/TabBar";
 import { buildLookup } from "./lookup";
 import { useRenderModel } from "./model";
 import { add, emptyState, parseState, serializeState, toggle } from "./state";
 import type { StackState } from "./state";
 import type { Detail } from "./types";
+
+type MainTab = "coverage" | "missing" | "overlaps";
+const MAIN_TABS: MainTab[] = ["coverage", "missing", "overlaps"];
+
+/** The tab an address asks for, so a link can open on the gaps. Anything else opens on coverage. */
+const tabFromHash = (): MainTab => {
+  const id = window.location.hash.replace(/^#/, "");
+  return (MAIN_TABS as string[]).includes(id) ? (id as MainTab) : "coverage";
+};
 
 /** Loads the render model, the only data the site reads, then hands it to the builder. */
 export function Root() {
@@ -47,6 +57,11 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   const lookup = useMemo(() => buildLookup(model), [model]);
   const [state, setState] = useState<StackState>(() => parseState(window.location.search, model));
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [tab, setTabState] = useState<MainTab>(tabFromHash);
+  const setTab = (next: MainTab) => {
+    setTabState(next);
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${next === "coverage" ? "" : `#${next}`}`);
+  };
   const [mode, setMode] = useState<"landing" | "builder">(() => {
     const initial = parseState(window.location.search, model);
     return startOnLanding && initial.tools.length === 0 && initial.needs.length === 0 ? "landing" : "builder";
@@ -97,7 +112,6 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
       <div className="app">
         <header className="top">
           <h1>Data stack builder</h1>
-          <p className="lede">Choose the tools you use, or start from a stack people really build. Then see what it covers, what it is missing, and why each gap matters.</p>
         </header>
         <main>
         <Landing
@@ -116,14 +130,20 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
     );
   }
 
+  // Overlaps only get a tab while there is something to say; a link to a tab that is gone shows coverage.
+  const active: MainTab = tab === "overlaps" && report.overlaps.length === 0 ? "coverage" : tab;
+  const tabs = [
+    { id: "coverage" as const, label: "Coverage" },
+    { id: "missing" as const, label: "What\u2019s missing", count: groupGaps(model, gaps).length },
+    ...(report.overlaps.length > 0 ? [{ id: "overlaps" as const, label: "Overlaps", count: report.overlaps.length }] : []),
+  ];
+
   return (
     <div className="app">
       <header className="top">
         <h1>Data stack builder</h1>
-        <p className="lede">Pick the tools you use. See what your stack covers, what it is missing, and how much each gap matters. Every claim opens to its score, its note and its source.</p>
+        <Actions canReset={canReset} onReset={reset} onGuide={startOnLanding ? () => setMode("landing") : undefined} />
       </header>
-
-      <FilterRow model={model} state={state} onChange={change} canReset={canReset} onReset={reset} onGuide={startOnLanding ? () => setMode("landing") : undefined} />
 
       <div className="layout">
         <aside className="side" aria-label="Build your stack">
@@ -141,33 +161,49 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
             </p>
           )}
 
-          <section aria-labelledby="coverage">
-            <h2 id="coverage">Coverage by stage</h2>
-            <StageStrip model={model} lookup={lookup} report={report} />
-          </section>
+          <TabBar tabs={tabs} value={active} onChange={setTab} prefix="main" label="Your stack" large />
 
-          <section aria-labelledby="where">
-            <h2 id="where">Where your tools sit</h2>
-            <p className="muted">
-              {lens.name}. Each row is a tool; the mark shows where it is strongest and how well it covers each zone.
-            </p>
-            <LensMatrix model={model} lookup={lookup} lens={lens} tools={tools} placement={placement} bands={bands} view={state.view} overlaps={report.overlaps} onOpen={setDetail} />
-            <Legend model={model} />
-          </section>
+          <div role="tabpanel" id={panelId("main", active)} aria-labelledby={tabId("main", active)} className="mainpanel">
+            {active === "coverage" && (
+              <>
+                <section aria-labelledby="coverage">
+                  <h2 id="coverage" className="sr-only">
+                    Coverage by stage
+                  </h2>
+                  <StageStrip model={model} lookup={lookup} report={report} />
+                </section>
 
-          <OverlapList
-            lookup={lookup}
-            overlaps={report.overlaps}
-            onUse={(capability, tool) => {
-              const rest = Object.fromEntries(Object.entries(state.use).filter(([c]) => c !== capability));
-              change({ use: tool ? { ...rest, [capability]: tool } : rest });
-            }}
-          />
+                <section aria-labelledby="where">
+                  <div className="sectionhead">
+                    <h2 id="where">Where your tools sit</h2>
+                    <ViewControls model={model} state={state} onChange={change} />
+                  </div>
+                  <LensMatrix model={model} lookup={lookup} lens={lens} tools={tools} placement={placement} bands={bands} view={state.view} overlaps={report.overlaps} onOpen={setDetail} />
+                  <Legend model={model} />
+                </section>
+              </>
+            )}
 
-          <section aria-labelledby="missing">
-            <h2 id="missing">What’s missing</h2>
-            <GapList model={model} lookup={lookup} lens={lens} gaps={gaps} setAside={setAside} placement={placement} hasTools={state.tools.length > 0} onOpen={(id) => setDetail({ kind: "gap", id })} onSkip={(c) => change({ skip: add(state.skip, c) })} onRestore={(c) => change({ skip: state.skip.filter((x) => x !== c) })} />
-          </section>
+            {active === "overlaps" && (
+              <OverlapList
+                lookup={lookup}
+                overlaps={report.overlaps}
+                onUse={(capability, tool) => {
+                  const rest = Object.fromEntries(Object.entries(state.use).filter(([c]) => c !== capability));
+                  change({ use: tool ? { ...rest, [capability]: tool } : rest });
+                }}
+              />
+            )}
+
+            {active === "missing" && (
+              <section aria-labelledby="missing">
+                <h2 id="missing" className="sr-only">
+                  What’s missing
+                </h2>
+                <GapList model={model} lookup={lookup} lens={lens} gaps={gaps} setAside={setAside} placement={placement} hasTools={state.tools.length > 0} onOpen={(id) => setDetail({ kind: "gap", id })} onSkip={(c) => change({ skip: add(state.skip, c) })} onRestore={(c) => change({ skip: state.skip.filter((x) => x !== c) })} />
+              </section>
+            )}
+          </div>
         </main>
       </div>
 

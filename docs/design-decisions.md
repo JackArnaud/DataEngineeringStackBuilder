@@ -160,6 +160,17 @@ a tint, and lists (the landing choices, examples, gaps, overlaps) are ruled rows
 arrow rather than buttons in tiles. None of this touches the data colours above: the ramps and status
 colours are unchanged, and axe still reports no violations in light, dark and at phone width.
 
+**One thing at a time.** The builder page stacked six sections and a control bar, and read as a wall.
+The main column now has three tabs: Coverage (the stage strip and the chart), What's missing, and
+Overlaps (only while two of your tools share a task). The tab is in the address (`#missing`,
+`#overlaps`), so a link can open on the gaps, and the counts sit on the tabs so nothing is hidden
+unseen. What is left on each screen is what you act on first; the rest is one click away behind a
+fold: the colour key, why a gap ranks where it does, each example's "what to look at", and the
+overlaps where one tool clearly leads (only ties need a decision, so only they are open). In a gap's
+detail, what goes wrong and what would close it come before the reasoning. The masthead is the name
+and the three whole-stack actions; the lens and chart/table controls moved next to the chart they
+change, and the stage filter is one select, not seven buttons.
+
 **Accessibility was measured, not assumed.** An axe audit in Chrome across ten states (light, dark,
 chart, table, both panels) found no violations, including colour contrast. The checks it could not
 decide are all rows scrolled out of view inside the tool list, using tokens that passed where

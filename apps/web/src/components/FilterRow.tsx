@@ -2,18 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import type { RenderModel } from "@compile";
 import type { StackState, View } from "../state";
 
-interface Props {
-  model: RenderModel;
-  state: StackState;
-  onChange: (patch: Partial<StackState>) => void;
+interface ActionsProps {
   canReset: boolean;
   onReset: () => void;
   /** Reopen the guided start with the current choices. */
   onGuide?: () => void;
 }
 
-/** One row above everything it scopes: which lens, chart or table, share, start over. */
-export function FilterRow({ model, state, onChange, canReset, onReset, onGuide }: Props) {
+/** What you do with the stack as a whole: share it, go back to the questions, or clear it. Lives in the masthead. */
+export function Actions({ canReset, onReset, onGuide }: ActionsProps) {
   const [copied, setCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -31,7 +28,40 @@ export function FilterRow({ model, state, onChange, canReset, onReset, onGuide }
   }
 
   return (
-    <section className="filters" aria-label="View options">
+    <nav className="actions" aria-label="Your stack">
+      <button type="button" className="secondary" onClick={copy}>
+        Copy link
+      </button>
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? "Link copied" : ""}
+      </span>
+      {copied && (
+        <span className="muted" aria-hidden="true">
+          Copied
+        </span>
+      )}
+      {onGuide && (
+        <button type="button" className="secondary" onClick={onGuide}>
+          Guided start
+        </button>
+      )}
+      <button type="button" className="linkish" disabled={!canReset} onClick={onReset}>
+        Start over
+      </button>
+    </nav>
+  );
+}
+
+interface ViewProps {
+  model: RenderModel;
+  state: StackState;
+  onChange: (patch: Partial<StackState>) => void;
+}
+
+/** How to draw the chart: which lens, and chart or table. It sits with the chart it controls. */
+export function ViewControls({ model, state, onChange }: ViewProps) {
+  return (
+    <div className="viewcontrols">
       <fieldset className="seg">
         <legend>View through</legend>
         {model.lenses.map((l) => (
@@ -51,24 +81,6 @@ export function FilterRow({ model, state, onChange, canReset, onReset, onGuide }
           </label>
         ))}
       </fieldset>
-
-      <div className="filters__actions">
-        <button type="button" className="secondary" onClick={copy}>
-          Copy link
-        </button>
-        <span className="sr-only" role="status" aria-live="polite">
-          {copied ? "Link copied" : ""}
-        </span>
-        {copied && <span className="muted" aria-hidden="true">Copied</span>}
-        {onGuide && (
-          <button type="button" className="secondary" onClick={onGuide}>
-            Guided start
-          </button>
-        )}
-        <button type="button" className="linkish" disabled={!canReset} onClick={onReset}>
-          Start over
-        </button>
-      </div>
-    </section>
+    </div>
   );
 }

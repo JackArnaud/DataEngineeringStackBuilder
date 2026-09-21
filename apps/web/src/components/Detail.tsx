@@ -323,6 +323,11 @@ function GapDetail(props: Props & { gap: Gap }) {
           <p className="muted">
             <strong>For example:</strong> {impact.example}
           </p>
+          {impact.skip_when && gap.kind !== "needed-capability" && (
+            <p className="muted">
+              <strong>Reasonable to skip if:</strong> {impact.skip_when}
+            </p>
+          )}
         </section>
       )}
 
@@ -330,43 +335,6 @@ function GapDetail(props: Props & { gap: Gap }) {
         <section className="aiwhy">
           <h3>If AI uses this data</h3>
           <p>{impact.ai}</p>
-        </section>
-      )}
-
-      <section>
-        <h3>Why it ranks {gap.criticality >= 4 ? "high" : gap.criticality === 3 ? "in the middle" : "low"}</h3>
-        <p>{why}</p>
-        <p className="muted">
-          Criticality {gap.criticality} of 5{gap.kind === "band" && <> for this capability at {stage.name}</>}.
-        </p>
-        {impact?.skip_when && gap.kind !== "needed-capability" && (
-          <p className="muted">
-            <strong>Reasonable to skip if:</strong> {impact.skip_when}
-          </p>
-        )}
-        {capability && (
-          <p className="muted">
-            <strong>{capability.name}:</strong> {capability.description}
-          </p>
-        )}
-        {gap.kind === "empty-stage" && <p className="muted">{stage.description}</p>}
-      </section>
-
-      <p className="note">Where it shows: {whereText(gap, placement, lens, model, lookup) || "not drawn in this lens"}.</p>
-
-      {others.length > 0 && (
-        <section>
-          <h3>Also missing at</h3>
-          <ul className="alsoat">
-            {others.map((o) => (
-              <li key={o.id}>
-                <button type="button" className="linkish" onClick={() => onOpen({ kind: "gap", id: o.id })}>
-                  {lookup.stageName(o.stage)}
-                </button>
-                <span className="muted"> · criticality {o.criticality}</span>
-              </li>
-            ))}
-          </ul>
         </section>
       )}
 
@@ -424,6 +392,39 @@ function GapDetail(props: Props & { gap: Gap }) {
           </>
         )}
       </section>
+
+      {others.length > 0 && (
+        <section>
+          <h3>Also missing at</h3>
+          <ul className="alsoat">
+            {others.map((o) => (
+              <li key={o.id}>
+                <button type="button" className="linkish" onClick={() => onOpen({ kind: "gap", id: o.id })}>
+                  {lookup.stageName(o.stage)}
+                </button>
+                <span className="muted"> · criticality {o.criticality}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <details className="fold">
+        <summary>Why it ranks {gap.criticality >= 4 ? "high" : gap.criticality === 3 ? "in the middle" : "low"}</summary>
+        <div className="fold__body">
+          <p>{why}</p>
+          <p className="muted">
+            Criticality {gap.criticality} of 5{gap.kind === "band" && <> for this capability at {stage.name}</>}.
+          </p>
+          {capability && (
+            <p className="muted">
+              <strong>{capability.name}:</strong> {capability.description}
+            </p>
+          )}
+          {gap.kind === "empty-stage" && <p className="muted">{stage.description}</p>}
+          <p className="note">Where it shows: {whereText(gap, placement, lens, model, lookup) || "not drawn in this lens"}.</p>
+        </div>
+      </details>
     </>
   );
 }

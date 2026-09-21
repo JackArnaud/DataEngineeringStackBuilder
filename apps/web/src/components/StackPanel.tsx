@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { KeyboardEvent } from "react";
 import type { RenderModel } from "@compile";
 import type { Lookup } from "../lookup";
 import { toggle } from "../state";
 import type { StackState } from "../state";
 import { NeedsPicker } from "./NeedsPicker";
+import { TabBar, panelId, tabId } from "./TabBar";
 import { ToolPicker } from "./ToolPicker";
 
 interface Props {
@@ -23,18 +23,10 @@ type Tab = "tools" | "needs";
  */
 export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props) {
   const [tab, setTab] = useState<Tab>("tools");
-  const tabs: { id: Tab; label: string; count: number }[] = [
-    { id: "tools", label: "Tools you have", count: state.tools.length },
-    { id: "needs", label: "What you need", count: state.needs.length },
+  const tabs = [
+    { id: "tools" as const, label: "Tools you have", count: state.tools.length },
+    { id: "needs" as const, label: "What you need", count: state.needs.length },
   ];
-
-  const onKey = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-    e.preventDefault();
-    const next: Tab = tab === "tools" ? "needs" : "tools";
-    setTab(next);
-    document.getElementById(`tab-${next}`)?.focus();
-  };
 
   return (
     <div className="panel stack">
@@ -78,26 +70,8 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
       </section>
 
       <section aria-label="Build your stack">
-        <div className="tabs" role="tablist" aria-label="Build your stack">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              id={`tab-${t.id}`}
-              aria-selected={tab === t.id}
-              aria-controls={`panel-${t.id}`}
-              tabIndex={tab === t.id ? 0 : -1}
-              className="tab"
-              onClick={() => setTab(t.id)}
-              onKeyDown={onKey}
-            >
-              {t.label}
-              {t.count > 0 && <span className="count">{t.count}</span>}
-            </button>
-          ))}
-        </div>
-        <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="tabpanel">
+        <TabBar tabs={tabs} value={tab} onChange={setTab} prefix="stack" label="Build your stack" />
+        <div role="tabpanel" id={panelId("stack", tab)} aria-labelledby={tabId("stack", tab)} className="tabpanel">
           {tab === "tools" ? <ToolPicker model={model} lookup={lookup} state={state} onChange={onChange} onOpenTool={onOpenTool} /> : <NeedsPicker model={model} state={state} onChange={onChange} />}
         </div>
       </section>

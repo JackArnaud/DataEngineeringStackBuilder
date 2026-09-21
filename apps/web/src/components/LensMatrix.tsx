@@ -51,6 +51,11 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
   const lanes = useMemo(() => buildLanes(lens, tools), [lens, tools]);
   // Where you chose another tool for a task this one can also do, say so on its row.
   const notUsedFor = (id: string) => overlaps.filter((o) => o.used !== null && o.used !== id && o.providers.some((p) => p.tool === id));
+  // Said briefly: a few tasks are named, more than that are counted, and the title carries the full list.
+  const notUsedNote = (id: string) => {
+    const names = notUsedFor(id).map((o) => lookup.capabilityName(o.capability).toLowerCase());
+    return { text: names.length > 3 ? `${names.length} tasks` : listNames(names), full: listNames(names) };
+  };
   const noPosition = tools.filter((t) => !lanes.some((l) => l.tool.id === t.id));
   // A tool with no place in the pipeline but real cross-cutting coverage (a catalog, a monitor, an
   // access layer) still gets a row: the best level it reaches in each zone, and which concerns it covers.
@@ -169,7 +174,11 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
                     </span>
                     <span className="lane__text">
                       <span className="lane__name lane__name--wrap">{tool.name}</span>
-                      {notUsedFor(tool.id).length > 0 && <span className="lane__note lane__note--wrap">not used for {listNames(notUsedFor(tool.id).map((o) => lookup.capabilityName(o.capability).toLowerCase()))}</span>}
+                      {notUsedFor(tool.id).length > 0 && (
+                      <span className="lane__note lane__note--wrap" title={`Not used for ${notUsedNote(tool.id).full}`}>
+                        not used for {notUsedNote(tool.id).text}
+                      </span>
+                    )}
                     </span>
                   </button>
                   {lens.zones.map((z) => {
