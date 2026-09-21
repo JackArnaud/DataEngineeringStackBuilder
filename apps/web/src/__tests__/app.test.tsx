@@ -15,6 +15,11 @@ function setup(url = "/") {
 const chips = () => screen.getByRole("list", { name: "Selected tools" });
 /** The "Add all" control lives in a vendor's heading row; several vendors have one, so find it by vendor. */
 const vendorHead = (vendor: string) => screen.getByRole("heading", { name: vendor }).closest<HTMLElement>(".vendor__head")!;
+/** Vendors start folded, so a test opens one before reaching for its tools. */
+const openVendor = (user: ReturnType<typeof userEvent.setup>, vendor: string) => user.click(screen.getByRole("button", { name: vendor, expanded: false }));
+const showNeeds = (user: ReturnType<typeof userEvent.setup>) => user.click(screen.getByRole("tab", { name: /What you need/ }));
+/** The picker's own result line; other parts of the page also announce things. */
+const pickerCount = () => document.querySelector(".picker__count");
 const gapButtons = () => screen.getAllByRole("button").filter((b) => b.classList.contains("gap"));
 
 beforeEach(() => window.history.replaceState(null, "", "/"));
@@ -44,6 +49,7 @@ describe("an empty stack", () => {
 describe("building a stack", () => {
   it("adds a tool from the picker, updates coverage, and writes it to the address", async () => {
     const user = setup();
+    await openVendor(user, "Amazon Web Services");
     await user.click(screen.getByRole("checkbox", { name: /Amazon S3/ }));
 
     expect(within(chips()).getByText("Amazon S3")).toBeTruthy();
@@ -103,9 +109,73 @@ describe("building a stack", () => {
   });
 });
 
+describe("finding a tool", () => {
+  it("starts with vendors folded, so the list is short", () => {
+    setup();
+    expect(screen.queryByRole("checkbox", { name: /Amazon S3/ })).toBeNull();
+    expect(within(vendorHead("Amazon Web Services")).getByRole("button", { name: "Amazon Web Services", expanded: false })).toBeTruthy();
+  });
+
+  it("opens the matching vendors when you search, and says how many matched", async () => {
+    const user = setup();
+    await user.type(screen.getByRole("searchbox", { name: "Find a tool" }), "glue");
+    expect(screen.getByRole("checkbox", { name: /AWS Glue/ })).toBeTruthy();
+    expect(pickerCount()?.textContent).toMatch(/1 tool in 1 vendor/);
+  });
+
+  it("narrows to tools that cover a stage, and back again", async () => {
+    const user = setup();
+    await user.click(screen.getByRole("button", { name: "Orchestrate", pressed: false }));
+    expect(screen.getByRole("checkbox", { name: /dbt OSS/ })).toBeTruthy();
+    expect(screen.queryByRole("checkbox", { name: /Amazon S3/ })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Any stage" }));
+    expect(pickerCount()).toBeNull();
+  });
+
+  it("says so when nothing matches", async () => {
+    const user = setup();
+    await user.type(screen.getByRole("searchbox", { name: "Find a tool" }), "zzzz");
+    expect(pickerCount()?.textContent).toContain("No tool matches");
+  });
+
+  it("shows how many tools you have added to a folded vendor", async () => {
+    setup("/?tools=aws-s3,aws-glue");
+    expect(within(vendorHead("Amazon Web Services").parentElement!).getByText("2 added")).toBeTruthy();
+  });
+});
+
+describe("saying what you need", () => {
+  it("keeps needs one tab away, with a count, and shows the ones you picked beside your tools", async () => {
+    const user = setup("/?tools=postgres&needs=ingest.cdc");
+    const tab = screen.getByRole("tab", { name: /What you need/ });
+    expect(tab.textContent).toContain("1");
+    expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("Change data capture")).toBeTruthy();
+
+    await user.click(tab);
+    expect(tab.getAttribute("aria-selected")).toBe("true");
+    expect((screen.getByRole("checkbox", { name: /Change data capture/ }) as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("drops a need from its chip", async () => {
+    const user = setup("/?tools=postgres&needs=ingest.cdc");
+    await user.click(screen.getByRole("button", { name: "Stop needing Change data capture" }));
+    expect(screen.queryByRole("list", { name: "Selected needs" })).toBeNull();
+    await waitFor(() => expect(window.location.search).toBe("?tools=postgres"));
+  });
+
+  it("moves between the two tabs with the arrow keys", async () => {
+    const user = setup();
+    screen.getByRole("tab", { name: /Tools you have/ }).focus();
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("tab", { name: /What you need/ }).getAttribute("aria-selected")).toBe("true");
+    expect(document.activeElement).toBe(screen.getByRole("tab", { name: /What you need/ }));
+  });
+});
+
 describe("needs", () => {
   it("flags something you said you need and your tools lack, ahead of everything else", async () => {
     const user = setup("/?tools=postgres");
+    await showNeeds(user);
     await user.click(screen.getByRole("checkbox", { name: /Change data capture/ }));
     const top = gapButtons()[0]!;
     expect(top.textContent).toContain("You need Change data capture, and nothing provides it");
@@ -115,6 +185,7 @@ describe("needs", () => {
   it("stops flagging a need once a tool provides it", async () => {
     const user = setup("/?tools=postgres&needs=ingest.cdc");
     expect(screen.getByText("You need Change data capture, and nothing provides it")).toBeTruthy();
+    await openVendor(user, "Amazon Web Services");
     await user.click(screen.getByRole("checkbox", { name: /AWS Database Migration Service/ }));
     expect(screen.queryByText("You need Change data capture, and nothing provides it")).toBeNull();
   });
@@ -123,12 +194,14 @@ describe("needs", () => {
 describe("lenses", () => {
   it("switches the zones between the audit grid and medallion", async () => {
     const user = setup("/?tools=aws-s3,aws-glue");
-    expect(screen.getByRole("button", { name: "Bronze" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Orchestrate" })).toBeNull();
+    // The picker also has an "Orchestrate" button, for its stage filter, so look only in the chart.
+    const chart = () => within(screen.getByRole("main"));
+    expect(chart().getByRole("button", { name: "Bronze" })).toBeTruthy();
+    expect(chart().queryByRole("button", { name: "Orchestrate" })).toBeNull();
 
     await user.click(screen.getByRole("radio", { name: "Audit grid" }));
-    expect(screen.getByRole("button", { name: "Orchestrate" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Bronze" })).toBeNull();
+    expect(chart().getByRole("button", { name: "Orchestrate" })).toBeTruthy();
+    expect(chart().queryByRole("button", { name: "Bronze" })).toBeNull();
     await waitFor(() => expect(window.location.search).toContain("lens=grid"));
   });
 

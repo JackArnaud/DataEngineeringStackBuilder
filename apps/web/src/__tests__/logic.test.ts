@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GLYPH_ROLES } from "../components/glyphs";
-import { groupByVendor } from "../components/StackPanel";
+import { coversStage, groupByVendor } from "../picker";
 import { EXAMPLES } from "../examples";
 import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
@@ -121,6 +121,33 @@ describe("the picker's vendor groups", () => {
   it("show every service when the search matches a portfolio", () => {
     const aws = groupByVendor(model, "Amazon Web Services").find((g) => g.portfolio)!;
     expect(aws.tools).toHaveLength(9);
+  });
+});
+
+describe("narrowing the picker", () => {
+  it("keeps only tools with a spine capability in the stage, not ones that only have a band there", () => {
+    const orchestrate = groupByVendor(model, "", "orchestrate").flatMap((g) => g.tools.map((t) => t.id));
+    expect(orchestrate).toContain("dbt-core");
+    expect(orchestrate).not.toContain("aws-s3");
+    const uc = model.tools.find((t) => t.id === "unity-catalog")!;
+    expect(uc.cells.some((c) => c.stage === "store")).toBe(true); // it has bands at Store...
+    expect(coversStage(uc, "store")).toBe(false); // ...but nothing that stores
+  });
+
+  it("puts a bundle's parts straight after it, marked as parts", () => {
+    const databricks = groupByVendor(model, "").find((g) => g.vendor === "Databricks")!;
+    expect(databricks.tools[0]!.kind).toBe("bundle");
+    const bundle = databricks.tools[0]!;
+    const next = databricks.tools.slice(1, 1 + (bundle.includes?.length ?? 0));
+    expect(next.every((t) => bundle.includes?.includes(t.id))).toBe(true);
+    for (const t of next) expect(databricks.parts.has(t.id)).toBe(true);
+    expect(databricks.parts.has(bundle.id)).toBe(false);
+  });
+
+  it("combines a search with a stage", () => {
+    const ids = groupByVendor(model, "aws", "ingest").flatMap((g) => g.tools.map((t) => t.id));
+    expect(ids).toContain("aws-dms");
+    expect(ids).not.toContain("aws-athena");
   });
 });
 
