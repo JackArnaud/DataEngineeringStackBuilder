@@ -15,13 +15,13 @@
       "level": 3,
       "delivery": "native",
       "note": "A fully managed Postgres database inside the Databricks platform, for building transactional applications that sit next to the lakehouse.",
-      "source": "https://docs.databricks.com/aws/en/oltp/"
+      "source": "https://docs.databricks.com/aws/en/oltp/projects"
     },
     "ingest.reverse-etl": {
       "level": 2,
       "delivery": "native",
       "note": "Synced tables copy Unity Catalog tables into Postgres for low-latency application reads. The target is Lakebase only, not arbitrary SaaS or operational systems.",
-      "source": "https://docs.databricks.com/aws/en/oltp/"
+      "source": "https://docs.databricks.com/aws/en/oltp/projects"
     }
   },
   "presentation": {

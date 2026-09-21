@@ -8,6 +8,7 @@ export interface Lookup {
   capabilityName(id: string): string;
   stageName(id: string): string;
   bandName(id: string): string;
+  roleLabel(id: string): string;
   roleDescription(id: string): string;
   /** "Masking at Store" for a `govern.masking@store` key. */
   cellLabel(key: string): string;
@@ -20,7 +21,7 @@ export function buildLookup(model: RenderModel): Lookup {
   const caps = new Map(model.capabilities.map((c) => [c.id, c]));
   const stages = new Map(model.stages.map((s) => [s.id, s.name]));
   const bands = new Map(model.bands.map((b) => [b.id, b.name]));
-  const roles = new Map(model.roles.map((r) => [r.id, r.description]));
+  const roles = new Map(model.roles.map((r) => [r.id, r]));
 
   const capabilityName = (id: string) => caps.get(id)?.name ?? id;
   const stageName = (id: string) => stages.get(id) ?? id;
@@ -32,7 +33,8 @@ export function buildLookup(model: RenderModel): Lookup {
     capabilityName,
     stageName,
     bandName: (id) => bands.get(id) ?? id,
-    roleDescription: (id) => roles.get(id) ?? "",
+    roleLabel: (id) => roles.get(id)?.label ?? id,
+    roleDescription: (id) => roles.get(id)?.description ?? "",
     cellLabel: (key) => {
       const at = key.indexOf("@");
       return `${capabilityName(key.slice(0, at))} at ${stageName(key.slice(at + 1))}`;

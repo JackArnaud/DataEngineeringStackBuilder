@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-rds",
+  "name": "Amazon RDS and Aurora",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon RDS for its six engines (Db2, MariaDB, SQL Server, MySQL, Oracle, PostgreSQL) and Amazon Aurora, which is MySQL- and PostgreSQL-compatible and is part of RDS. Scored as one record because both are managed through RDS.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Managed relational databases that AWS sets up, operates and scales, on six engines including PostgreSQL and Oracle. Aurora is part of the same service.",
+      "source": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "AWS handles scaling, high availability, backups, patching and failure recovery, with Multi-AZ standbys and read replicas. Query tuning stays with the customer. It manages the database's infrastructure, not yours.",
+      "source": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Metrics go to CloudWatch every minute, with alarms, Performance Insights for database load and Enhanced Monitoring for operating-system metrics.",
+      "source": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed relational databases for application data, including Aurora."
+  },
+  "pairs_with": ["postgres", "aws-dms"],
+  "updated": "2026-09-21"
+}

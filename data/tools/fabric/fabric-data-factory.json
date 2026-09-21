@@ -54,5 +54,6 @@
   "presentation": {
     "tagline": "Copy, transform and orchestrate data inside Fabric, the next generation of Azure Data Factory."
   },
-  "updated": "2026-09-20"
+  "pairs_with": ["apache-airflow"],
+  "updated": "2026-09-21"
 }

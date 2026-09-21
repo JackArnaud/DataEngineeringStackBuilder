@@ -37,5 +37,6 @@
   "presentation": {
     "tagline": "Spark notebooks, job definitions and a lakehouse over OneLake."
   },
-  "updated": "2026-09-20"
+  "pairs_with": ["apache-spark"],
+  "updated": "2026-09-21"
 }

@@ -88,6 +88,6 @@
   "presentation": {
     "tagline": "Open-source relational database, and the system of record behind many applications."
   },
-  "pairs_with": ["dbt-core", "aws-dms"],
+  "pairs_with": ["aws-dms"],
   "updated": "2026-09-20"
 }

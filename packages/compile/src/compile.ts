@@ -100,7 +100,7 @@ export function compileRenderModel(input: CompileInput): RenderModel {
     derivation_version: derivation.derivation_version,
     stages: taxonomy.stages.map(({ id, name, description, criticality: weight, rationale }) => ({ id, name, description, criticality: weight, rationale })),
     bands: taxonomy.bands.map(({ id, name }) => ({ id, name, rationale: taxonomy.criticality.bands[id]!.rationale })),
-    roles: derivation.roles.map(({ id, description }) => ({ id, description })),
+    roles: derivation.roles.map(({ id, label, description }) => ({ id, label, description })),
     capabilities: Object.entries(taxonomy.capabilities).map(([id, c]) => ({
       id,
       name: c.name,

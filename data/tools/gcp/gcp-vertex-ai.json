@@ -15,13 +15,13 @@
       "level": 3,
       "delivery": "native",
       "note": "Models are served from endpoints that give online inferences, managed alongside a Model Registry and MLOps tooling for pipelines, experiments and model monitoring.",
-      "source": "https://docs.cloud.google.com/vertex-ai/docs/start/introduction-unified-platform"
+      "source": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning"
     },
     "transform.feature-eng": {
       "level": 3,
       "delivery": "native",
       "note": "A Feature Store organises and serves ML features.",
-      "source": "https://docs.cloud.google.com/vertex-ai/docs/start/introduction-unified-platform"
+      "source": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning"
     }
   },
   "presentation": {

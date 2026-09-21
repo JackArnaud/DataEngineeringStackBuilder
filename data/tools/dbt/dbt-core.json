@@ -4,7 +4,7 @@
   "name": "dbt OSS (dbt Core)",
   "vendor": "dbt Labs",
   "kind": "tool",
-  "sku": "The Apache 2.0 open-source distribution of the dbt framework, called dbt Core until dbt Core 2.0 renamed it dbt OSS. Excludes the proprietary dbt distribution's extras and the dbt platform's scheduler, Catalog, Mesh and hosted features.",
+  "sku": "dbt OSS 2.0: the Apache 2.0 build of the v2 Rust engine (`dbt-oss`, called dbt Core 2.0 until the rename). It has the dbt project language, the standard commands, dbt Docs v2 and dbt State, and lacks what only the free proprietary dbt (v2) adds: SQL comprehension and static analysis, the language server, `dbt lint` and the VS Code extension, which are scored in dbt-v2-additions. The v2 engine lists BigQuery, Databricks, Redshift, Snowflake and DuckDB (CLI) as GA, Spark as beta and ClickHouse as private beta; PostgreSQL is not listed, so a Postgres project still needs dbt v1 (Python, final minor 1.13, still patched), which is not scored here. Scores come from docs.getdbt.com pages that describe the framework in general. The v2 upgrade guide says nearly all v1 capability carries over, but Python models, MetricFlow and state selection were not individually confirmed for v2.",
   "license": "open-source",
   "deployment": ["self-hosted"],
   "pricing_model": "free",
@@ -80,7 +80,7 @@
       "level": 2,
       "delivery": "native",
       "scope": ["transform"],
-      "note": "The docs site includes a DAG of the project, and dbt Docs v2 adds column-level lineage. Covers dbt-managed nodes only.",
+      "note": "The docs site includes a DAG of the project, which dbt Docs v2 also shows. It is model-level and covers dbt-managed nodes only. Column-level lineage needs strict static analysis, which is in the dbt (v2) distribution behind a free login, so it is scored in dbt-v2-additions.",
       "source": "https://docs.getdbt.com/docs/build/documentation"
     },
     {
@@ -109,8 +109,8 @@
     }
   ],
   "presentation": {
-    "tagline": "SQL-first transformation framework: models, tests and docs kept in version control."
+    "tagline": "Apache 2.0 SQL-first transformation framework: models, tests and docs kept in version control."
   },
-  "pairs_with": ["databricks", "postgres"],
-  "updated": "2026-09-20"
+  "pairs_with": ["databricks", "snowflake"],
+  "updated": "2026-09-21"
 }

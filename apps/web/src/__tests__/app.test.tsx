@@ -20,6 +20,8 @@ const openVendor = (user: ReturnType<typeof userEvent.setup>, vendor: string) =>
 const showNeeds = (user: ReturnType<typeof userEvent.setup>) => user.click(screen.getByRole("tab", { name: /What you need/ }));
 /** The picker's own result line; other parts of the page also announce things. */
 const pickerCount = () => document.querySelector(".picker__count");
+/** How many services the AWS portfolio lists; the tests should not care as the catalogue grows. */
+const awsServices = model.tools.find((t) => t.id === "aws")!.includes!.length;
 const gapButtons = () => screen.getAllByRole("button").filter((b) => b.classList.contains("gap"));
 
 beforeEach(() => window.history.replaceState(null, "", "/"));
@@ -68,8 +70,8 @@ describe("building a stack", () => {
 
   it("adds every service of a portfolio at once, and only its services", async () => {
     const user = setup();
-    await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: "Add all 9 services" }));
-    expect(within(chips()).getAllByRole("listitem")).toHaveLength(9);
+    await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: `Add all ${awsServices} services` }));
+    expect(within(chips()).getAllByRole("listitem")).toHaveLength(awsServices);
     expect(within(chips()).queryByText("Amazon Web Services")).toBeNull();
     expect((within(vendorHead("Amazon Web Services")).getByRole("button", { name: "All services added" }) as HTMLButtonElement).disabled).toBe(true);
   });
@@ -79,8 +81,8 @@ describe("building a stack", () => {
     const user = userEvent.setup();
     const moved = { ...model, tools: model.tools.map((t) => (t.id === "aws-glue" ? { ...t, vendor: "Somebody Else" } : t)) };
     render(<Builder model={moved} />);
-    await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: "Add all 9 services" }));
-    expect(within(chips()).getAllByRole("listitem")).toHaveLength(9);
+    await user.click(within(vendorHead("Amazon Web Services")).getByRole("button", { name: `Add all ${awsServices} services` }));
+    expect(within(chips()).getAllByRole("listitem")).toHaveLength(awsServices);
     expect(within(chips()).getByText("AWS Glue")).toBeTruthy();
   });
 

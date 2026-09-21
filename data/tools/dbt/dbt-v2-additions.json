@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dbt-v2-additions",
+  "name": "dbt v2 additions to dbt OSS",
+  "vendor": "dbt Labs",
+  "kind": "tool",
+  "sku": "The proprietary layer of the standard dbt (v2) install, formerly the dbt Fusion engine, free to use under the dbt Product Licensing Agreement. It sits on the open-source layer, so it is scored only for what it adds. Strict static analysis and column-level lineage need `dbt login`, a free dbt platform account. dbt State (state-aware orchestration) is usage-based paid and Mesh and Catalog are seat-based paid, none of them scored here. Adapters are the same as dbt OSS: PostgreSQL is not listed.",
+  "license": "proprietary",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["sql", "yaml", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.sql-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Adds a local compiler for SQL for the first time: after Jinja renders, the engine builds and checks a logical plan for every query without running it, so dialect and type mistakes are caught before they reach the warehouse.",
+      "source": "https://docs.getdbt.com/blog/dbt-v2-is-ga"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Column-level lineage, produced by building or compiling with strict static analysis, which needs a free login. Baseline analysis works without one. Covers dbt-managed nodes.",
+      "source": "https://docs.getdbt.com/docs/dbt-versions/dbt-upgrade/upgrading-to-v2"
+    },
+    {
+      "band": "platform.dev-experience",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "A language server gives autocomplete, hover information and inline errors, `dbt lint` gives SQLFluff-compatible linting with auto-fix, and the dbt VS Code extension is free to install. Some advanced features need a free login after a 14-day trial.",
+      "source": "https://docs.getdbt.com/docs/local/install-dbt-v2"
+    }
+  ],
+  "presentation": {
+    "tagline": "Local SQL compiler, language server and column-level lineage on top of dbt OSS."
+  },
+  "pairs_with": ["dbt-core"],
+  "updated": "2026-09-21"
+}

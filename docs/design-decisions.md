@@ -197,3 +197,31 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
 - **Vendor is a picker grouping.** Microsoft Purview is documented as a Microsoft product but is
   listed under the "Microsoft Azure" vendor so it sits beside the Azure services in the picker, and
   the portfolio's "Add all" uses the portfolio's `includes`, not whatever shares the vendor label.
+- **dbt is three distributions, modelled as OSS plus a layer.** The docs now name dbt v1 (Python, final
+  minor 1.13), dbt v2 (the Rust engine formerly called Fusion, proprietary but free, their default
+  recommendation) and dbt OSS (the Apache 2.0 build of v2). `dbt-core` is dbt OSS. `dbt-v2-additions`
+  scores only what v2 adds on top (SQL comprehension, language server, column-level lineage), because
+  the docs describe v2 as "on top of the open source layer". The `dbt` bundle is the two together, and
+  the dbt platform bundle takes both, since the platform runs either engine. dbt v1 is not scored. It is
+  the only line that lists PostgreSQL, so Postgres no longer pairs with dbt and the starter stack moved
+  to Snowflake. Scores for dbt OSS come from pages that describe the framework generally, and the sku
+  says Python models, MetricFlow and state selection were not confirmed for v2.
+- **Hosting choices are records that repeat the engine's scores.** Apache Spark and Airflow run the
+  same on every host, so each host gets its own record: self-hosted, on Kubernetes, and managed
+  (Amazon EMR, Dataproc, Synapse, Fabric and Databricks for Spark; MWAA, Composer, Astronomer and Fabric
+  for Airflow). The duplicate scores are deliberate, so a user who picks one host sees complete
+  coverage without also picking a framework. The host-specific difference is a `platform.infra` band.
+  `pairs_with` links each managed host to its open-source engine. The alternative was a framework record
+  plus hosting layers in a bundle, as dbt v2 is built; it was passed over because there are five or more
+  hosts per engine.
+- **API gateways are bands only, plus a proposal.** Azure API Management scores access control,
+  policy and monitoring at Serve, and proposes an "API gateway for data access" capability, because
+  nothing in the taxonomy describes publishing data as a managed API. Its tiers were not checked, so no
+  score is flagged enterprise-tier.
+- **Roles have a stable id and a plain label.** The role ids (`substrate`, `gatekeeper`, `sentinel`,
+  `conductor` and so on) are keys in the data, the tool schema and the derivation rules, and they stay.
+  What people read is the `label` beside each id in `derivation.json`: Movement, Compute, Storage,
+  Modelling, Orchestration, Governance, Monitoring and Consumption. The labels are job words that match
+  the stage names, not invented nouns, and they can be reworded without touching any record. The render
+  model carries them, so the site holds no copy of the vocabulary.
+

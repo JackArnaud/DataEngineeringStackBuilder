@@ -1,0 +1,32 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-workflows",
+  "name": "Workflows",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Workflows.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed orchestration platform that runs services in an order the user defines, in YAML or JSON steps, with switch conditions, for loops, parallel steps and subworkflows. It is application-general rather than built around data pipelines.",
+      "source": "https://docs.cloud.google.com/workflows/docs/overview"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Executions can be scheduled with Cloud Scheduler, a separate service, as well as started from the console or the API.",
+      "source": "https://docs.cloud.google.com/workflows/docs/overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Serverless orchestration of Google Cloud services and HTTP APIs."
+  },
+  "pairs_with": ["gcp-bigquery", "gcp-dataflow"],
+  "updated": "2026-09-21"
+}

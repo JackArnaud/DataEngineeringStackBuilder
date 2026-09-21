@@ -1,0 +1,48 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "astronomer-astro",
+  "name": "Astro by Astronomer",
+  "vendor": "Astronomer",
+  "kind": "tool",
+  "sku": "Astro, a fully managed Apache Airflow service from Astronomer, hosted in its cloud. The overview page does not cover Astro's hybrid or remote execution options, plans, or Airflow version policy, and the pricing model was not checked. It repeats the Airflow scores because Astro runs Airflow; the difference is that Astronomer operates it.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A Dag encapsulates everything needed to run a workflow: its schedule, tasks, dependencies and callbacks. Workflows are defined entirely in Python, and a wide range of built-in operators and providers connect tasks to other systems.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Rich scheduling semantics for complex recurring pipelines, with manual triggering, backfilling of historical data and targeted task reruns.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Templates for popular CI/CD tools deploy dags to Astro automatically, and the Astro CLI develops projects locally before deploying them.",
+      "source": "https://www.astronomer.io/docs/astro/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Astronomer hosts and runs the Airflow instances, so teams spend less time managing Airflow itself. A Terraform provider and the Astro API manage deployments as code.",
+      "source": "https://www.astronomer.io/docs/astro/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed Apache Airflow with a local CLI, CI/CD templates and Terraform support."
+  },
+  "pairs_with": ["apache-airflow", "dbt-core"],
+  "updated": "2026-09-21"
+}

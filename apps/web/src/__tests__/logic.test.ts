@@ -4,7 +4,7 @@ import { coversStage, groupByVendor } from "../picker";
 import { EXAMPLES } from "../examples";
 import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
-import { RAMP_ORDER, ROLE_LABEL, ROLE_RAMP, rampOf } from "../roles";
+import { RAMP_ORDER, ROLE_RAMP, rampOf } from "../roles";
 import { add, defaultLens, emptyState, isSelectable, parseState, serializeState, toggle } from "../state";
 import { dataset, model } from "./fixture";
 
@@ -66,15 +66,22 @@ describe("the starting examples", () => {
 });
 
 describe("colour and shape for roles", () => {
-  const roles = dataset.derivation!.data as { roles: { id: string }[] };
+  const roles = dataset.derivation!.data as { roles: { id: string; label: string }[] };
   const ids = roles.roles.map((r) => r.id);
 
-  it("give every derivation role a colour family, a label and a drawn shape", () => {
-    for (const id of ids) {
-      expect(ROLE_RAMP[id], id).toBeDefined();
-      expect(ROLE_LABEL[id], id).toBeDefined();
-    }
+  it("give every derivation role a colour family and a drawn shape", () => {
+    for (const id of ids) expect(ROLE_RAMP[id], id).toBeDefined();
     expect([...GLYPH_ROLES].sort()).toEqual([...ids].sort());
+  });
+
+  it("name every role in words a newcomer would know, and never the id", () => {
+    // The ids are stable keys in the data; the labels are what people read.
+    const jargon = /substrate|gatekeeper|sentinel|conductor|mover|modeller|surface/i;
+    for (const r of roles.roles) {
+      expect(r.label, r.id).toMatch(/^[A-Z][a-z]+$/);
+      expect(r.label, r.id).not.toMatch(jargon);
+    }
+    expect(new Set(roles.roles.map((r) => r.label)).size).toBe(roles.roles.length);
   });
 
   it("use at most three colour families", () => {
@@ -120,7 +127,7 @@ describe("the picker's vendor groups", () => {
 
   it("show every service when the search matches a portfolio", () => {
     const aws = groupByVendor(model, "Amazon Web Services").find((g) => g.portfolio)!;
-    expect(aws.tools).toHaveLength(9);
+    expect(aws.tools).toHaveLength(aws.portfolio!.includes!.length);
   });
 });
 

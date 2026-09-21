@@ -1,0 +1,35 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-bigtable",
+  "name": "Bigtable",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Bigtable.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui", "java"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A NoSQL wide-column database for high read and write throughput at low latency, used for time series, IoT, financial records and other single-keyed data. It is an operational store but not a relational one, and it is HBase-compatible.",
+      "source": "https://docs.cloud.google.com/bigtable/docs/overview"
+    }
+  },
+  "proposed_capabilities": [
+    {
+      "name": "Source-side change stream",
+      "description": "A change feed the database itself exposes, so downstream tools can read row-level changes without a separate CDC product. Scored here as a source feature rather than as ingestion.",
+      "home": "source",
+      "nearest_existing": "ingest.cdc",
+      "source": "https://docs.cloud.google.com/bigtable/docs/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Wide-column NoSQL database for high-throughput, low-latency data."
+  },
+  "pairs_with": ["gcp-dataflow", "gcp-bigquery"],
+  "updated": "2026-09-21"
+}

@@ -7,8 +7,7 @@ All the requested tools are scored. Candidates for later:
 | Tool | Why it matters | Notes |
 |---|---|---|
 | Oracle APEX | Oracle's low-code app builder, a `serve.data-apps` candidate. | The docs host refused fetches, so no record exists. Autonomous Database scores `serve.data-apps` at 2 from its workload list; APEX itself is unscored. |
-| Azure Synapse Analytics | Overlaps Fabric and the Azure warehouse story. | Microsoft documents Fabric as the successor for new work; decide whether a legacy record is worth it. |
-| Google Dataproc, Bigtable, Spanner, AlloyDB | Fill out the GCP portfolio. | The `gcp` portfolio lists 11 services and says it understates the catalogue. |
+| Other cloud services | The three portfolios are samples. | AWS has no DynamoDB, EventBridge, API Gateway or Lambda; GCP has no Apigee, Cloud Run or Cloud Monitoring; Azure has no HDInsight, Analysis Services, Service Bus or Key Vault. Azure API Management is scored, as bands only. |
 
 ## Known coverage gaps
 
@@ -19,9 +18,12 @@ list of unscored capabilities is empty, so a new capability with no score fails 
 
 - Databricks: Genie and agent tooling are not scored.
 - Fabric: Data Science, Fabric IQ, Copilot, Git integration and the OneLake shortcut transformations are not scored. The dbt job and Eventhouse anomaly detection are preview and skipped.
-- Azure: the portfolio lists nine services; Synapse, HDInsight, Cosmos DB and Functions are not scored.
+- Azure: Synapse Analytics is scored from an overview page last updated in 2024; check it against the current docs. The ADF Workflow Orchestration Manager (managed Airflow) stopped accepting new instances on 1 January 2026, so it has no record.
+- Azure API Management and Data Fusion: which features belong to which tier or edition was not checked, so neither carries an enterprise-tier constraint.
+- dbt: dbt OSS 2.0 was scored from pages that describe dbt in general. Confirm Python models, MetricFlow and state selection against the v2 docs, and decide whether dbt v1 (Postgres and most other adapters) needs its own record.
+- Astronomer: the pricing model and plan tiers were not checked. Only its overview page was read.
 - Oracle: `govern.masking` is scored 2 for Data Redaction with a note to check the licence, because the docs page states none.
-- AWS: EMR, Step Functions, Quick, Firehose and Managed Service for Apache Flink are not scored, so AWS has no BI and only Glue for orchestration.
+- AWS: EMR Serverless and EMR on EKS are not scored separately from EMR on EC2.
 - Lakeflow Connect: only Salesforce, Workday and SQL Server are confirmed GA; other connectors' release states are unchecked.
 
 ## Open decisions
@@ -39,10 +41,11 @@ list of unscored capabilities is empty, so a new capability with no score fails 
 ## Tooling
 
 - **ID immutability check.** Diff the taxonomy ID set against `main` in CI.
-- **Taxonomy backlog report** built from `proposed_capabilities`. Six records carry proposals today: Postgres (CDC source interface), SSMS (administration console),
-  and "visual self-service data preparation" from Power BI, Tableau, Azure Data Factory and Data
-  Factory in Fabric. The last one has four independent records asking for it, so it is the first
-  candidate for a real taxonomy capability.
+- **Taxonomy backlog report** built from `proposed_capabilities`. Eleven records carry proposals across
+  three ideas. "Visual self-service data preparation" comes from six (Power BI, Tableau, Azure and
+  Fabric Data Factory, Data Fusion, and by extension Dataflow Gen2), so it is the first candidate for a
+  real capability. "Source-side change stream" comes from Postgres, Spanner, Bigtable and Cosmos DB.
+  "API gateway for data access" comes from API Management alone.
 
 ## For the stack builder UI
 

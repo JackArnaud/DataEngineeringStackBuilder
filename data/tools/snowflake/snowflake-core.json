@@ -27,7 +27,7 @@
       "level": 3,
       "delivery": "native",
       "note": "Dynamic tables turn a SELECT query into a table that Snowflake keeps up to date by refreshing only changed rows, and Snowflake infers the dependency graph between them from the SQL.",
-      "source": "https://docs.snowflake.com/en/user-guide/dynamic-tables-about"
+      "source": "https://docs.snowflake.com/en/user-guide/dynamic-tables/overview"
     },
     "transform.code-transform": {
       "level": 2,
@@ -75,7 +75,7 @@
       "level": 2,
       "delivery": "native",
       "note": "DCM Projects give declarative object management with plan-then-deploy validation and multi-environment targeting, and the Snowflake CLI has first-party integrations for GitHub Actions, GitLab CI/CD and Azure DevOps.",
-      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops"
+      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops-with-snowflake"
     }
   },
   "bands": [
@@ -101,7 +101,7 @@
       "delivery": "native",
       "scope": ["store", "transform"],
       "note": "A Terraform provider manages account-level objects, alongside DCM Projects for the objects inside databases. It provisions Snowflake objects, not the cloud beneath them.",
-      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops"
+      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops-with-snowflake"
     },
     {
       "band": "platform.environments",
@@ -109,7 +109,7 @@
       "delivery": "native",
       "scope": ["store", "transform"],
       "note": "DCM Projects target multiple environments from one declarative definition.",
-      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops"
+      "source": "https://docs.snowflake.com/en/developer-guide/builders/devops-with-snowflake"
     }
   ],
   "presentation": {

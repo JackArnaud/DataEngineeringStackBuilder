@@ -1,0 +1,45 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-spanner",
+  "name": "Spanner",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Google Cloud Spanner.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A globally distributed relational database that combines SQL with horizontal scale, offered with GoogleSQL or PostgreSQL dialects.",
+      "source": "https://cloud.google.com/spanner"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Multi-region replication, automatic failover and dynamic scaling, so the customer runs no replicas. It manages the database's infrastructure, not yours.",
+      "source": "https://cloud.google.com/spanner"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Source-side change stream",
+      "description": "A change feed the database itself exposes, so downstream tools can read row-level changes without a separate CDC product. Scored here as a source feature rather than as ingestion.",
+      "home": "source",
+      "nearest_existing": "ingest.cdc",
+      "source": "https://cloud.google.com/spanner"
+    }
+  ],
+  "presentation": {
+    "tagline": "Globally distributed relational database with strong consistency."
+  },
+  "pairs_with": ["gcp-datastream"],
+  "updated": "2026-09-21"
+}

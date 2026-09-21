@@ -21,7 +21,7 @@
       "level": 2,
       "delivery": "native",
       "note": "Structured Streaming provides stateful aggregations, stream-stream joins, deduplication, watermarks and exactly-once processing, plus a real-time mode with latency as low as five milliseconds.",
-      "source": "https://docs.databricks.com/aws/en/structured-streaming/"
+      "source": "https://docs.databricks.com/aws/en/structured-streaming/concepts"
     },
     "store.table-format": {
       "level": 3,
@@ -57,5 +57,6 @@
   "presentation": {
     "tagline": "Spark compute with Delta Lake tables as the default storage layer."
   },
-  "updated": "2026-09-20"
+  "pairs_with": ["apache-spark"],
+  "updated": "2026-09-21"
 }

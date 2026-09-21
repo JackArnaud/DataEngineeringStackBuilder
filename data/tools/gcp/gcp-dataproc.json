@@ -1,0 +1,50 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-dataproc",
+  "name": "Dataproc (now Managed Service for Apache Spark)",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Dataproc clusters, documented as Managed Service for Apache Spark on clusters. The record ID keeps the old name because IDs are immutable. Serverless for Apache Spark is a separate deployment and is not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "java", "scala", "sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A managed platform for open-source data tools for batch processing, querying, streaming and machine learning: Spark, Hadoop, Hive, Pig, Flink and Presto, with no new APIs to learn.",
+      "source": "https://docs.cloud.google.com/managed-spark/docs/concepts/clusters-overview"
+    },
+    "transform.stream-processing": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Streaming is among its listed workloads, and Flink runs on the clusters. Continuous event processing is a secondary use next to batch.",
+      "source": "https://docs.cloud.google.com/managed-spark/docs/concepts/clusters-overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Clusters are created, scaled and shut down in 90 seconds or less on average, with no administrator overhead. Cluster shape and applications are still chosen by the customer.",
+      "source": "https://docs.cloud.google.com/managed-spark/docs/concepts/clusters-overview"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Built-in connectivity with Cloud Logging and Cloud Monitoring.",
+      "source": "https://docs.cloud.google.com/managed-spark/docs/concepts/clusters-overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed Spark and Hadoop clusters, quick to create and shut down."
+  },
+  "pairs_with": ["gcp-cloud-storage", "gcp-bigquery", "gcp-composer", "apache-spark"],
+  "updated": "2026-09-21"
+}

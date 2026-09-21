@@ -1,0 +1,36 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-alloydb",
+  "name": "AlloyDB for PostgreSQL",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "AlloyDB for PostgreSQL.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed, PostgreSQL-compatible database service that works with standard PostgreSQL protocols and tools. A columnar engine keeps data in memory in columnar form to speed analytical queries on the same data.",
+      "source": "https://docs.cloud.google.com/alloydb/docs/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Redundant nodes in two zones with automatic failover, read pool instances for read scaling, and continuous backup with point-in-time recovery. Compute and storage scale separately.",
+      "source": "https://docs.cloud.google.com/alloydb/docs/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "PostgreSQL-compatible database with a columnar engine for analytics."
+  },
+  "pairs_with": ["postgres", "gcp-datastream"],
+  "updated": "2026-09-21"
+}

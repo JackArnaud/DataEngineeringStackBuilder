@@ -1,6 +1,6 @@
 import type { RenderModel } from "@compile";
 import { LEVEL_LABEL } from "../labels";
-import { RAMP_ORDER, RAMP_TITLE, rampOf, ROLE_LABEL } from "../roles";
+import { RAMP_ORDER, RAMP_TITLE, rampOf } from "../roles";
 import { RoleGlyph } from "./glyphs";
 
 /**
@@ -40,7 +40,7 @@ export function Legend({ model }: { model: RenderModel }) {
                     .filter((r) => rampOf(r.id) === ramp)
                     .map((r) => (
                       <li key={r.id} title={r.description}>
-                        <RoleGlyph role={r.id} size={14} /> {ROLE_LABEL[r.id] ?? r.id}
+                        <RoleGlyph role={r.id} size={14} /> {r.label}
                       </li>
                     ))}
                 </ul>

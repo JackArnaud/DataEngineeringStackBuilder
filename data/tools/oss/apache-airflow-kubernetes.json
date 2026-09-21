@@ -1,0 +1,50 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "apache-airflow-kubernetes",
+  "name": "Apache Airflow on Kubernetes (Helm chart)",
+  "vendor": "Apache Software Foundation",
+  "kind": "tool",
+  "sku": "Apache Airflow deployed on a Kubernetes cluster that you operate with the official Helm chart, which the Apache project maintains, optionally running each task in its own pod with the KubernetesExecutor. It repeats the Airflow scores of the self-hosted record; the hosting difference is the infrastructure band.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["python", "ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A Dag encapsulates everything needed to run a workflow: its schedule, tasks, dependencies and callbacks. Workflows are defined entirely in Python, and a wide range of built-in operators and providers connect tasks to other systems.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Rich scheduling semantics for complex recurring pipelines, with manual triggering, backfilling of historical data and targeted task reruns.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "A web-based UI to visualise, manage and debug workflows across deployment scales. It shows workflow runs; it does not check the data the tasks produce.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    },
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "The chart bootstraps Airflow on Kubernetes: scheduler, web server, workers and database, with automatic database migration and administrator creation on deploy, and KEDA autoscaling for Celery workers. The KubernetesExecutor isolates each task in its own pod. You still run the cluster, the database and upgrades.",
+      "source": "https://airflow.apache.org/docs/helm-chart/stable/index.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Airflow on your own Kubernetes cluster via the official Helm chart."
+  },
+  "pairs_with": ["apache-airflow", "apache-spark-kubernetes"],
+  "updated": "2026-09-21"
+}

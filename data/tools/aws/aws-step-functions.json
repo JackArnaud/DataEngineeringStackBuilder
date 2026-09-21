@@ -1,0 +1,36 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-step-functions",
+  "name": "AWS Step Functions",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "AWS Step Functions Standard and Express workflows.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Workflows, also called state machines, are event-driven steps that call other AWS services, with Choice, Parallel and Map states, and Retry and Catch for errors. They cover data and machine learning pipelines as well as applications, and can control Glue, EMR and Athena jobs.",
+      "source": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "The console visualises each workflow and shows the state of every step. Standard workflows keep execution history, and Express workflows send it to CloudWatch.",
+      "source": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Serverless workflows that chain AWS services, with retries and error handling."
+  },
+  "pairs_with": ["aws-glue", "aws-emr", "aws-athena"],
+  "updated": "2026-09-21"
+}

@@ -74,7 +74,7 @@
       "maturity": "preview",
       "scope": ["store"],
       "note": "Monitors every table in a schema for freshness and completeness by learning from historical patterns. It is in Public Preview, and the percent-null and slicing extensions are Beta.",
-      "source": "https://docs.databricks.com/aws/en/data-quality-monitoring/anomaly-detection/"
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/data-quality-monitoring/anomaly-detection"
     }
   ],
   "presentation": {

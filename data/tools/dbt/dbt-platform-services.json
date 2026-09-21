@@ -4,7 +4,7 @@
   "name": "dbt platform (hosted services)",
   "vendor": "dbt Labs",
   "kind": "tool",
-  "sku": "dbt platform Starter plan. Capability that needs the Enterprise or Enterprise+ plan carries an enterprise-tier constraint. Excludes the dbt framework itself, which the dbt-platform bundle takes from the dbt OSS record.",
+  "sku": "dbt platform Starter plan. Capability that needs the Enterprise or Enterprise+ plan carries an enterprise-tier constraint. Excludes the dbt framework itself, which the dbt-platform bundle takes from the dbt OSS record and the dbt v2 additions.",
   "license": "proprietary",
   "deployment": ["saas"],
   "pricing_model": "hybrid",
@@ -66,7 +66,7 @@
       "delivery": "native",
       "scope": ["transform"],
       "note": "The Studio IDE is a browser-based environment to build, test, run and version dbt projects, with autocomplete, formatting and linting, DAG view and the dbt Copilot assistant. It is available on every plan, including the free Developer plan.",
-      "source": "https://docs.getdbt.com/docs/cloud/studio-ide/develop-in-studio"
+      "source": "https://docs.getdbt.com/docs/platform/studio-ide/develop-in-studio"
     },
     {
       "band": "platform.environments",
@@ -80,5 +80,5 @@
   "presentation": {
     "tagline": "Hosted scheduler, CI, catalog, semantic layer and IDE for dbt projects."
   },
-  "updated": "2026-09-20"
+  "updated": "2026-09-21"
 }

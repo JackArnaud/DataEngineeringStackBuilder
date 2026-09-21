@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dbt",
+  "name": "dbt (v2)",
+  "vendor": "dbt Labs",
+  "kind": "bundle",
+  "sku": "The standard dbt v2 install, formerly the dbt Fusion engine: the Apache 2.0 dbt OSS layer plus the free proprietary additions, in one binary. The docs make it their default recommendation over dbt OSS, and say to use dbt OSS only if a policy requires Apache software. dbt v1 (Python, final minor 1.13) is the previous line. It supports PostgreSQL and many other adapters, still gets security patches, and is not scored here.",
+  "license": "proprietary",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["sql", "yaml", "cli"],
+  "taxonomy_version": "1.0.1",
+  "includes": ["dbt-core", "dbt-v2-additions"],
+  "bundling": "single-contract",
+  "presentation": {
+    "tagline": "The free dbt v2 install: SQL-first framework with a local SQL compiler, language server and column-level lineage."
+  },
+  "pairs_with": ["snowflake", "databricks"],
+  "updated": "2026-09-21"
+}

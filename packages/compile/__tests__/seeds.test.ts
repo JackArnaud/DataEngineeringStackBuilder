@@ -69,8 +69,13 @@ describe("seed dataset structure", () => {
   it("carries proposed capabilities as evidence for taxonomy growth", () => {
     const proposals = records.flatMap((r) => (r.proposed_capabilities ?? []).map((p) => ({ id: r.id, ...p })));
     expect(proposals.map((p) => p.id).sort()).toEqual([
+      "azure-api-management",
+      "azure-cosmos-db",
       "azure-data-factory",
       "fabric-data-factory",
+      "gcp-bigtable",
+      "gcp-data-fusion",
+      "gcp-spanner",
       "postgres",
       "power-bi",
       "ssms",
@@ -101,12 +106,17 @@ describe("seed dataset structure", () => {
     for (const r of records) expect(majorMinor(r.taxonomy_version), r.id).toBe(majorMinor(taxonomy.taxonomy_version));
   });
 
-  it("composes the dbt platform from the open-source record plus its own hosted services", () => {
+  it("composes dbt v2 from the open-source record plus a proprietary layer, and the platform from both plus its hosted services", () => {
+    const v2 = byId.get("dbt") as Bundle;
+    expect(v2.kind).toBe("bundle");
+    expect(v2.includes).toEqual(["dbt-core", "dbt-v2-additions"]);
     const platform = byId.get("dbt-platform") as Bundle;
     expect(platform.kind).toBe("bundle");
-    expect(platform.includes).toEqual(["dbt-core", "dbt-platform-services"]);
+    expect(platform.includes).toEqual(["dbt-core", "dbt-v2-additions", "dbt-platform-services"]);
     // The open-source record is a real product in its own right, not only a part.
     expect(byId.get("dbt-core")?.kind).toBe("tool");
+    expect(byId.get("dbt-core")?.license).toBe("open-source");
+    expect(byId.get("dbt-v2-additions")?.license).toBe("proprietary");
   });
 
   it("uses the enterprise-tier constraint for capability only a higher plan provides", () => {

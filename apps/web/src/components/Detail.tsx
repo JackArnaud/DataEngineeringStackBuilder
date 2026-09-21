@@ -4,7 +4,6 @@ import type { Gap, GapReport, GapsInLens, RenderLens, RenderModel, RenderTool } 
 import { ARCHETYPE_LABEL, constraintText, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural } from "../labels";
 import type { Lookup } from "../lookup";
 import { groupCells, joinNames } from "../receipts";
-import { ROLE_LABEL } from "../roles";
 import type { StackState } from "../state";
 import type { Detail } from "../types";
 import { CellGroups } from "./CellGroups";
@@ -116,7 +115,7 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onToggleTool, onAddToo
         <dd>{tool.vendor}</dd>
         <dt>Role</dt>
         <dd>
-          <RoleGlyph role={tool.role} /> {ROLE_LABEL[tool.role] ?? tool.role}
+          <RoleGlyph role={tool.role} /> {lookup.roleLabel(tool.role)}
           <span className="muted"> · {lookup.roleDescription(tool.role)}</span>
           {tool.role_source === "override" && <span className="muted"> (set by hand; derived: {tool.derived_role})</span>}
         </dd>

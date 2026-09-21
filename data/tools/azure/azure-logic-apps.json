@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-logic-apps",
+  "name": "Azure Logic Apps",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Logic Apps in its Consumption and Standard hosting models. The AI agentic workflows are not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Designer-first workflows of actions with conditions, switches and inline code, for business processes across systems. It is aimed at integration and business automation more than data pipelines.",
+      "source": "https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Every workflow starts with a trigger that fires when a condition is met, such as an email arriving or a new file appearing in a storage account.",
+      "source": "https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Many triggers include scheduling capabilities that control how often the workflow runs.",
+      "source": "https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Workflows can be created as Azure Resource Manager templates so deployments are automated across multiple environments and regions.",
+      "source": "https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Low-code workflows that connect cloud and on-premises systems through 1,400+ connectors."
+  },
+  "pairs_with": ["azure-functions", "azure-event-grid"],
+  "updated": "2026-09-21"
+}

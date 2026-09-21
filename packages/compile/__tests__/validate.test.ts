@@ -816,7 +816,7 @@ describe("derivation rules", () => {
   });
 
   it("must use the same role vocabulary as the tool schema's role override", () => {
-    const issues = run({ derivation: (d) => { d.roles.push({ id: "wizard", description: "A role the tool schema does not allow." }); } });
+    const issues = run({ derivation: (d) => { d.roles.push({ id: "wizard", label: "Wizard", description: "A role the tool schema does not allow." }); } });
     expect(has(issues, "role-vocabulary-mismatch")).toBe(true);
   });
 

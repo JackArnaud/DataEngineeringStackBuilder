@@ -1,0 +1,66 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-mwaa",
+  "name": "Amazon MWAA",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Managed Workflows for Apache Airflow. AWS runs Apache Airflow for the customer; the workflow code is the customer's.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A managed service for Apache Airflow, an open-source tool used to create, schedule and monitor workflows, run at scale without managing infrastructure.",
+      "source": "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Workflows are written in Python as Airflow DAGs, stored in an S3 bucket, using the same Airflow user interface and open-source code as Airflow itself.",
+      "source": "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Sets up Airflow, scales workers between limits the customer sets, and patches and upgrades supported Airflow versions periodically.",
+      "source": "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Airflow logs and metrics go to CloudWatch to spot task delays and workflow errors.",
+      "source": "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Role-based access to the Airflow web server is defined in IAM policies, and workers assume IAM roles to reach other AWS services.",
+      "source": "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    },
+    {
+      "band": "platform.environments",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "Each Amazon MWAA environment is a separate Airflow deployment with its own metadata database, so separate environments can hold different stages.",
+      "source": "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed Apache Airflow for scheduling and orchestrating pipelines."
+  },
+  "pairs_with": ["aws-emr", "aws-glue", "aws-redshift", "apache-airflow"],
+  "updated": "2026-09-21"
+}

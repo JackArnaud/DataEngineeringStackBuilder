@@ -1,0 +1,50 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-managed-flink",
+  "name": "Amazon Managed Service for Apache Flink",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Managed Service for Apache Flink applications and Studio notebooks.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["java", "scala", "python", "sql", "api", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.stream-processing": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Runs Apache Flink applications to process and analyse streaming data, for time-series analytics and real-time dashboards, using the Flink SQL, Table, DataStream and Process Function APIs.",
+      "source": "https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html"
+    },
+    "transform.code-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Applications are written in Java, Scala or Python with embedded SQL, in the developer's own IDE. Its use is streaming; batch transformation is not the point.",
+      "source": "https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Provisions compute, fails over across availability zones, scales automatically and backs applications up as checkpoints and snapshots.",
+      "source": "https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html"
+    },
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Studio notebooks let users query data streams interactively in SQL, Python and Scala, and promote a notebook to a long-running application.",
+      "source": "https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed Apache Flink for stream processing in Java, Python or SQL."
+  },
+  "pairs_with": ["aws-kinesis", "aws-s3"],
+  "updated": "2026-09-21"
+}

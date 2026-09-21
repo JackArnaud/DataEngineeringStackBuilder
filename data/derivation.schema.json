@@ -16,9 +16,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "description"],
+        "required": ["id", "label", "description"],
         "properties": {
           "id": { "$ref": "#/$defs/slug" },
+          "label": { "description": "The name shown to people. The id is a stable key in the data; the label can be reworded without touching any record.", "type": "string", "minLength": 3 },
           "description": { "type": "string", "minLength": 10 }
         }
       }

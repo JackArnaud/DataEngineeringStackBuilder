@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-functions",
+  "name": "Azure Functions",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Functions on its Flex Consumption, Premium, Dedicated and Container Apps hosting options, with Durable Functions for workflows.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "java", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Triggers and bindings connect functions to other services with no extra code: run code when a file is uploaded to blob storage, when a message arrives on a queue, Service Bus or Event Hubs, or when a database document changes.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    },
+    "orchestrate.scheduling": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Timer-driven functions run tasks such as data clean-up code on predefined intervals.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "The Durable Functions extension builds an event-driven workflow from a series of functions. It is code-first and application-oriented rather than a data-pipeline DAG.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    },
+    "transform.code-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Captures and transforms data from event and IoT streams on the way to storage, in C#, Java, JavaScript, PowerShell, Python or Go. It suits light per-event transformation, not large-scale batch processing.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Serverless code that runs on events, timers and HTTP requests."
+  },
+  "pairs_with": ["azure-event-grid", "azure-event-hubs", "azure-api-management"],
+  "updated": "2026-09-21"
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "gcp-data-fusion",
+  "name": "Cloud Data Fusion",
+  "vendor": "Google Cloud",
+  "kind": "tool",
+  "sku": "Cloud Data Fusion, powered by the open-source CDAP project. It comes in Developer, Basic and Enterprise editions; which features need which edition was not checked, so no score carries an enterprise-tier constraint.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed data integration service that builds pipelines to extract, transform and load data from on-premises and cloud sources, in batch and real time, from a point-and-click web interface.",
+      "source": "https://docs.cloud.google.com/data-fusion/docs/concepts/overview"
+    },
+    "ingest.cdc": {
+      "level": 2,
+      "delivery": "native",
+      "note": "A Replication Accelerator replicates data between systems, including from SQL Server. It is one feature of an integration service, and the source list was not checked.",
+      "source": "https://docs.cloud.google.com/data-fusion/docs/concepts/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform"],
+      "note": "Data lineage can be explored using metadata, so a pipeline's flow and dependencies are visible. It covers pipelines built in Data Fusion.",
+      "source": "https://docs.cloud.google.com/data-fusion/docs/concepts/overview"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Visual self-service data preparation",
+      "description": "Point-and-click building of pipelines from sources, transformations and sinks as nodes in a graph, without writing Spark code. The pipelines run on an ephemeral Spark cluster that the service creates and removes.",
+      "home": "transform",
+      "nearest_existing": "transform.code-transform",
+      "source": "https://docs.cloud.google.com/data-fusion/docs/concepts/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Point-and-click ETL pipelines that run on Spark, plus a replication accelerator."
+  },
+  "pairs_with": ["gcp-bigquery", "gcp-cloud-storage"],
+  "updated": "2026-09-21"
+}

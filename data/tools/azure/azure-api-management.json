@@ -1,0 +1,53 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-api-management",
+  "name": "Azure API Management",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure API Management across its Classic, V2 and Consumption tiers. Which features belong to which tier was not checked, so no score carries an enterprise-tier constraint. Azure API Center, which inventories APIs, is a separate service and is not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "bands": [
+    {
+      "band": "govern.access-control",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "The gateway verifies API keys, JWTs and certificates on every request, and Microsoft Entra ID can authenticate developers and authorise calls. Products group APIs and can require a subscription key that an administrator approves.",
+      "source": "https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "Policies change an API's behaviour through configuration: usage quotas and rate limits, format conversion such as XML to JSON, and response caching, applied globally or per product, API or operation.",
+      "source": "https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "The gateway emits logs, metrics and traces, with Azure Monitor for reporting and alerting and Application Insights for live metrics and end-to-end tracing.",
+      "source": "https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "API gateway for data access",
+      "description": "Publishing a data source or a model as a managed, secured and metered API, with keys, quotas and a developer portal, so applications and partners consume data without direct database access. The gateway fronts the data; it does not store, query or transform it.",
+      "home": "serve",
+      "nearest_existing": "serve.data-apps",
+      "source": "https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts"
+    }
+  ],
+  "presentation": {
+    "tagline": "API gateway that publishes, secures and meters access to data and services."
+  },
+  "pairs_with": ["azure-functions", "azure-cosmos-db", "azure-event-hubs"],
+  "updated": "2026-09-21"
+}

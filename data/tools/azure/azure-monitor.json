@@ -1,0 +1,28 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-monitor",
+  "name": "Azure Monitor",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Monitor, the platform-wide observability service. It watches Azure resources, applications and infrastructure; it does not check whether data is fresh or correct. It monitors Azure resources across every service, so the scope is the whole spine.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["source", "ingest", "store", "transform", "orchestrate", "serve"],
+      "note": "Microsoft's unified observability service: it collects logs and metrics from every Azure service, analyses them with Log Analytics and metrics explorer, visualises them in workbooks, and alerts on them with dynamic thresholds.",
+      "source": "https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Metrics, logs, alerts and dashboards across Azure services."
+  },
+  "pairs_with": ["azure-cost-management"],
+  "updated": "2026-09-21"
+}

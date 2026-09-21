@@ -1,0 +1,45 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-cosmos-db",
+  "name": "Azure Cosmos DB",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Cosmos DB for NoSQL and its other APIs. Azure DocumentDB, the MongoDB-compatible vCore service, is a separate offering and is not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "sql", "python", "java", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed NoSQL and vector database for operational data with single-digit millisecond response times, multi-region writes and models including document, key-value, graph and table. It calls itself a poor fit for analytical workloads and highly relational apps.",
+      "source": "https://learn.microsoft.com/en-us/azure/cosmos-db/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Automatic patching and updates, autoscale and serverless throughput, and continuous backup with point-in-time restore across regions.",
+      "source": "https://learn.microsoft.com/en-us/azure/cosmos-db/overview"
+    }
+  ],
+  "proposed_capabilities": [
+    {
+      "name": "Source-side change stream",
+      "description": "A change feed the database itself exposes, so downstream tools can read row-level changes without a separate CDC product. Scored here as a source feature rather than as ingestion.",
+      "home": "source",
+      "nearest_existing": "ingest.cdc",
+      "source": "https://learn.microsoft.com/en-us/azure/cosmos-db/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Globally distributed NoSQL and vector database for application data."
+  },
+  "pairs_with": ["azure-synapse", "microsoft-fabric"],
+  "updated": "2026-09-21"
+}

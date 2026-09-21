@@ -4,26 +4,16 @@
   "name": "Microsoft Azure",
   "vendor": "Microsoft Azure",
   "kind": "portfolio",
-  "sku": "Nine data-path services only. This is a sample of the Azure catalogue, so derived coverage understates it (no Synapse Analytics, HDInsight, Databricks on Azure, Cosmos DB, Data Share, Functions and others). Microsoft Fabric is a separate bundle.",
+  "sku": "Seventeen data-path and integration services. This is a sample of the Azure catalogue, so derived coverage understates it (no HDInsight, Analysis Services, Data Share, Key Vault, Service Bus and others). Microsoft Fabric is a separate bundle.",
   "license": "proprietary",
   "deployment": ["cloud-managed"],
   "pricing_model": "usage",
   "interfaces": ["api", "cli", "ui"],
   "taxonomy_version": "1.0.1",
-  "includes": [
-    "azure-data-lake-storage",
-    "azure-sql-database",
-    "azure-data-factory",
-    "azure-event-hubs",
-    "azure-stream-analytics",
-    "azure-purview",
-    "azure-data-explorer",
-    "azure-machine-learning",
-    "azure-cost-management"
-  ],
+  "includes": ["azure-data-lake-storage", "azure-sql-database", "azure-data-factory", "azure-event-hubs", "azure-stream-analytics", "azure-purview", "azure-data-explorer", "azure-machine-learning", "azure-cost-management", "azure-synapse", "azure-cosmos-db", "azure-postgresql", "azure-monitor", "azure-api-management", "azure-event-grid", "azure-functions", "azure-logic-apps"],
   "bundling": "a-la-carte",
   "presentation": {
     "tagline": "Independently purchased cloud services; compose the ones you use."
   },
-  "updated": "2026-09-20"
+  "updated": "2026-09-21"
 }

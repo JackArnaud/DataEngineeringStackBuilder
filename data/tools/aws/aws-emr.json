@@ -1,0 +1,52 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-emr",
+  "name": "Amazon EMR",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon EMR clusters on EC2, as documented in the management guide. EMR Serverless and EMR on EKS are separate deployment options and are not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["python", "java", "scala", "sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A managed cluster platform for running big data frameworks such as Apache Hadoop and Apache Spark to process and analyse large volumes of data, and to move data into and out of stores such as S3 and DynamoDB.",
+      "source": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "Provisions the EC2 nodes, replaces failed ones and lets clusters resize, run transient or long-lived, and mix On-Demand and Spot instances. Clusters, sizing and applications are still chosen by the customer.",
+      "source": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview-benefits.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "CloudWatch metrics and alarms for the cluster and its jobs, with log files archived to S3 and a debugging tool in the console.",
+      "source": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview-benefits.html"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "IAM policies decide who can act on clusters, and Lake Formation can discover, catalogue and secure data in an S3 data lake for EMR.",
+      "source": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview-benefits.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed clusters for Apache Spark, Hadoop and Hive."
+  },
+  "pairs_with": ["aws-s3", "aws-mwaa", "aws-step-functions", "apache-spark"],
+  "updated": "2026-09-21"
+}

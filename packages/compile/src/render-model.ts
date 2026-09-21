@@ -15,7 +15,7 @@ export interface RenderModel {
   stages: { id: string; name: string; description: string; criticality: number; rationale: string }[];
   bands: { id: string; name: string; rationale: string }[];
   /** The closed role vocabulary, with what each role means. */
-  roles: { id: string; description: string }[];
+  roles: { id: string; label: string; description: string }[];
   capabilities: RenderCapability[];
   /** Criticality 0-5 for every band capability x stage cell, keyed `<capability>@<stage>`. */
   criticality: Record<string, number>;

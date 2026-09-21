@@ -1,0 +1,42 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "apache-airflow",
+  "name": "Apache Airflow (self-hosted)",
+  "vendor": "Apache Software Foundation",
+  "kind": "tool",
+  "sku": "Apache Airflow 3.3 run on hosts that you operate: the scheduler, web server, workers and metadata database are yours, on its local or Celery executors. Its code-first design is central, so it suits teams that prefer workflows as Python code to a graphical designer. The engine is the same on every host, so the Kubernetes, Astronomer and managed records repeat its scores; managed hosts are Amazon MWAA, Cloud Composer and Data Factory in Fabric.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["python", "ui", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A Dag encapsulates everything needed to run a workflow: its schedule, tasks, dependencies and callbacks. Workflows are defined entirely in Python, and a wide range of built-in operators and providers connect tasks to other systems.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Rich scheduling semantics for complex recurring pipelines, with manual triggering, backfilling of historical data and targeted task reruns.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "A web-based UI to visualise, manage and debug workflows across deployment scales. It shows workflow runs; it does not check the data the tasks produce.",
+      "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Open-source workflows as Python code: schedule, run and monitor data pipelines."
+  },
+  "pairs_with": ["apache-spark", "aws-mwaa", "gcp-composer", "dbt-core"],
+  "updated": "2026-09-21"
+}

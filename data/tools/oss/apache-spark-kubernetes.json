@@ -1,0 +1,68 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "apache-spark-kubernetes",
+  "name": "Apache Spark on Kubernetes",
+  "vendor": "Apache Software Foundation",
+  "kind": "tool",
+  "sku": "Apache Spark submitted straight to a Kubernetes cluster that you operate, using Spark's native Kubernetes scheduler and container images. It repeats the Spark engine scores of the standalone record; the hosting difference is the infrastructure band. The Kubernetes page lists external shuffle service, job queues and resource management as future work.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["python", "scala", "java", "sql", "r", "api", "cli"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "High-level APIs in Java, Scala, Python and R over an optimised engine that supports general execution graphs, plus the pandas API on Spark. You write and operate the code.",
+      "source": "https://spark.apache.org/docs/latest/"
+    },
+    "transform.stream-processing": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Structured Streaming does incremental computation and stream processing on the same engine and APIs as batch.",
+      "source": "https://spark.apache.org/docs/latest/"
+    },
+    "transform.sql-transform": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Spark SQL runs SQL over structured data. It has no models, dependency ordering or tests of its own, so SQL transformation projects add a framework on top.",
+      "source": "https://spark.apache.org/docs/latest/"
+    },
+    "transform.feature-eng": {
+      "level": 2,
+      "delivery": "native",
+      "note": "MLlib is the built-in machine learning library, with which features can be built. There is no feature store or serving layer.",
+      "source": "https://spark.apache.org/docs/latest/"
+    },
+    "serve.query-engine": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Spark SQL is a SQL query engine over the same data. The overview does not describe serving many concurrent interactive users.",
+      "source": "https://spark.apache.org/docs/latest/"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "A web UI for each running application shows tasks, executors and storage, a History Server replays finished runs, and a REST API and metrics sinks including Prometheus export the same data.",
+      "source": "https://spark.apache.org/docs/latest/monitoring.html"
+    },
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["transform"],
+      "note": "spark-submit creates the driver as a pod, the driver creates executor pods, and they are cleaned up when the application ends, with dynamic allocation of executors. You still provide and run the Kubernetes cluster, the images and the RBAC.",
+      "source": "https://spark.apache.org/docs/latest/running-on-kubernetes.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Spark driver and executors as pods on your own Kubernetes cluster."
+  },
+  "pairs_with": ["apache-spark", "apache-airflow-kubernetes"],
+  "updated": "2026-09-21"
+}

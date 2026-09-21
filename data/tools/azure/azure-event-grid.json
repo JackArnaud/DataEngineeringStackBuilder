@@ -1,0 +1,38 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-event-grid",
+  "name": "Azure Event Grid",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Event Grid, its HTTP event messaging and its MQTT broker. MQTT messages sent over HTTPS are marked preview on the overview and are not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Routes events from Azure services, custom applications and partner SaaS systems to handlers such as webhooks, Azure Functions and Event Hubs, with filtering and a 24-hour retry with exponential backoff. Push delivery sends events to a destination, and pull delivery lets subscribers read them.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-grid/overview"
+    },
+    "source.event-stream": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Publishers announce state changes as events to subscribers, over HTTP with CloudEvents 1.0, and IoT clients publish over MQTT. It distributes discrete events, where Event Hubs is the log for high-volume streams.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-grid/overview"
+    },
+    "ingest.stream-ingest": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Can start a data pipeline by routing device MQTT messages to Azure services for analysis, storage or visualisation. It routes events and leaves the processing to the destination.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-grid/overview"
+    }
+  },
+  "presentation": {
+    "tagline": "Publish-subscribe routing of events to functions, webhooks and other services."
+  },
+  "pairs_with": ["azure-event-hubs", "azure-functions"],
+  "updated": "2026-09-21"
+}

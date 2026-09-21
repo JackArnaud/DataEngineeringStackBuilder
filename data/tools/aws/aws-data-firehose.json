@@ -1,0 +1,26 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-data-firehose",
+  "name": "Amazon Data Firehose",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Data Firehose, formerly Kinesis Data Firehose. Optional transformation of records before delivery is not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed service for delivering real-time streaming data to S3, Redshift, OpenSearch, Splunk, Apache Iceberg tables and HTTP endpoints, buffering records by size or time. Producers send data in, or Firehose reads a Kinesis data stream. It delivers and does not process the stream.",
+      "source": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+    }
+  },
+  "presentation": {
+    "tagline": "Delivers streaming data to S3, Redshift, Iceberg tables and other destinations."
+  },
+  "pairs_with": ["aws-kinesis", "aws-s3", "aws-redshift"],
+  "updated": "2026-09-21"
+}

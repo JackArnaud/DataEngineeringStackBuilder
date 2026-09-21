@@ -1,0 +1,26 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "aws-quick-sight",
+  "name": "Amazon Quick Sight",
+  "vendor": "Amazon Web Services",
+  "kind": "tool",
+  "sku": "Amazon Quick Sight, the BI feature inside Amazon Quick. Amazon Quick's AI agents, Flows, Automate, Index and Research are not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "per-seat",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "serve.bi-viz": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Interactive data visualisation and business intelligence: connect to data sources, build dashboards and embed analytics in applications. Amazon Quick evolved from QuickSight, and the QuickSight APIs continue to work.",
+      "source": "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html"
+    }
+  },
+  "presentation": {
+    "tagline": "Dashboards and embedded analytics inside Amazon Quick."
+  },
+  "pairs_with": ["aws-redshift", "aws-athena"],
+  "updated": "2026-09-21"
+}

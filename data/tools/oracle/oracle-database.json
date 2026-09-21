@@ -15,37 +15,37 @@
       "level": 3,
       "delivery": "native",
       "note": "A relational, object-relational database with ACID transactions and multiuser concurrency, used as the system of record behind applications.",
-      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/introduction-to-oracle-database.html"
+      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/26/cncpt/introduction-to-oracle-database.html"
     },
     "serve.query-engine": {
       "level": 2,
       "delivery": "native",
       "note": "All operations on the data are performed with SQL statements. It is a general-purpose engine rather than one built only for analytics; the warehouse workload is scored under Autonomous Database.",
-      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/introduction-to-oracle-database.html"
+      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/26/cncpt/introduction-to-oracle-database.html"
     },
     "transform.code-transform": {
       "level": 2,
       "delivery": "native",
       "note": "PL/SQL, a procedural extension to SQL, lets business logic be stored and run in the database, alongside Java and JavaScript.",
-      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/introduction-to-oracle-database.html"
+      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/26/cncpt/introduction-to-oracle-database.html"
     },
     "orchestrate.scheduling": {
       "level": 2,
       "delivery": "native",
       "note": "The Scheduler (DBMS_SCHEDULER) runs jobs on calendar schedules such as daily, weekly or last day of month.",
-      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/23/admin/scheduling-jobs-with-oracle-scheduler.html"
+      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/scheduling-jobs-with-oracle-scheduler.html"
     },
     "orchestrate.dependency-dag": {
       "level": 2,
       "delivery": "native",
       "note": "Job chains link a named series of steps with dependencies and control flow. They orchestrate work inside the database only.",
-      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/23/admin/scheduling-jobs-with-oracle-scheduler.html"
+      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/scheduling-jobs-with-oracle-scheduler.html"
     },
     "orchestrate.event-triggers": {
       "level": 2,
       "delivery": "native",
       "note": "Event-based jobs start when an event arrives through Advanced Queuing, or when a file watcher sees a file arrive on a local or remote system.",
-      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/23/admin/scheduling-jobs-with-oracle-scheduler.html"
+      "source": "https://docs.oracle.com/en/database/oracle/oracle-database/26/admin/scheduling-jobs-with-oracle-scheduler.html"
     }
   },
   "bands": [

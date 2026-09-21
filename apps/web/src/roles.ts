@@ -24,14 +24,3 @@ export const ROLE_RAMP: Record<string, Ramp> = {
 };
 
 export const rampOf = (role: string): Ramp => ROLE_RAMP[role] ?? "structural";
-
-export const ROLE_LABEL: Record<string, string> = {
-  mover: "Mover",
-  substrate: "Substrate",
-  engine: "Engine",
-  modeller: "Modeller",
-  conductor: "Conductor",
-  gatekeeper: "Gatekeeper",
-  sentinel: "Sentinel",
-  surface: "Surface",
-};

@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-postgresql",
+  "name": "Azure Database for PostgreSQL",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Database for PostgreSQL flexible server, running the community version of PostgreSQL. The V6 SKU family is in preview and is not scored.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "api", "cli", "ui"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "source.oltp": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed PostgreSQL service that runs the community version, with full application compatibility, a built-in PgBouncer connection pooler, and Burstable, General Purpose and Memory Optimized compute tiers.",
+      "source": "https://learn.microsoft.com/en-us/azure/postgresql/overview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.infra",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Automated patching in a managed maintenance window, automatic backups kept 7 days by default and up to 35, and high availability within one zone or across zones with zero data loss.",
+      "source": "https://learn.microsoft.com/en-us/azure/postgresql/overview"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source"],
+      "note": "Built-in performance monitoring and alerting: one-minute metrics with 30 days of history, alerts on metrics and configurable slow query logs.",
+      "source": "https://learn.microsoft.com/en-us/azure/postgresql/overview"
+    }
+  ],
+  "presentation": {
+    "tagline": "Managed community PostgreSQL with zone-redundant high availability."
+  },
+  "pairs_with": ["postgres", "azure-data-factory", "fabric-mirroring"],
+  "updated": "2026-09-21"
+}

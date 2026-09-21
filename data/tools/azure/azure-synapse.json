@@ -1,0 +1,75 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "azure-synapse",
+  "name": "Azure Synapse Analytics",
+  "vendor": "Microsoft Azure",
+  "kind": "tool",
+  "sku": "Azure Synapse Analytics: dedicated and serverless SQL pools, Apache Spark pools, pipelines and Synapse Studio. The overview page was last updated in 2024, and Data Explorer in Synapse is marked preview on it. Microsoft Fabric is scored as a separate bundle.",
+  "license": "proprietary",
+  "deployment": ["cloud-managed"],
+  "pricing_model": "usage",
+  "interfaces": ["sql", "python", "scala", "ui", "api"],
+  "taxonomy_version": "1.0.1",
+  "coverage": {
+    "store.warehouse": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Synapse SQL is a distributed T-SQL query system for data warehousing. Dedicated SQL pools reserve processing power for data in SQL tables, for predictable performance and cost.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    },
+    "serve.query-engine": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A serverless SQL endpoint is always available for unplanned or bursty workloads, and SQL and Spark can both query Parquet, CSV, TSV and JSON files in the data lake.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    },
+    "transform.code-transform": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Apache Spark pools for data preparation, data engineering and ETL, with fast start-up and autoscaling, and tables on lake files that Spark and SQL both read.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    },
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "The same data integration engine as Azure Data Factory: ingest from more than 90 data sources and build code-free ETL with data flows.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    },
+    "orchestrate.dependency-dag": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Pipelines orchestrate notebooks, Spark jobs, stored procedures and SQL scripts. The orchestration is that of Data Factory pipelines inside a Synapse workspace.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    },
+    "store.olap-serving": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Data Explorer is an interactive query engine indexed for near real-time log and IoT analytics. The overview marks it preview.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is",
+      "maturity": "preview"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "store", "transform", "orchestrate", "serve"],
+      "note": "Synapse Studio is one place to ingest, explore, prepare, orchestrate and visualise, writing SQL, Spark or KQL and integrating with enterprise CI/CD processes.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    },
+    {
+      "band": "govern.access-control",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["store", "transform"],
+      "note": "Role-based access control governs access to the analytics resources.",
+      "source": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+    }
+  ],
+  "presentation": {
+    "tagline": "SQL warehouse, Spark and pipelines in one Azure workspace."
+  },
+  "pairs_with": ["azure-data-lake-storage", "power-bi", "apache-spark"],
+  "updated": "2026-09-21"
+}

@@ -45,5 +45,6 @@
   "presentation": {
     "tagline": "Managed Apache Airflow for scheduling and orchestrating pipelines."
   },
-  "updated": "2026-09-20"
+  "pairs_with": ["apache-airflow"],
+  "updated": "2026-09-21"
 }
