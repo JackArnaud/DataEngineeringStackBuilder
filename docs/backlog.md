@@ -54,7 +54,7 @@ Not yet:
 
 - **Compare stacks** side by side, or against a suggested one.
 - **Suggest the smallest set of tools** that closes the top gaps, not just tools per gap.
-- **Group the ranked gaps** by tier or by stage; a long list is still a long list.
+- **Judge relevance, not just severity.** The gap list is grouped and the user can set capabilities aside, but nothing infers that, say, infrastructure-as-code matters less for a fully managed platform. Two candidates: let users tick cross-cutting capabilities as needs, as they can for the spine, or add a few stack profiles such as regulated data or a team of one.
 - **A theme toggle.** Light and dark follow the operating system; the tokens already support a toggle.
 - **A real end-to-end test in CI.** Component tests run in jsdom; the screenshots and the axe audit
   were run by hand against Chrome and are not automated.

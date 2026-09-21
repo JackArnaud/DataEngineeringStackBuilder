@@ -181,6 +181,60 @@ export function computeGaps(model: RenderModel, input: StackInput): GapReport {
   return { gaps, stages, cells };
 }
 
+/**
+ * A list-sized view of the gaps. A stack is missing a cross-cutting capability like masking at
+ * every stage it occupies, and listing each stage separately turns one finding into five. A group
+ * folds the band gaps of one capability into a single row that names its stages. Empty-stage and
+ * needed-capability gaps stay one to a row. Nothing here changes what the gaps are: `gaps` is
+ * still the full, factual list that lenses and the matrix use.
+ */
+export interface GapGroup {
+  /** `band:<capability>` for a band group, otherwise the gap's own id. */
+  id: string;
+  kind: GapKind;
+  capability?: string;
+  /** The stages the gap is at, in pipeline order. */
+  stages: string[];
+  /** The worst criticality among the members. */
+  criticality: number;
+  /** The member gaps, worst first, then in pipeline order. */
+  gaps: Gap[];
+}
+
+/** From this criticality up, a cross-cutting gap is worth fixing before anything else. */
+export const FIX_FIRST_MIN_CRITICALITY = 4;
+
+/** Empty stages and things the user said they need always come first; the rest earn it by criticality. */
+export const isFixFirst = (g: GapGroup): boolean => g.kind !== "band" || g.criticality >= FIX_FIRST_MIN_CRITICALITY;
+
+export function groupGaps(model: RenderModel, gaps: Gap[]): GapGroup[] {
+  const stageOrder = new Map(model.stages.map((s, i) => [s.id, i]));
+  const byStage = (a: Gap, b: Gap) => b.criticality - a.criticality || stageOrder.get(a.stage)! - stageOrder.get(b.stage)!;
+
+  const groups: GapGroup[] = [];
+  const bands = new Map<string, GapGroup>();
+  for (const g of gaps) {
+    if (g.kind !== "band") {
+      groups.push({ id: g.id, kind: g.kind, capability: g.capability, stages: [g.stage], criticality: g.criticality, gaps: [g] });
+      continue;
+    }
+    let group = bands.get(g.capability!);
+    if (!group) {
+      group = { id: `band:${g.capability}`, kind: "band", capability: g.capability, stages: [], criticality: 0, gaps: [] };
+      bands.set(g.capability!, group);
+      groups.push(group);
+    }
+    group.gaps.push(g);
+    group.criticality = Math.max(group.criticality, g.criticality);
+  }
+  for (const group of bands.values()) {
+    group.gaps.sort(byStage);
+    group.stages = [...group.gaps].sort((a, b) => stageOrder.get(a.stage)! - stageOrder.get(b.stage)!).map((g) => g.stage);
+  }
+
+  return groups.sort((a, b) => b.criticality - a.criticality || KIND_ORDER[a.kind] - KIND_ORDER[b.kind] || a.id.localeCompare(b.id));
+}
+
 /** A gap and the lens zones it is drawn in. */
 export interface PlacedGap {
   gap: Gap;

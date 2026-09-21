@@ -174,8 +174,9 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
 - **Alternatives between capabilities.** A stack needs `object-store` *or* `warehouse`, not both.
   Needs are per capability, so a user who ticks both is told about whichever is missing. Modelling
   "one of" needs would need a grouping the taxonomy does not have.
-- **Band gap volume.** A real stack has around 50 band gaps. They are ranked, but a view has to show
-  only the top few; nothing here caps them.
+- **Band gap volume.** Mostly settled by the gap list (see "The gap list is a summary, not the facts"),
+  which folds about 40 to 60 cell-level gaps into around 13 rows. Nothing yet judges whether a capability
+  matters to a particular stack beyond the user setting it aside.
 - **ID immutability.** Deleting a taxonomy ID fails validation only if a record still uses it.
   Repurposing one is invisible without history. A CI check that diffs the ID set against `main`
   would close the first half.
@@ -224,4 +225,16 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
   Modelling, Orchestration, Governance, Monitoring and Consumption. The labels are job words that match
   the stage names, not invented nouns, and they can be reworded without touching any record. The render
   model carries them, so the site holds no copy of the vocabulary.
+- **The gap list is a summary, not the facts.** `computeGaps` still returns one gap per capability and
+  stage, because the matrix, the zone counts and the lens invariants need that grain. Real stacks came to
+  40 to 60 of them, but only 13 distinct cross-cutting capabilities exist, each missing at up to six
+  stages. `groupGaps` folds a capability's gaps into one row that keeps the worst criticality and lists
+  its stages; the detail panel names the rest. Rows are split into "fix first" (empty stages, stated
+  needs, and cross-cutting gaps of criticality 4 or 5) and "worth checking", which sits behind a fold by
+  theme. Titles name up to three stages and count beyond that.
+- **The user can set a cross-cutting capability aside.** "Not relevant" removes it from the list and from
+  the matrix counts together, so the two agree, records it in the address as `skip=`, and keeps it under a
+  "set aside" fold with one click to bring it back. Only cross-cutting capabilities can be set aside.
+  Empty stages and stated needs cannot: the first is a fact, and the second the user can simply untick.
+  This is a view filter. The report and every lens invariant are unchanged.
 

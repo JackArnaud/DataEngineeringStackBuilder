@@ -9,6 +9,8 @@ export type View = "chart" | "table";
 export interface StackState {
   tools: string[];
   needs: string[];
+  /** Cross-cutting capabilities the user set aside as not relevant to their stack. */
+  skip: string[];
   lens: string;
   view: View;
 }
@@ -25,7 +27,7 @@ export const isSelectable = (model: RenderModel, id: string): boolean => model.t
 const canonical = (items: string[]): string[] => [...new Set(items)].sort();
 
 export function emptyState(model: RenderModel): StackState {
-  return { tools: [], needs: [], lens: defaultLens(model), view: "chart" };
+  return { tools: [], needs: [], skip: [], lens: defaultLens(model), view: "chart" };
 }
 
 /** Read a query string against the model, quietly dropping anything that no longer exists. */
@@ -38,10 +40,12 @@ export function parseState(search: string, model: RenderModel): StackState {
       .filter(Boolean);
 
   const spine = new Set(model.capabilities.filter((c) => c.kind === "spine").map((c) => c.id));
+  const band = new Set(model.capabilities.filter((c) => c.kind === "band").map((c) => c.id));
   const lens = params.get("lens");
   return {
     tools: canonical(list("tools").filter((id) => isSelectable(model, id))),
     needs: canonical(list("needs").filter((id) => spine.has(id))),
+    skip: canonical(list("skip").filter((id) => band.has(id))),
     lens: lens && model.lenses.some((l) => l.id === lens) ? lens : defaultLens(model),
     view: params.get("view") === "table" ? "table" : "chart",
   };
@@ -52,6 +56,7 @@ export function serializeState(state: StackState, model: RenderModel): string {
   const params = new URLSearchParams();
   if (state.tools.length) params.set("tools", canonical(state.tools).join(","));
   if (state.needs.length) params.set("needs", canonical(state.needs).join(","));
+  if (state.skip.length) params.set("skip", canonical(state.skip).join(","));
   if (state.lens !== defaultLens(model)) params.set("lens", state.lens);
   if (state.view !== "chart") params.set("view", state.view);
   // Commas are the list separator and are safe in a query string; keep the address readable.

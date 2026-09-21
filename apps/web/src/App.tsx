@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { computeGaps, projectGaps, stackBands } from "@compile";
-import type { RenderModel, RenderTool } from "@compile";
+import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
 import { FilterRow } from "./components/FilterRow";
 import { GapList } from "./components/GapList";
@@ -57,12 +57,19 @@ export function Builder({ model }: { model: RenderModel }) {
   const change = (patch: Partial<StackState>) => setState((s) => ({ ...s, ...patch }));
 
   const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs }), [model, state.tools, state.needs]);
+  // A capability the user set aside is left out of the list and the matrix alike, so the two agree.
+  // The report itself stays the full, factual set.
+  const { gaps, setAside } = useMemo(() => {
+    const skip = new Set(state.skip);
+    const isSkipped = (g: Gap) => g.kind === "band" && skip.has(g.capability!);
+    return { gaps: report.gaps.filter((g) => !isSkipped(g)), setAside: report.gaps.filter(isSkipped) };
+  }, [report.gaps, state.skip]);
   const lens = model.lenses.find((l) => l.id === state.lens) ?? model.lenses[0]!;
-  const placement = useMemo(() => projectGaps(model, lens.id, report.gaps), [model, lens.id, report.gaps]);
+  const placement = useMemo(() => projectGaps(model, lens.id, gaps), [model, lens.id, gaps]);
   const bands = useMemo(() => stackBands(model, lens.id, state.tools), [model, lens.id, state.tools]);
   const tools = useMemo(() => state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t), [state.tools, lookup]);
 
-  const canReset = state.tools.length > 0 || state.needs.length > 0;
+  const canReset = state.tools.length > 0 || state.needs.length > 0 || state.skip.length > 0;
 
   return (
     <div className="app">
@@ -95,7 +102,7 @@ export function Builder({ model }: { model: RenderModel }) {
 
           <section aria-labelledby="missing">
             <h2 id="missing">What’s missing</h2>
-            <GapList model={model} lookup={lookup} lens={lens} gaps={report.gaps} placement={placement} hasTools={state.tools.length > 0} onOpen={(id) => setDetail({ kind: "gap", id })} />
+            <GapList model={model} lookup={lookup} lens={lens} gaps={gaps} setAside={setAside} placement={placement} hasTools={state.tools.length > 0} onOpen={(id) => setDetail({ kind: "gap", id })} onSkip={(c) => change({ skip: add(state.skip, c) })} onRestore={(c) => change({ skip: state.skip.filter((x) => x !== c) })} />
           </section>
         </main>
       </div>

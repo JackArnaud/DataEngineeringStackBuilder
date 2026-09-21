@@ -9,15 +9,21 @@ import { add, defaultLens, emptyState, isSelectable, parseState, serializeState,
 import { dataset, model } from "./fixture";
 
 describe("stack state in the address", () => {
+  it("keeps set-aside capabilities in the address, and drops any that are not cross-cutting capabilities", () => {
+    const state = parseState("?tools=postgres&skip=govern.masking,ingest.cdc,ghost,quality.tests", model);
+    expect(state.skip).toEqual(["govern.masking", "quality.tests"]);
+    expect(serializeState(state, model)).toBe("?tools=postgres&skip=govern.masking,quality.tests");
+  });
+
   it("starts empty, on the medallion lens, as a chart", () => {
-    expect(emptyState(model)).toEqual({ tools: [], needs: [], lens: "medallion", view: "chart" });
+    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], lens: "medallion", view: "chart" });
     expect(defaultLens(model)).toBe("medallion");
   });
 
   it("round-trips: what is written is what is read back", () => {
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], lens: "grid", view: "table" as const };
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], lens: "grid", view: "table" as const };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&lens=grid&view=table");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&lens=grid&view=table");
     expect(parseState(query, model)).toEqual(state);
   });
 
@@ -34,7 +40,7 @@ describe("stack state in the address", () => {
 
   it("drops anything the model no longer has, rather than failing", () => {
     const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope&lens=kappa&view=poster", model);
-    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], lens: "medallion", view: "chart" });
+    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], lens: "medallion", view: "chart" });
   });
 
   it("does not let a portfolio be selected, only its services", () => {

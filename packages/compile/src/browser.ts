@@ -2,8 +2,8 @@
  * The browser-safe surface of the compile package: everything the site may import. It must never
  * pull in a module that touches the file system, so the site's bundle stays free of Node.
  */
-export { computeGaps, projectGaps, NEEDED_CAPABILITY_CRITICALITY } from "./gaps.js";
-export type { Gap, GapKind, GapReport, GapsInLens, PlacedGap, StackCell, StackInput, StageSummary } from "./gaps.js";
+export { computeGaps, groupGaps, isFixFirst, projectGaps, FIX_FIRST_MIN_CRITICALITY, NEEDED_CAPABILITY_CRITICALITY } from "./gaps.js";
+export type { Gap, GapGroup, GapKind, GapReport, GapsInLens, PlacedGap, StackCell, StackInput, StageSummary } from "./gaps.js";
 export { suggestTools } from "./suggest.js";
 export type { Suggestion } from "./suggest.js";
 export { stackBands } from "./stack-bands.js";

@@ -1,4 +1,4 @@
-import type { Delivery, Gap } from "@compile";
+import type { Delivery, Gap, GapGroup } from "@compile";
 import type { Lookup } from "./lookup";
 
 /** The four coverage levels, in the words the taxonomy defines them. */
@@ -54,6 +54,21 @@ export function gapTitle(gap: Gap, lookup: Lookup): string {
     case "band":
       return `${lookup.capabilityName(gap.capability!)} is missing at ${lookup.stageName(gap.stage)}`;
   }
+}
+
+/** "A", "A and B", "A, B and C". */
+export const listNames = (names: string[]): string => (names.length <= 1 ? (names[0] ?? "") : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`);
+
+/** Up to this many stages a group's title names them; past it the title counts and the row lists them. */
+export const NAMED_STAGES_MAX = 3;
+
+/** A group's title: a cross-cutting capability missing at a few stages names them, at many it counts them. */
+export function groupTitle(group: GapGroup, lookup: Lookup): string {
+  if (group.kind === "band" && group.stages.length > 1) {
+    const where = group.stages.length <= NAMED_STAGES_MAX ? listNames(group.stages.map((s) => lookup.stageName(s))) : `${group.stages.length} stages`;
+    return `${lookup.capabilityName(group.capability!)} is missing at ${where}`;
+  }
+  return gapTitle(group.gaps[0]!, lookup);
 }
 
 export const GAP_KIND_LABEL: Record<Gap["kind"], string> = {

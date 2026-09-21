@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compileDataset } from "../src/compile.js";
-import { computeGaps, NEEDED_CAPABILITY_CRITICALITY } from "../src/gaps.js";
+import { computeGaps, FIX_FIRST_MIN_CRITICALITY, groupGaps, isFixFirst, NEEDED_CAPABILITY_CRITICALITY } from "../src/gaps.js";
 import type { GapReport } from "../src/gaps.js";
 import { ds } from "./helpers.js";
 
@@ -217,3 +217,66 @@ describe("selection", () => {
     expect(() => report(["nope"])).toThrow(/unknown tool "nope"/);
   });
 });
+
+describe("grouping gaps for a list", () => {
+  const stacks: [string, string[], string[]?][] = [
+    ["nothing", []],
+    ["one tool", ["aws-s3"]],
+    ["a pipeline", ["aws-s3", "aws-glue", "aws-athena"]],
+    ["with a need", ["postgres"], ["ingest.cdc"]],
+  ];
+
+  it("put every gap in exactly one group, and never invent one", () => {
+    for (const [name, tools, needs] of stacks) {
+      const r = report(tools, needs);
+      const grouped = groupGaps(model, r.gaps).flatMap((g) => g.gaps.map((x) => x.id));
+      expect(grouped.sort(), name).toEqual(ids(r).sort());
+    }
+  });
+
+  it("fold a cross-cutting capability missing at several stages into one row", () => {
+    const r = report(["aws-s3", "aws-glue", "aws-athena"]);
+    const groups = groupGaps(model, r.gaps);
+    const masking = groups.filter((g) => g.capability === "govern.masking");
+    expect(masking).toHaveLength(1);
+    expect(masking[0]!.gaps.length).toBeGreaterThan(1);
+    expect(groups.length).toBeLessThan(r.gaps.length);
+    // A stack's cross-cutting gaps cannot outnumber the cross-cutting capabilities there are.
+    const bandCapabilities = model.capabilities.filter((c) => c.kind === "band").length;
+    expect(groups.filter((g) => g.kind === "band").length).toBeLessThanOrEqual(bandCapabilities);
+  });
+
+  it("list a group's stages once each, in pipeline order, and take its worst criticality", () => {
+    const order = model.stages.map((s) => s.id);
+    for (const [name, tools, needs] of stacks) {
+      for (const g of groupGaps(model, report(tools, needs).gaps)) {
+        expect(new Set(g.stages).size, name).toBe(g.stages.length);
+        expect(g.stages.map((s) => order.indexOf(s)), name).toEqual([...g.stages.map((s) => order.indexOf(s))].sort((a, b) => a - b));
+        expect(g.criticality, name).toBe(Math.max(...g.gaps.map((x) => x.criticality)));
+        expect(g.gaps[0]!.criticality, name).toBe(g.criticality);
+      }
+    }
+  });
+
+  it("leave empty stages and needs as one gap to a row", () => {
+    for (const g of groupGaps(model, report(["postgres"], ["ingest.cdc"]).gaps)) {
+      if (g.kind !== "band") expect(g.gaps).toHaveLength(1);
+    }
+  });
+
+  it("keep the ranking: worst first, and needs and empty stages ahead of cross-cutting at a tie", () => {
+    const groups = groupGaps(model, report(["postgres"], ["ingest.reverse-etl"]).gaps);
+    expect(groups.map((g) => g.criticality)).toEqual([...groups.map((g) => g.criticality)].sort((a, b) => b - a));
+    expect(groups[0]!.kind).toBe("needed-capability");
+  });
+
+  it("call empty stages and needs fix-first always, and cross-cutting gaps only from the threshold", () => {
+    const groups = groupGaps(model, report(["postgres"], ["ingest.cdc"]).gaps);
+    for (const g of groups) {
+      if (g.kind === "band") expect(isFixFirst(g), g.id).toBe(g.criticality >= FIX_FIRST_MIN_CRITICALITY);
+      else expect(isFixFirst(g), g.id).toBe(true);
+    }
+    expect(groups.some((g) => g.kind === "band" && !isFixFirst(g))).toBe(true);
+  });
+});
+

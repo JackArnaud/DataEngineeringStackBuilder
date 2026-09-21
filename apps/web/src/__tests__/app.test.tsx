@@ -2,6 +2,7 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { computeGaps } from "@compile";
 import { Builder, Root } from "../App";
 import { model } from "./fixture";
 
@@ -190,6 +191,60 @@ describe("needs", () => {
     await openVendor(user, "Amazon Web Services");
     await user.click(screen.getByRole("checkbox", { name: /AWS Database Migration Service/ }));
     expect(screen.queryByText("You need Change data capture, and nothing provides it")).toBeNull();
+  });
+});
+
+describe("the gap list", () => {
+  const stack = "/?tools=aws-s3,aws-glue,aws-athena";
+
+  it("folds a capability missing at several stages into one row, so the list is short", () => {
+    setup(stack);
+    const facts = computeGaps(model, { tools: ["aws-s3", "aws-glue", "aws-athena"] }).gaps;
+    expect(gapButtons().length).toBeGreaterThan(0);
+    expect(gapButtons().length).toBeLessThan(facts.length);
+    const titles = gapButtons().map((b) => b.querySelector(".gap__title")?.textContent);
+    expect(new Set(titles).size).toBe(titles.length);
+    expect(titles.some((t) => /is missing at (.+ and .+|\d+ stages)/.test(t ?? ""))).toBe(true);
+  });
+
+  it("puts the urgent ones first and the lower-priority cross-cutting ones behind a fold", () => {
+    setup(stack);
+    expect(document.querySelector(".gaplist__intro")?.textContent).toMatch(/to fix first, \d+ more worth checking/);
+    const rest = document.querySelector(".gapsrest")!;
+    expect(within(rest as HTMLElement).getAllByRole("heading").length).toBeGreaterThan(0);
+    const urgent = within(screen.getByRole("list", { name: "Fix first" })).getAllByRole("button").filter((b) => b.classList.contains("gap"));
+    for (const b of urgent) expect(b.textContent).toMatch(/Critical|Serious/);
+  });
+
+  it("lets you set a cross-cutting capability aside, keeps the address and the matrix honest, and brings it back", async () => {
+    const user = setup(stack);
+    const titles = () => gapButtons().map((b) => b.querySelector(".gap__title")?.textContent);
+    const [skip] = screen.getAllByRole("button", { name: /^Not relevant to my stack: / });
+    const title = skip!.getAttribute("aria-label")!.replace("Not relevant to my stack: ", "");
+    await user.click(skip!);
+
+    expect(titles()).not.toContain(title);
+    await waitFor(() => expect(window.location.search).toMatch(/skip=/));
+    expect(screen.getByText(/1 capability set aside as not relevant/)).toBeTruthy();
+
+    await user.click(screen.getByText(/1 capability set aside as not relevant/));
+    await user.click(screen.getByRole("button", { name: /^Bring back: / }));
+    expect(titles()).toContain(title);
+    await waitFor(() => expect(window.location.search).not.toMatch(/skip=/));
+  });
+
+  it("restores set-aside capabilities from the address, and clears them on start over", async () => {
+    const user = setup(`${stack}&skip=govern.masking`);
+    expect(screen.getByText(/1 capability set aside as not relevant/)).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Start over" }));
+    await waitFor(() => expect(window.location.search).toBe(""));
+  });
+
+  it("names the other stages in the detail of a gap that is missing at several", async () => {
+    const user = setup(stack);
+    const multi = gapButtons().find((b) => /is missing at (.+ and .+|\d+ stages)/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
+    await user.click(multi);
+    expect(screen.getByRole("heading", { name: "Also missing at" })).toBeTruthy();
   });
 });
 
