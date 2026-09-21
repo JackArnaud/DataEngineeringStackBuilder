@@ -3,6 +3,7 @@ import { computeGaps, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
 import { Landing } from "./components/Landing";
+import { OverlapList } from "./components/OverlapList";
 import { FilterRow } from "./components/FilterRow";
 import { GapList } from "./components/GapList";
 import { Legend } from "./components/Legend";
@@ -63,9 +64,15 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
     return () => window.removeEventListener("popstate", onPop);
   }, [model]);
 
-  const change = (patch: Partial<StackState>) => setState((s) => ({ ...s, ...patch }));
+  const change = (patch: Partial<StackState>) =>
+    setState((s) => {
+      const next = { ...s, ...patch };
+      // A choice of tool for a task goes when the tool does.
+      if (patch.tools) next.use = Object.fromEntries(Object.entries(next.use).filter(([, tool]) => next.tools.includes(tool)));
+      return next;
+    });
 
-  const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs }), [model, state.tools, state.needs]);
+  const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs, use: state.use }), [model, state.tools, state.needs, state.use]);
   // A capability the user set aside is left out of the list and the matrix alike, so the two agree.
   // The report itself stays the full, factual set.
   const { gaps, setAside } = useMemo(() => {
@@ -78,7 +85,7 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   const bands = useMemo(() => stackBands(model, lens.id, state.tools), [model, lens.id, state.tools]);
   const tools = useMemo(() => state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t), [state.tools, lookup]);
 
-  const canReset = state.tools.length > 0 || state.needs.length > 0 || state.skip.length > 0;
+  const canReset = state.tools.length > 0 || state.needs.length > 0 || state.skip.length > 0 || Object.keys(state.use).length > 0;
   const reset = () => {
     setState(emptyState(model));
     setDetail(null);
@@ -100,7 +107,7 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
           onChange={change}
           onDone={() => setMode("builder")}
           onLoadExample={(e) => {
-            change({ tools: [...e.tools], needs: e.needs ?? [], skip: [] });
+            change({ tools: [...e.tools], needs: e.needs ?? [], skip: [], use: {} });
             setMode("builder");
           }}
         />
@@ -144,9 +151,18 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
             <p className="muted">
               {lens.name}. Each row is a tool; the mark shows where it is strongest and how well it covers each zone.
             </p>
-            <LensMatrix model={model} lookup={lookup} lens={lens} tools={tools} placement={placement} bands={bands} view={state.view} onOpen={setDetail} />
+            <LensMatrix model={model} lookup={lookup} lens={lens} tools={tools} placement={placement} bands={bands} view={state.view} overlaps={report.overlaps} onOpen={setDetail} />
             <Legend model={model} />
           </section>
+
+          <OverlapList
+            lookup={lookup}
+            overlaps={report.overlaps}
+            onUse={(capability, tool) => {
+              const rest = Object.fromEntries(Object.entries(state.use).filter(([c]) => c !== capability));
+              change({ use: tool ? { ...rest, [capability]: tool } : rest });
+            }}
+          />
 
           <section aria-labelledby="missing">
             <h2 id="missing">What’s missing</h2>

@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useRef, useState } from "react";
-import type { Gap, GapsInLens, RenderLens, RenderModel, RenderTool, ToolLensView } from "@compile";
-import { gapTitle, LEVEL_LABEL, plural, severity } from "../labels";
+import type { Gap, GapsInLens, Overlap, RenderLens, RenderModel, RenderTool, ToolLensView } from "@compile";
+import { gapTitle, LEVEL_LABEL, listNames, plural, severity } from "../labels";
 import type { Lookup } from "../lookup";
 import { RAMP_ORDER, rampOf } from "../roles";
 import type { View } from "../state";
@@ -35,6 +35,8 @@ interface Props {
   placement: GapsInLens;
   bands: Record<string, Record<string, number>>;
   view: View;
+  /** Tasks that more than one of the tools can do; a tool that is not the one used says so on its row. */
+  overlaps?: Overlap[];
   onOpen: (detail: Detail) => void;
 }
 
@@ -45,9 +47,27 @@ interface Tip {
   lines: string[];
 }
 
-export function LensMatrix({ model, lookup, lens, tools, placement, bands, view, onOpen }: Props) {
+export function LensMatrix({ model, lookup, lens, tools, placement, bands, view, overlaps = [], onOpen }: Props) {
   const lanes = useMemo(() => buildLanes(lens, tools), [lens, tools]);
+  // Where you chose another tool for a task this one can also do, say so on its row.
+  const notUsedFor = (id: string) => overlaps.filter((o) => o.used !== null && o.used !== id && o.providers.some((p) => p.tool === id));
   const noPosition = tools.filter((t) => !lanes.some((l) => l.tool.id === t.id));
+  // A tool with no place in the pipeline but real cross-cutting coverage (a catalog, a monitor, an
+  // access layer) still gets a row: the best level it reaches in each zone, and which concerns it covers.
+  const crossLanes = noPosition
+    .map((tool) => {
+      const view = lens.tools[tool.id];
+      const perZone = Object.fromEntries(lens.zones.map((z) => [z, Math.max(0, ...Object.values(view?.bands[z] ?? {}))])) as Record<string, number>;
+      const names = model.bands.filter((b) => lens.zones.some((z) => (view?.bands[z]?.[b.id] ?? 0) > 0)).map((b) => b.name);
+      // Some lenses have no honest zone for a concern (cost has none in the medallion lens). Such a tool
+      // still gets its row, marked as having no zone here, and its cells are in the "not shown" fold.
+      const railed = [...new Set((view?.rail ?? []).map((k) => lookup.capabilityName(k.slice(0, k.indexOf("@")))))];
+      const note = names.length > 0 ? listNames(names) : `no zone in this lens: ${listNames(railed.map((n) => n.toLowerCase()))}`;
+      return { tool, perZone, names, note, placed: names.length > 0 };
+    })
+    .filter((l) => l.placed || l.note.includes(": "));
+  // Only a tool with neither a position nor any cross-cutting coverage is left to a footnote.
+  const unplaced = noPosition.filter((t) => !crossLanes.some((l) => l.tool.id === t.id));
   const zoneName = (z: string) => (model.stages.some((s) => s.id === z) ? lookup.stageName(z) : capitalise(z));
 
   const gapsByZone = useMemo(() => Object.fromEntries(lens.zones.map((z) => [z, placement.placed.filter((p) => p.zones.includes(z)).map((p) => p.gap)])) as Record<string, Gap[]>, [lens, placement]);
@@ -68,6 +88,13 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
         title: `${lane.tool.name} in ${zoneName(b)}`,
         lines: [`${LEVEL_LABEL[zone.intensity]}${core ? ", core position" : ", also reaches here"}`, names.length <= 3 ? names.join(", ") : `${names.slice(0, 3).join(", ")} and ${names.length - 3} more`, "Click for notes and sources"],
       };
+    }
+    if (kind === "cross") {
+      const view = lens.tools[a];
+      const tool = tools.find((t) => t.id === a);
+      if (!view || !tool) return undefined;
+      const here = model.bands.filter((bd) => (view.bands[b]?.[bd.id] ?? 0) > 0).map((bd) => `${bd.name}: ${LEVEL_LABEL[view.bands[b]![bd.id]!]}`);
+      return { title: `${tool.name} in ${zoneName(b)}`, lines: [...here, "Cross-cutting, not a pipeline position. Click for notes"] };
     }
     if (kind === "band") {
       const level = bands[a]?.[b] ?? 0;
@@ -140,7 +167,10 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
                     <span className="lane__glyph" data-ramp={ramp}>
                       <RoleGlyph role={tool.role} />
                     </span>
-                    <span className="lane__name">{tool.name}</span>
+                    <span className="lane__text">
+                      <span className="lane__name lane__name--wrap">{tool.name}</span>
+                      {notUsedFor(tool.id).length > 0 && <span className="lane__note lane__note--wrap">not used for {listNames(notUsedFor(tool.id).map((o) => lookup.capabilityName(o.capability).toLowerCase()))}</span>}
+                    </span>
                   </button>
                   {lens.zones.map((z) => {
                     const zone = v.zones[z];
@@ -161,6 +191,39 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
                       </div>
                     );
                   })}
+                </Fragment>
+              );
+            })}
+
+            {crossLanes.length > 0 && <h3 className="matrix__section">Cross-cutting tools</h3>}
+            {crossLanes.map(({ tool, perZone, note }) => {
+              const ramp = rampOf(tool.role);
+              return (
+                <Fragment key={tool.id}>
+                  <button type="button" className="lane__label" onClick={() => onOpen({ kind: "tool", id: tool.id })} title={`${tool.name}: ${lookup.roleDescription(tool.role)}`}>
+                    <span className="lane__glyph" data-ramp={ramp}>
+                      <RoleGlyph role={tool.role} />
+                    </span>
+                    <span className="lane__text">
+                      <span className="lane__name lane__name--wrap">{tool.name}</span>
+                      <span className="lane__note lane__note--wrap">{note}</span>
+                    </span>
+                  </button>
+                  {lens.zones.map((z) => (
+                    <div key={z} className="cell">
+                      {perZone[z]! > 0 && (
+                        <button
+                          type="button"
+                          className="mark mark--reach"
+                          data-ramp={ramp}
+                          data-level={perZone[z]}
+                          data-tip={`cross|${tool.id}|${z}`}
+                          aria-label={`${tool.name}, ${zoneName(z)}: ${LEVEL_LABEL[perZone[z]!]}, cross-cutting`}
+                          onClick={() => onOpen({ kind: "tool", id: tool.id })}
+                        />
+                      )}
+                    </div>
+                  ))}
                 </Fragment>
               );
             })}
@@ -265,6 +328,19 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
                   })}
                 </tr>
               ))}
+              {crossLanes.map(({ tool, perZone, note }) => (
+                <tr key={tool.id}>
+                  <th scope="row">
+                    <button type="button" className="linkish" onClick={() => onOpen({ kind: "tool", id: tool.id })}>
+                      {tool.name}
+                    </button>
+                    <span className="muted"> · cross-cutting: {note}</span>
+                  </th>
+                  {lens.zones.map((z) => (
+                    <td key={z}>{perZone[z]! > 0 ? LEVEL_LABEL[perZone[z]!] : <span className="muted">–</span>}</td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
             <tbody>
               <tr className="table-section">
@@ -300,10 +376,10 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
         </div>
       )}
 
-      {noPosition.length > 0 && (
+      {unplaced.length > 0 && (
         <p className="note">
-          Cross-cutting only, with no position in the pipeline:{" "}
-          {noPosition.map((t, i) => (
+          Nothing to place in this lens yet:{" "}
+          {unplaced.map((t, i) => (
             <Fragment key={t.id}>
               {i > 0 && ", "}
               <button type="button" className="linkish" onClick={() => onOpen({ kind: "tool", id: t.id })}>

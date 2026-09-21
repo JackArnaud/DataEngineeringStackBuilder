@@ -251,6 +251,109 @@ describe("the guided start", () => {
   });
 });
 
+describe("overlapping tools", () => {
+  const stack = "/?tools=snowflake,dbt,github";
+  const section = () => screen.getByRole("region", { name: "Where your tools overlap" });
+  const useFor = (name: RegExp) => within(section()).getByRole("combobox", { name }) as HTMLSelectElement;
+
+  it("lists the tasks more than one of your tools can do, with who leads", () => {
+    setup(stack);
+    expect(within(section()).getByText(/can be done by more than one of your tools/)).toBeTruthy();
+    // GitHub is native and Snowflake bundled, both level 2, so GitHub leads on scheduling.
+    expect(useFor(/Used for Scheduling/).options[0]!.textContent).toMatch(/GitHub.*\(best score\)/);
+    expect(useFor(/Used for Scheduling/).value).toBe("");
+  });
+
+  it("says so, and flags it, when the best tools tie", () => {
+    setup(stack);
+    const sql = useFor(/Used for SQL transformation/);
+    expect(sql.options[0]!.textContent).toMatch(/No clear lead/);
+    expect(sql.closest("li")!.textContent).toContain("Choose one");
+  });
+
+  it("keeps your choice in the address, and takes it away with the tool", async () => {
+    const user = setup(stack);
+    await user.selectOptions(useFor(/Used for SQL transformation/), "dbt");
+    await waitFor(() => expect(window.location.search).toContain("use=transform.sql-transform:dbt"));
+    expect(useFor(/Used for SQL transformation/).closest("li")!.textContent).not.toContain("Choose one");
+
+    await user.click(screen.getByRole("button", { name: "Remove dbt (v2)" }));
+    await waitFor(() => expect(window.location.search).not.toContain("use="));
+  });
+
+  it("scores the task by the tool you use, and shows it in the tool's row", async () => {
+    const user = setup("/?tools=aws-mwaa,github");
+    expect(screen.getByRole("list", { name: "Coverage by stage" }).textContent).toContain("Amazon MWAA");
+    await user.selectOptions(useFor(/Used for Scheduling/), "github");
+    await waitFor(() => expect(window.location.search).toContain("use=orchestrate.scheduling:github"));
+    // Amazon MWAA still leads on other tasks but is no longer the one used for scheduling.
+    const lane = screen.getAllByText(/not used for/).map((n) => n.textContent).join(" ");
+    expect(lane).toContain("scheduling");
+  });
+
+  it("counts the overlaps in each stage of the strip, and clears with start over", async () => {
+    const user = setup(`${stack}&use=transform.sql-transform:dbt`);
+    expect(within(screen.getByRole("list", { name: "Coverage by stage" })).getAllByText(/\d+ overlaps?/).length).toBeGreaterThan(0);
+    await user.click(screen.getByRole("button", { name: "Start over" }));
+    await waitFor(() => expect(window.location.search).toBe(""));
+    expect(screen.queryByRole("region", { name: "Where your tools overlap" })).toBeNull();
+  });
+
+  it("shows nothing when no task is shared", () => {
+    setup("/?tools=aws-s3");
+    expect(screen.queryByRole("region", { name: "Where your tools overlap" })).toBeNull();
+  });
+});
+
+describe("tools with no place in the pipeline", () => {
+  it("get a row in the matrix, under cross-cutting tools, instead of a footnote", () => {
+    setup("/?tools=aws-s3,aws-lake-formation,azure-monitor");
+    const matrix = screen.getByRole("group", { name: /Where your tools sit/ });
+    expect(within(matrix).getByRole("heading", { name: "Cross-cutting tools" })).toBeTruthy();
+    const rows = Array.from(matrix.querySelectorAll(".lane__label")).map((n) => n.textContent);
+    expect(rows.some((t) => t?.startsWith("AWS Lake Formation"))).toBe(true);
+    expect(rows.some((t) => t?.startsWith("Azure Monitor"))).toBe(true);
+    expect(screen.queryByText(/with no position in the pipeline/)).toBeNull();
+  });
+
+  it("say which concerns they cover, and mark their reach across the zones", () => {
+    setup("/?tools=aws-lake-formation");
+    const matrix = screen.getByRole("group", { name: /Where your tools sit/ });
+    expect(matrix.textContent).toContain("Govern");
+    expect(within(matrix).getAllByRole("button", { name: /AWS Lake Formation, .*cross-cutting/ }).length).toBeGreaterThan(1);
+  });
+
+  it("are rows in the table view too", async () => {
+    setup("/?tools=aws-lake-formation&view=table");
+    const table = screen.getByRole("table", { name: /Where your tools sit/ });
+    expect(within(table).getByText(/cross-cutting: Govern/)).toBeTruthy();
+  });
+
+  it("do not disturb the pipeline rows of the tools beside them", () => {
+    setup("/?tools=aws-s3,aws-lake-formation");
+    const matrix = screen.getByRole("group", { name: /Where your tools sit/ });
+    const rows = Array.from(matrix.querySelectorAll(".lane__label")).map((n) => n.textContent);
+    expect(rows.some((t) => t?.startsWith("Amazon S3"))).toBe(true);
+  });
+
+  it("get a row even where the lens has no zone for what they do, and say so", () => {
+    setup("/?tools=aws-s3,azure-cost-management");
+    const matrix = screen.getByRole("group", { name: /Where your tools sit/ });
+    const row = Array.from(matrix.querySelectorAll(".lane__label")).find((n) => n.textContent?.startsWith("Microsoft Cost Management"))!;
+    expect(row.textContent).toContain("no zone in this lens: cost visibility");
+  });
+});
+
+describe("the stage strip", () => {
+  it("names every tool in a stage, including one that another beats on every capability", () => {
+    setup("/?tools=aws-mwaa,github");
+    const strip = screen.getByRole("list", { name: "Coverage by stage" });
+    const orchestrate = within(strip).getAllByRole("listitem").find((li) => li.textContent?.startsWith("Orchestrate"))!;
+    expect(orchestrate.textContent).toContain("Amazon MWAA");
+    expect(orchestrate.textContent).toContain("GitHub");
+  });
+});
+
 describe("finding a tool", () => {
   it("starts with vendors folded, so the list is short", () => {
     setup();

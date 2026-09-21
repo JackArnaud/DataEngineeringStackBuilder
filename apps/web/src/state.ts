@@ -11,6 +11,8 @@ export interface StackState {
   needs: string[];
   /** Cross-cutting capabilities the user set aside as not relevant to their stack. */
   skip: string[];
+  /** Spine capability to the tool the user uses for it, where more than one tool provides it. */
+  use: Record<string, string>;
   lens: string;
   view: View;
 }
@@ -27,7 +29,7 @@ export const isSelectable = (model: RenderModel, id: string): boolean => model.t
 const canonical = (items: string[]): string[] => [...new Set(items)].sort();
 
 export function emptyState(model: RenderModel): StackState {
-  return { tools: [], needs: [], skip: [], lens: defaultLens(model), view: "chart" };
+  return { tools: [], needs: [], skip: [], use: {}, lens: defaultLens(model), view: "chart" };
 }
 
 /** Read a query string against the model, quietly dropping anything that no longer exists. */
@@ -41,11 +43,18 @@ export function parseState(search: string, model: RenderModel): StackState {
 
   const spine = new Set(model.capabilities.filter((c) => c.kind === "spine").map((c) => c.id));
   const band = new Set(model.capabilities.filter((c) => c.kind === "band").map((c) => c.id));
+  const tools = canonical(list("tools").filter((id) => isSelectable(model, id)));
   const lens = params.get("lens");
   return {
-    tools: canonical(list("tools").filter((id) => isSelectable(model, id))),
+    tools,
     needs: canonical(list("needs").filter((id) => spine.has(id))),
     skip: canonical(list("skip").filter((id) => band.has(id))),
+    // `use=<capability>:<tool>`, kept only when it names a spine capability and a tool that is in the stack.
+    use: Object.fromEntries(
+      list("use")
+        .map((pair) => pair.split(":") as [string, string])
+        .filter(([cap, tool]) => spine.has(cap) && tools.includes(tool)),
+    ),
     lens: lens && model.lenses.some((l) => l.id === lens) ? lens : defaultLens(model),
     view: params.get("view") === "table" ? "table" : "chart",
   };
@@ -57,10 +66,12 @@ export function serializeState(state: StackState, model: RenderModel): string {
   if (state.tools.length) params.set("tools", canonical(state.tools).join(","));
   if (state.needs.length) params.set("needs", canonical(state.needs).join(","));
   if (state.skip.length) params.set("skip", canonical(state.skip).join(","));
+  const use = Object.entries(state.use).sort(([a], [b]) => a.localeCompare(b));
+  if (use.length) params.set("use", use.map(([cap, tool]) => `${cap}:${tool}`).join(","));
   if (state.lens !== defaultLens(model)) params.set("lens", state.lens);
   if (state.view !== "chart") params.set("view", state.view);
   // Commas are the list separator and are safe in a query string; keep the address readable.
-  const query = params.toString().replace(/%2C/g, ",");
+  const query = params.toString().replace(/%2C/g, ",").replace(/%3A/g, ":");
   return query ? `?${query}` : "";
 }
 

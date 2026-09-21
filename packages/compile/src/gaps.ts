@@ -1,6 +1,6 @@
 import { DELIVERY_RANK } from "./derive.js";
 import type { Cell, ConditionalLevel, Delivery } from "./derive.js";
-import type { RenderModel } from "./render-model.js";
+import type { RenderModel, RenderTool } from "./render-model.js";
 
 /**
  * Gaps: what a stack is missing, ranked by how much it matters.
@@ -50,14 +50,48 @@ export interface StackCell {
 export interface StageSummary {
   stage: string;
   best_level: 0 | 1 | 2 | 3;
-  /** Selected tools providing spine coverage in the stage. */
+  /** Selected tools whose coverage is counted for the stage: the ones that win a capability in it. */
   covered_by: string[];
+  /**
+   * Every selected tool with any spine capability in the stage, at any level, strongest first. It
+   * includes a tool that another beats on every capability, so nothing you picked goes unlisted.
+   */
+  providers: { tool: string; level: 1 | 2 | 3 }[];
+}
+
+/** One tool that can do a task, and how well. */
+export interface Provider {
+  tool: string;
+  level: 1 | 2 | 3;
+  delivery: Delivery;
+}
+
+/**
+ * A spine capability that two or more tools in the stack provide properly (native or core). Not a
+ * gap: an overlap is a decision about which tool does the job, and it changes what the stack is
+ * scored as covering.
+ */
+export interface Overlap {
+  capability: string;
+  stage: string;
+  /** Every tool that provides it at level 2 or above, best first. */
+  providers: Provider[];
+  /** The clear best provider by the scores, or null when the top ones tie. */
+  lead: string | null;
+  /** The providers tied for best. One when there is a lead. */
+  tied: string[];
+  /** The tool the user said they use for it, if that choice is valid. */
+  assigned: string | null;
+  /** The tool coverage counts: the assigned one, else the lead, else null when it is a tie. */
+  used: string | null;
 }
 
 export interface GapReport {
   gaps: Gap[];
   stages: StageSummary[];
   cells: StackCell[];
+  /** Spine capabilities covered by more than one tool, in pipeline order. */
+  overlaps: Overlap[];
 }
 
 export interface StackInput {
@@ -65,6 +99,12 @@ export interface StackInput {
   tools: string[];
   /** Spine capabilities the user says they need. */
   needs?: string[];
+  /**
+   * Which tool the user uses for a spine capability that more than one tool provides: capability id
+   * to tool id. Coverage for that capability is then the chosen tool's, not the best in the stack.
+   * A choice for a tool that does not provide it is ignored.
+   */
+  use?: Record<string, string>;
 }
 
 /** What a user-stated need ranks as. */
@@ -76,6 +116,35 @@ const uniqueSorted = (items: string[]): string[] => [...new Set(items)].sort();
 interface Holder {
   tool: string;
   cell: Cell;
+}
+
+/**
+ * The overlap on one spine cell, or null. Only tools that provide it properly (level 2 or 3) count,
+ * and a tool that is part of a bundle that is also in the stack is not a second tool: it is the same
+ * product twice.
+ */
+function findOverlap(toolsById: Map<string, RenderTool>, list: Holder[], capability: string, stage: string, chosen: string | undefined): Overlap | null {
+  const rank = (h: Holder) => h.cell.level * 10 + DELIVERY_RANK[h.cell.delivery!];
+  const proper = list.filter((h) => h.cell.level >= 2);
+  const distinct = proper.filter((h) => !proper.some((o) => o.tool !== h.tool && toolsById.get(o.tool)?.includes?.includes(h.tool)));
+  if (distinct.length < 2) return null;
+
+  const providers = distinct
+    .map((h) => ({ tool: h.tool, level: h.cell.level as 1 | 2 | 3, delivery: h.cell.delivery!, r: rank(h) }))
+    .sort((a, b) => b.r - a.r || a.tool.localeCompare(b.tool));
+  const top = providers[0]!.r;
+  const tied = providers.filter((p) => p.r === top).map((p) => p.tool);
+  const lead = tied.length === 1 ? tied[0]! : null;
+  const assigned = chosen && providers.some((p) => p.tool === chosen) ? chosen : null;
+  return {
+    capability,
+    stage,
+    providers: providers.map(({ tool, level, delivery }) => ({ tool, level, delivery })),
+    lead,
+    tied,
+    assigned,
+    used: assigned ?? lead,
+  };
 }
 
 export function computeGaps(model: RenderModel, input: StackInput): GapReport {
@@ -93,6 +162,12 @@ export function computeGaps(model: RenderModel, input: StackInput): GapReport {
     if (kindOf.get(capability) !== "spine") throw new Error(`"${capability}" is not a spine capability, so it cannot be a need`);
   }
 
+  const use = input.use ?? {};
+  for (const [capability, tool] of Object.entries(use)) {
+    if (kindOf.get(capability) !== "spine") throw new Error(`"${capability}" is not a spine capability, so no tool can be chosen for it`);
+    if (!selected.includes(tool)) throw new Error(`"${tool}" is not in the stack, so it cannot be the one used for ${capability}`);
+  }
+
   // The stack's coverage: for every cell, the best any selected tool reaches.
   const holders = new Map<string, Holder[]>();
   for (const id of selected) {
@@ -103,9 +178,26 @@ export function computeGaps(model: RenderModel, input: StackInput): GapReport {
     }
   }
 
+  const overlaps: Overlap[] = [];
+  const stageTools = new Map<string, Map<string, number>>();
   const cells: StackCell[] = [];
-  for (const [key, list] of holders) {
-    const { capability, stage } = list[0]!.cell;
+  for (const [key, everyone] of holders) {
+    const { capability, stage } = everyone[0]!.cell;
+    let list = everyone;
+    if (kindOf.get(capability) === "spine") {
+      for (const h of everyone) {
+        if (h.cell.level === 0) continue;
+        const tools = stageTools.get(stage) ?? new Map<string, number>();
+        tools.set(h.tool, Math.max(tools.get(h.tool) ?? 0, h.cell.level));
+        stageTools.set(stage, tools);
+      }
+      const overlap = findOverlap(toolsById, everyone, capability, stage, use[capability]);
+      if (overlap) {
+        overlaps.push(overlap);
+        // Coverage follows the tool in use, not the best tool owned.
+        if (overlap.assigned) list = everyone.filter((h) => h.tool === overlap.assigned);
+      }
+    }
     const stackCell: StackCell = { key, capability, stage, level: 0, via: [], conditional: [] };
 
     const covering = list.filter((h) => h.cell.level > 0);
@@ -139,6 +231,7 @@ export function computeGaps(model: RenderModel, input: StackInput): GapReport {
       stage: id,
       best_level: Math.max(0, ...spine.map((c) => c.level)) as 0 | 1 | 2 | 3,
       covered_by: uniqueSorted(spine.flatMap((c) => c.via)),
+      providers: [...(stageTools.get(id) ?? [])].map(([tool, level]) => ({ tool, level: level as 1 | 2 | 3 })).sort((a, b) => b.level - a.level || a.tool.localeCompare(b.tool)),
     };
   });
   const occupied = new Set(stages.filter((s) => s.best_level > 0).map((s) => s.stage));
@@ -178,7 +271,9 @@ export function computeGaps(model: RenderModel, input: StackInput): GapReport {
   }
 
   gaps.sort((a, b) => b.criticality - a.criticality || KIND_ORDER[a.kind] - KIND_ORDER[b.kind] || a.id.localeCompare(b.id));
-  return { gaps, stages, cells };
+  const order = new Map(model.stages.map((s, i) => [s.id, i]));
+  overlaps.sort((a, b) => order.get(a.stage)! - order.get(b.stage)! || a.capability.localeCompare(b.capability));
+  return { gaps, stages, cells, overlaps };
 }
 
 /**

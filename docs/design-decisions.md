@@ -152,6 +152,14 @@ say; they never gate anything.
 are sorted so the same stack is always the same link, and ids the data no longer has are dropped
 silently.
 
+**The page is typeset, not carded.** The first version read as a generic dashboard: rounded
+cards, pill chips, soft shadows, a sans face throughout. The rewrite gives it a document's structure.
+Headings are serif and numerals are monospace. Corners are 2px. Sections are separated by hairline
+rules, with a heavier rule opening each one, instead of boxes. Selection is shown by ink fill, not
+a tint, and lists (the landing choices, examples, gaps, overlaps) are ruled rows with a text link or
+arrow rather than buttons in tiles. None of this touches the data colours above: the ramps and status
+colours are unchanged, and axe still reports no violations in light, dark and at phone width.
+
 **Accessibility was measured, not assumed.** An axe audit in Chrome across ten states (light, dark,
 chart, table, both panels) found no violations, including colour contrast. The checks it could not
 decide are all rows scrolled out of view inside the tool list, using tokens that passed where
@@ -283,4 +291,31 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
   capability properly (native or core): a level 1 option, which needs a plugin or custom work, never
   outranks one that does not, however well it fits. The panel says why a tool is offered ("Same vendor as
   Snowflake"). `pairs_with` is a hint for ordering and nothing else, and never counts as coverage.
+- **Overlapping tools are a decision, not a gap.** When two or more tools in the stack provide the same
+  spine capability properly (native or core), the report lists an overlap: the providers best first, a
+  lead, and whether the top ones tie. A bundle and its own part in the same stack is one product, not two.
+  The lead is the best level, then native over bundled. A tie is called "no clear lead" and never guessed:
+  Snowflake and dbt both score 3 for SQL transformation, and the data cannot say which one a team uses.
+  Bands are left out, because dozens of tools touch access control and nobody chooses one.
+- **Coverage follows the tool you use.** The user can say which tool they use for an overlapping task
+  (`use=<capability>:<tool>` in the address). That capability is then scored as the chosen tool's level,
+  not the best one owned, so owning Airflow (3) while scheduling with GitHub Actions (2) shows 2. With no
+  choice, nothing changes. A choice for a tool that does not provide the task is ignored, one for a tool
+  that leaves the stack is dropped with it, and a choice never adds or removes a gap, because a gap needs
+  a level of zero and a chosen tool has none. The list sits under the matrix, each tool's row says what it
+  is not used for, and the stage strip counts the overlaps in each stage.
+- **What overlap cannot yet tell apart.** Some overlaps are alternatives (Snowflake or dbt for SQL
+  models), some are layers (dbt orders models, Airflow orders jobs) and some share a label but not a job
+  (a cron trigger on a CI runner is not a data scheduler). The scores carry this only in their notes. A
+  structured "reach" on each score (own objects, general purpose, CI jobs) would let layers be told from
+  alternatives, and is the next step if overlap needs to be smarter.
+- **Every tool you pick is on the page.** The matrix drew a row only for a tool with a spine position, so
+  the nine tools with only cross-cutting coverage (a catalog, a monitor, an access layer, an IaC tool)
+  were a footnote under the chart, and in the medallion lens the cost tool, which has no honest zone
+  there, was easy to miss. They now get a row under "Cross-cutting tools": marks in the zones where they
+  have coverage, the concerns they cover under the name, and for a tool the lens has no zone for, a note
+  saying so, with its cells in the "not shown" fold. The stage strip likewise lists every tool that
+  touches a stage, including one another beats on every capability; `covered_by` still means only the
+  tools whose coverage is counted. A data test fails if any tool in either lens has neither a row nor a
+  reason, so a new record cannot be invisible.
 

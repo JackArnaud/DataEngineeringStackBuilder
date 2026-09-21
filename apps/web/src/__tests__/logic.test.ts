@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GLYPH_ROLES } from "../components/glyphs";
 import { coversStage, groupByVendor } from "../picker";
 import { EXAMPLES } from "../examples";
+import { buildLanes } from "../components/LensMatrix";
 import { CLOUDS, NEED_CARDS, TOOL_STEPS, cardIsOn } from "../landing";
 import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
@@ -17,15 +18,23 @@ describe("stack state in the address", () => {
     expect(serializeState(state, model)).toBe("?tools=postgres&skip=govern.masking,quality.tests");
   });
 
+  it("keeps a choice of tool for a task, and drops one for a tool that is not in the stack or a task that is not a spine capability", () => {
+    const state = parseState("?tools=aws-mwaa,github&use=orchestrate.scheduling:github,orchestrate.scheduling:ghost,govern.masking:github,nope:github", model);
+    expect(state.use).toEqual({ "orchestrate.scheduling": "github" });
+    expect(serializeState(state, model)).toBe("?tools=aws-mwaa,github&use=orchestrate.scheduling:github");
+    // A tool that is left out of the address takes its choice with it.
+    expect(parseState("?tools=aws-mwaa&use=orchestrate.scheduling:github", model).use).toEqual({});
+  });
+
   it("starts empty, on the medallion lens, as a chart", () => {
-    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], lens: "medallion", view: "chart" });
+    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, lens: "medallion", view: "chart" });
     expect(defaultLens(model)).toBe("medallion");
   });
 
   it("round-trips: what is written is what is read back", () => {
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], lens: "grid", view: "table" as const };
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, lens: "grid", view: "table" as const };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&lens=grid&view=table");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&lens=grid&view=table");
     expect(parseState(query, model)).toEqual(state);
   });
 
@@ -42,7 +51,7 @@ describe("stack state in the address", () => {
 
   it("drops anything the model no longer has, rather than failing", () => {
     const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope&lens=kappa&view=poster", model);
-    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], lens: "medallion", view: "chart" });
+    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, lens: "medallion", view: "chart" });
   });
 
   it("does not let a portfolio be selected, only its services", () => {
@@ -274,5 +283,22 @@ describe("the guided start's choices", () => {
     expect(cardIsOn(card, [])).toBe(false);
     expect(cardIsOn(card, [card.needs[0]!])).toBe(false);
     expect(cardIsOn(card, [...card.needs, "ingest.cdc"])).toBe(true);
+  });
+});
+
+describe("every tool you pick is on the page", () => {
+  it("has a row in the matrix, either in the pipeline or among the cross-cutting tools, in every lens", () => {
+    const pickable = model.tools.filter((t) => t.kind !== "portfolio");
+    expect(pickable.length).toBeGreaterThan(50);
+    for (const lens of model.lenses) {
+      for (const tool of pickable) {
+        const inPipeline = buildLanes(lens, [tool]).length === 1;
+        const view = lens.tools[tool.id];
+        const crossCutting = Object.values(view?.bands ?? {}).some((zone) => Object.values(zone).some((level) => level > 0));
+        // A lens with no honest zone for a concern puts it in the "not shown" fold, and the tool still has a row.
+        const noZoneHere = (view?.rail.length ?? 0) > 0;
+        expect(inPipeline || crossCutting || noZoneHere, `${tool.id} in ${lens.id}`).toBe(true);
+      }
+    }
   });
 });

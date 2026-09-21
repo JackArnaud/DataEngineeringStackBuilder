@@ -280,3 +280,117 @@ describe("grouping gaps for a list", () => {
   });
 });
 
+describe("overlapping tools", () => {
+  const overlaps = (tools: string[], use?: Record<string, string>) => computeGaps(model, { tools, use }).overlaps;
+  const at = (tools: string[], capability: string, use?: Record<string, string>) => overlaps(tools, use).find((o) => o.capability === capability);
+  const stack = ["snowflake", "dbt", "github"];
+
+  it("find a capability that two of your tools provide properly", () => {
+    const scheduling = at(stack, "orchestrate.scheduling")!;
+    expect(scheduling.stage).toBe("orchestrate");
+    expect(scheduling.providers.map((p) => p.tool).sort()).toEqual(["github", "snowflake"]);
+    for (const o of overlaps(stack)) {
+      expect(o.providers.length, o.capability).toBeGreaterThanOrEqual(2);
+      for (const p of o.providers) expect(p.level, `${o.capability} ${p.tool}`).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("do not count a tool that only reaches level 1, or a capability only one tool has", () => {
+    expect(overlaps(["aws-s3"])).toEqual([]);
+    expect(overlaps(["postgres"])).toEqual([]);
+    // Postgres has a level 1 route to storage; it must not overlap a real warehouse.
+    expect(overlaps(["postgres", "aws-redshift"]).find((o) => o.capability === "store.warehouse")).toBeUndefined();
+  });
+
+  it("do not count a bundle and its own part as two tools", () => {
+    expect(overlaps(["snowflake", "snowflake-core"])).toEqual([]);
+  });
+
+  it("name the best provider as the lead, native ahead of bundled at the same level", () => {
+    const scheduling = at(stack, "orchestrate.scheduling")!;
+    expect(scheduling.lead).toBe("github");
+    expect(scheduling.tied).toEqual(["github"]);
+    expect(scheduling.used).toBe("github");
+    expect(scheduling.providers[0]!.tool).toBe("github");
+  });
+
+  it("say there is no clear lead when the best providers tie", () => {
+    const sql = at(stack, "transform.sql-transform")!;
+    expect(sql.lead).toBeNull();
+    expect(sql.tied.sort()).toEqual(["dbt", "snowflake"]);
+    expect(sql.used).toBeNull();
+    // A tie changes nothing about coverage: either tool gives the same level.
+    expect(cell(report(stack), "transform.sql-transform@transform")).toMatchObject({ level: 3 });
+  });
+
+  it("score coverage by the tool you use, not the best one you own", () => {
+    const tools = ["aws-mwaa", "github"];
+    expect(cell(report(tools), "orchestrate.scheduling@orchestrate")).toMatchObject({ level: 3, via: ["aws-mwaa"] });
+    const r = computeGaps(model, { tools, use: { "orchestrate.scheduling": "github" } });
+    expect(r.cells.find((c) => c.key === "orchestrate.scheduling@orchestrate")).toMatchObject({ level: 2, via: ["github"] });
+    expect(r.overlaps.find((o) => o.capability === "orchestrate.scheduling")).toMatchObject({ assigned: "github", used: "github", lead: "aws-mwaa" });
+  });
+
+  it("leave every other capability alone when one is assigned", () => {
+    const tools = ["aws-mwaa", "github"];
+    const before = report(tools).cells.filter((c) => c.key !== "orchestrate.scheduling@orchestrate");
+    const after = computeGaps(model, { tools, use: { "orchestrate.scheduling": "github" } }).cells.filter((c) => c.key !== "orchestrate.scheduling@orchestrate");
+    expect(after).toEqual(before);
+  });
+
+  it("ignore a choice for a tool that does not provide the capability", () => {
+    const tools = ["aws-mwaa", "github", "aws-s3"];
+    const r = computeGaps(model, { tools, use: { "orchestrate.scheduling": "aws-s3" } });
+    expect(r.overlaps.find((o) => o.capability === "orchestrate.scheduling")!.assigned).toBeNull();
+    expect(r.cells.find((c) => c.key === "orchestrate.scheduling@orchestrate")).toMatchObject({ level: 3, via: ["aws-mwaa"] });
+  });
+
+  it("refuse a choice for something that is not a spine capability or not in the stack", () => {
+    expect(() => computeGaps(model, { tools: stack, use: { "govern.masking": "github" } })).toThrow(/not a spine capability/);
+    expect(() => computeGaps(model, { tools: ["snowflake"], use: { "orchestrate.scheduling": "github" } })).toThrow(/not in the stack/);
+  });
+
+  it("never change which gaps there are: an overlap is not a gap", () => {
+    for (const tools of [stack, ["aws-mwaa", "github"], ["databricks", "power-bi"]]) {
+      const use = Object.fromEntries(overlaps(tools).flatMap((o) => (o.providers[1] ? [[o.capability, o.providers[1].tool]] : [])));
+      expect(ids(computeGaps(model, { tools, use })), tools.join()).toEqual(ids(report(tools)));
+    }
+  });
+
+  it("list overlaps in pipeline order, and only spine capabilities", () => {
+    const order = model.stages.map((s) => s.id);
+    const found = overlaps(["snowflake", "dbt", "github", "power-bi"]);
+    expect(found.map((o) => order.indexOf(o.stage))).toEqual([...found.map((o) => order.indexOf(o.stage))].sort((a, b) => a - b));
+    for (const o of found) expect(o.capability.startsWith(`${o.stage}.`), o.capability).toBe(true);
+  });
+});
+
+describe("every tool is listed in the stages it touches", () => {
+  it("names a tool that another beats on every capability, not only the winners", () => {
+    const r = report(["aws-mwaa", "github"]);
+    const orchestrate = stage(r, "orchestrate");
+    expect(orchestrate.providers.map((p) => p.tool).sort()).toEqual(["aws-mwaa", "github"]);
+    // GitHub wins CI/CD and MWAA wins the rest, so both are also covered_by; a weaker one would only be a provider.
+    for (const id of orchestrate.covered_by) expect(orchestrate.providers.map((p) => p.tool)).toContain(id);
+  });
+
+  it("lists every selected tool with any spine capability in a stage, strongest first, and no one else", () => {
+    for (const tools of [["snowflake", "dbt", "github"], ["postgres", "aws-redshift"], ["aws-s3", "aws-glue", "aws-athena"]]) {
+      const r = report(tools);
+      for (const s of r.stages) {
+        const levels = s.providers.map((p) => p.level);
+        expect(levels, `${tools} ${s.stage}`).toEqual([...levels].sort((a, b) => b - a));
+        for (const p of s.providers) {
+          expect(tools).toContain(p.tool);
+          const tool = model.tools.find((t) => t.id === p.tool)!;
+          expect(tool.cells.some((c) => c.stage === s.stage && c.capability.startsWith(`${s.stage}.`) && c.level > 0), `${p.tool} in ${s.stage}`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("agrees with the stage's best level", () => {
+    const r = report(["snowflake", "dbt", "github"]);
+    for (const s of r.stages) expect(Math.max(0, ...s.providers.map((p) => p.level)), s.stage).toBeGreaterThanOrEqual(s.best_level);
+  });
+});

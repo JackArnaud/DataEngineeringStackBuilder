@@ -659,6 +659,7 @@
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "source"
       },
       {
@@ -666,16 +667,24 @@
         "covered_by": [
           "fx-mover"
         ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-mover"
+          }
+        ],
         "stage": "ingest"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "store"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "transform"
       },
       {
@@ -683,11 +692,18 @@
         "covered_by": [
           "fx-orchestrator"
         ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-orchestrator"
+          }
+        ],
         "stage": "orchestrate"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "serve"
       }
     ]
@@ -1311,11 +1327,13 @@
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "source"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "ingest"
       },
       {
@@ -1323,22 +1341,36 @@
         "covered_by": [
           "fx-warehouse"
         ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-warehouse"
+          }
+        ],
         "stage": "store"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "transform"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "orchestrate"
       },
       {
         "best_level": 3,
         "covered_by": [
           "fx-warehouse"
+        ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-warehouse"
+          }
         ],
         "stage": "serve"
       }
@@ -1472,31 +1504,37 @@
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "source"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "ingest"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "store"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "transform"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "orchestrate"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "serve"
       }
     ]
@@ -2501,17 +2539,25 @@
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "source"
       },
       {
         "best_level": 0,
         "covered_by": [],
+        "providers": [],
         "stage": "ingest"
       },
       {
         "best_level": 3,
         "covered_by": [
           "fx-suite"
+        ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-suite"
+          }
         ],
         "stage": "store"
       },
@@ -2520,6 +2566,12 @@
         "covered_by": [
           "fx-suite"
         ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-suite"
+          }
+        ],
         "stage": "transform"
       },
       {
@@ -2527,12 +2579,24 @@
         "covered_by": [
           "fx-suite"
         ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-suite"
+          }
+        ],
         "stage": "orchestrate"
       },
       {
         "best_level": 3,
         "covered_by": [
           "fx-suite"
+        ],
+        "providers": [
+          {
+            "level": 3,
+            "tool": "fx-suite"
+          }
         ],
         "stage": "serve"
       }
