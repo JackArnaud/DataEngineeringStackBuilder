@@ -62,6 +62,8 @@ export interface RenderTool {
   pricing_model: string;
   interfaces: string[];
   tagline?: string;
+  /** Records this one is commonly used with. A hint for suggestions, never a coverage claim. */
+  pairs_with?: string[];
   /** Members of a bundle or portfolio. */
   includes?: string[];
   bundling?: string;

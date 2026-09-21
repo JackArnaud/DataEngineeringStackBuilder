@@ -8,10 +8,12 @@ interface Props {
   onChange: (patch: Partial<StackState>) => void;
   canReset: boolean;
   onReset: () => void;
+  /** Reopen the guided start with the current choices. */
+  onGuide?: () => void;
 }
 
 /** One row above everything it scopes: which lens, chart or table, share, start over. */
-export function FilterRow({ model, state, onChange, canReset, onReset }: Props) {
+export function FilterRow({ model, state, onChange, canReset, onReset, onGuide }: Props) {
   const [copied, setCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -58,6 +60,11 @@ export function FilterRow({ model, state, onChange, canReset, onReset }: Props) 
           {copied ? "Link copied" : ""}
         </span>
         {copied && <span className="muted" aria-hidden="true">Copied</span>}
+        {onGuide && (
+          <button type="button" className="secondary" onClick={onGuide}>
+            Guided start
+          </button>
+        )}
         <button type="button" className="linkish" disabled={!canReset} onClick={onReset}>
           Start over
         </button>

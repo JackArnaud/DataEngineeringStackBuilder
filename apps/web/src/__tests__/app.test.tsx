@@ -13,6 +13,14 @@ function setup(url = "/") {
   return user;
 }
 
+/** Renders the guided start, as a first-time visitor sees it. */
+function setupLanding(url = "/") {
+  window.history.replaceState(null, "", url);
+  const user = userEvent.setup();
+  render(<Builder model={model} startOnLanding />);
+  return user;
+}
+
 const chips = () => screen.getByRole("list", { name: "Selected tools" });
 /** The "Add all" control lives in a vendor's heading row; several vendors have one, so find it by vendor. */
 const vendorHead = (vendor: string) => screen.getByRole("heading", { name: vendor }).closest<HTMLElement>(".vendor__head")!;
@@ -32,13 +40,13 @@ afterEach(() => {
 });
 
 describe("an empty stack", () => {
-  it("flags every stage that matters, and offers examples to start from", () => {
+  it("flags every stage that matters, and points to the guided start", () => {
     setup();
     for (const stage of ["Serve", "Store", "Ingest", "Transform", "Orchestrate"]) {
       expect(screen.getByText(`Nothing in your stack covers ${stage}`)).toBeTruthy();
     }
     expect(screen.queryByText("Nothing in your stack covers Source")).toBeNull(); // source is never a gap
-    expect(screen.getByRole("button", { name: /Databricks lakehouse/ })).toBeTruthy();
+    expect(screen.getByText(/Nothing picked yet/)).toBeTruthy();
     expect(screen.queryByRole("list", { name: "Selected tools" })).toBeNull();
   });
 
@@ -59,14 +67,6 @@ describe("building a stack", () => {
     expect(screen.queryByText("Nothing in your stack covers Store")).toBeNull();
     expect(screen.getByText("Nothing in your stack covers Serve")).toBeTruthy();
     await waitFor(() => expect(window.location.search).toBe("?tools=aws-s3"));
-  });
-
-  it("starts from an example", async () => {
-    const user = setup();
-    await user.click(screen.getByRole("button", { name: /Databricks lakehouse/ }));
-    expect(within(chips()).getByText("Databricks")).toBeTruthy();
-    // A whole Databricks stack leaves no stage empty.
-    expect(screen.queryByText(/^Nothing in your stack covers/)).toBeNull();
   });
 
   it("adds every service of a portfolio at once, and only its services", async () => {
@@ -98,7 +98,7 @@ describe("building a stack", () => {
     const user = setup("/?tools=postgres&needs=ingest.cdc");
     await user.click(screen.getByRole("button", { name: "Start over" }));
     expect(screen.queryByRole("list", { name: "Selected tools" })).toBeNull();
-    expect(screen.getByRole("button", { name: /Databricks lakehouse/ })).toBeTruthy();
+    expect(screen.getByText(/Nothing picked yet/)).toBeTruthy();
     await waitFor(() => expect(window.location.search).toBe(""));
   });
 
@@ -112,27 +112,142 @@ describe("building a stack", () => {
   });
 });
 
-describe("the example gallery", () => {
-  it("shows worked examples grouped by theme when nothing is picked, including one that ends in AI", () => {
-    setup();
+describe("the guided start", () => {
+  const next = (user: ReturnType<typeof userEvent.setup>) => user.click(screen.getByRole("button", { name: /^(Next|Skip)$/ }));
+  const title = () => document.getElementById("step-title")?.textContent;
+
+  it("asks how to start before showing any guidance", () => {
+    setupLanding();
+    expect(screen.getByRole("heading", { name: "How would you like to start?" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Start from an example/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Build my own/ })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Coverage by stage" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "What\u2019s missing" })).toBeNull();
+  });
+
+  it("offers worked examples, grouped by theme, one of which ends in AI", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
     const gallery = screen.getByRole("region", { name: "Start from an example" });
     expect(within(gallery).getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toContain("Ending in AI");
     expect(within(gallery).getAllByRole("button", { name: /^Load / }).length).toBeGreaterThan(10);
   });
 
-  it("loads an example with its needs, and gets out of the way", async () => {
-    const user = setup();
+  it("loads an example with its needs and opens the guidance", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
     await user.click(screen.getByRole("button", { name: "Load Features to a model on Google Cloud" }));
-    expect(screen.queryByRole("region", { name: "Start from an example" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "How would you like to start?" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
     expect(within(chips()).getByText("BigQuery")).toBeTruthy();
     expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("ML serving")).toBeTruthy();
   });
 
-  it("comes back after start over", async () => {
-    const user = setup("/?tools=github");
-    expect(screen.queryByRole("region", { name: "Start from an example" })).toBeNull();
+  it("builds a stack one question at a time, and lets any step be skipped", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Build my own/ }));
+    expect(title()).toBe("Where does your data start?");
+    expect(screen.getByRole("button", { name: "Skip" })).toBeTruthy();
+
+    await user.click(screen.getByRole("checkbox", { name: /PostgreSQL/ }));
+    expect(screen.getByRole("button", { name: "Next" })).toBeTruthy();
+    await next(user);
+
+    expect(title()).toBe("Where will it be stored and processed?");
+    await user.click(screen.getByRole("checkbox", { name: /^Snowflake/ }));
+    await user.click(screen.getByRole("checkbox", { name: /^Amazon Web Services/ }));
+    await next(user);
+
+    // Choosing a cloud adds a screen for its services.
+    expect(title()).toBe("Which Amazon Web Services services do you use?");
+    await user.click(screen.getByRole("checkbox", { name: /^Amazon S3/ }));
+    await next(user);
+
+    expect(title()).toBe("How do you model and schedule the work?");
+    await user.click(screen.getByRole("checkbox", { name: /^dbt \(v2\)/ }));
+    await next(user);
+    expect(title()).toBe("How do people use the data?");
+    await next(user); // skipped
+    expect(title()).toBe("How do you keep changes under control?");
+    await user.click(screen.getByRole("checkbox", { name: /^GitHub/ }));
+    await next(user);
+
+    expect(title()).toBe("What does it need to do?");
+    await user.click(screen.getByRole("checkbox", { name: /Dashboards and reports/ }));
+    await next(user);
+
+    expect(title()).toBe("Here is your stack");
+    const review = document.querySelector(".landing")!.textContent!;
+    expect(review).toContain("Snowflake");
+    expect(review).toContain("Amazon S3");
+    expect(review).toContain("BI and visualisation");
+
+    await user.click(screen.getByRole("button", { name: "Show me what's missing" }));
+    expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
+    expect(within(chips()).getByText("Snowflake")).toBeTruthy();
+    expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("BI and visualisation")).toBeTruthy();
+    await waitFor(() => expect(window.location.search).toContain("needs=serve.bi-viz"));
+  });
+
+  it("lets a group of services be selected or cleared at once", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Build my own/ }));
+    await next(user);
+    await user.click(screen.getByRole("checkbox", { name: /^Amazon Web Services/ }));
+    await next(user);
+    await user.click(screen.getByRole("button", { name: /^Select all/ }));
+    expect(screen.getAllByRole("checkbox").every((c) => (c as HTMLInputElement).checked)).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Clear" }));
+    expect(screen.getAllByRole("checkbox").every((c) => !(c as HTMLInputElement).checked)).toBe(true);
+  });
+
+  it("goes back a step without losing choices, and back to the start from the first", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Build my own/ }));
+    await user.click(screen.getByRole("checkbox", { name: /PostgreSQL/ }));
+    await next(user);
+    await user.click(screen.getByRole("button", { name: "Back" }));
+    expect((screen.getByRole("checkbox", { name: /PostgreSQL/ }) as HTMLInputElement).checked).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: "How would you like to start?" })).toBeTruthy();
+  });
+
+  it("keeps the needs cards and the needs tab in agreement", async () => {
+    const user = setupLanding("/");
+    await user.click(screen.getByRole("button", { name: /Build my own/ }));
+    for (let i = 0; i < 5; i += 1) await next(user);
+    await user.click(screen.getByRole("checkbox", { name: /Machine learning in production/ }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "Show me what's missing" }));
+    await user.click(screen.getByRole("tab", { name: /What you need/ }));
+    expect((screen.getByRole("checkbox", { name: /Feature engineering/ }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox", { name: /ML serving/ }) as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("lets someone who knows their stack skip straight to the builder", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /go straight to the builder/ }));
+    expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
+  });
+
+  it("goes straight to the guidance for an address that already carries a stack", () => {
+    setupLanding("/?tools=postgres");
+    expect(screen.queryByRole("heading", { name: "How would you like to start?" })).toBeNull();
+    expect(within(chips()).getByText("PostgreSQL")).toBeTruthy();
+  });
+
+  it("reopens from the builder with the choices kept, and start over returns to it", async () => {
+    const user = setupLanding("/?tools=postgres");
+    await user.click(screen.getByRole("button", { name: "Guided start" }));
+    expect(screen.getByRole("heading", { name: "How would you like to start?" })).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: /Build my own/ }));
+    expect((screen.getByRole("checkbox", { name: /PostgreSQL/ }) as HTMLInputElement).checked).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Back" }));
+    await user.click(screen.getByRole("button", { name: /go straight to the builder/ }));
+
     await user.click(screen.getByRole("button", { name: "Start over" }));
-    expect(screen.getByRole("region", { name: "Start from an example" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "How would you like to start?" })).toBeTruthy();
+    await waitFor(() => expect(window.location.search).toBe(""));
   });
 });
 
@@ -296,6 +411,16 @@ describe("the gap list", () => {
     await user.click(gapButtons().find((b) => /Nothing in your stack covers/.test(b.textContent ?? ""))!);
     dialog = screen.getByRole("dialog");
     expect(within(dialog).getByRole("heading", { name: "What goes wrong without it" })).toBeTruthy();
+  });
+
+  it("suggests tools from a vendor you already use first, and says so", async () => {
+    const user = setup("/?tools=aws-s3");
+    const masking = gapButtons().find((b) => /^Masking is missing/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
+    await user.click(masking);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.textContent).toContain("Tools from vendors you already use come first.");
+    const first = dialog.querySelector(".suggestion")!;
+    expect(first.textContent).toContain("Same vendor as Amazon S3");
   });
 
   it("names the other stages in the detail of a gap that is missing at several", async () => {

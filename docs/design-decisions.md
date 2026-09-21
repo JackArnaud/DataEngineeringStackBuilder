@@ -264,4 +264,23 @@ that erodes. Role drives colour. Add it back to `$defs/presentation` if you disa
 - **Example stacks are checked against real gaps.** Each example's "notice" line was written from the gaps
   the stack produces, and tests check that every example uses real tools, meets its own needs, fills at
   least three stages and stays under twenty gap rows. A notice can still go stale when scores change.
+- **A guided start comes before any guidance.** A visitor with nothing chosen sees two choices, an example
+  or "build my own", not the builder. Building your own is a short run of screens in pipeline order: where
+  the data starts, where it is stored and processed, how it is modelled and scheduled, how people use it,
+  how changes are kept under control, then what the stack has to do, then a review. Choosing a cloud adds
+  a screen of its services. Every screen can be skipped, and every choice writes to the same state the
+  builder reads, so nothing is lost when it opens. An address that already carries a stack goes straight
+  to the builder, so a shared link shows what was shared, and the builder has a "Guided start" button and
+  "Start over" returns to it. The tiles and need cards are curated lists in `apps/web/src/landing.ts`; a
+  test checks that each is a real record or capability, so a rename cannot leave a dead tile, but a new
+  tool does not appear on a screen until someone adds it.
+- **Need cards are outcomes, not capabilities.** "Machine learning in production" stands for feature
+  engineering and ML serving. A card is on when every capability it stands for is a need, so the cards and
+  the needs tab always agree. The cards use plain words for the same reason the roles do.
+- **Suggestions favour the stack's own ecosystem.** A tool from a vendor the stack already uses comes
+  first, then one commonly paired with it, then the rest. It uses the vendor and the `pairs_with` links,
+  with Azure, Fabric and Power BI counted as one vendor. The rule only reorders tools that provide the
+  capability properly (native or core): a level 1 option, which needs a plugin or custom work, never
+  outranks one that does not, however well it fits. The panel says why a tool is offered ("Same vendor as
+  Snowflake"). `pairs_with` is a hint for ordering and nothing else, and never counts as coverage.
 

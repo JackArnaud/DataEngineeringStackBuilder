@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { compileDataset } from "../src/compile.js";
 import { computeGaps } from "../src/gaps.js";
 import { stackBands } from "../src/stack-bands.js";
-import { suggestTools } from "../src/suggest.js";
+import { suggestTools, vendorFamily } from "../src/suggest.js";
 import { ds } from "./helpers.js";
 
 const model = compileDataset(ds);
@@ -36,13 +36,11 @@ describe("suggestions", () => {
     expect(ids).toContain("aws-s3");
   });
 
-  it("offer tools that provide a missing band capability, highest level first", () => {
+  it("offer tools that provide a missing band capability, and never one that only has it as an extra", () => {
     const s = suggest(["aws-s3"], "band:govern.masking@store");
-    expect(s[0]).toMatchObject({ level: 3 });
-    expect(s.filter((x) => x.level === 3).map((x) => x.tool)).toEqual(expect.arrayContaining(["unity-catalog", "gcp-bigquery"]));
     // Snowflake Horizon scores masking only on Enterprise, so it is not offered for it.
     expect(s.map((x) => x.tool)).not.toContain("snowflake-horizon");
-    expect(s.map((x) => x.level)).toEqual([...s.map((x) => x.level)].sort((a, b) => b - a));
+    expect(s.map((x) => x.tool)).toEqual(expect.arrayContaining(["unity-catalog", "gcp-bigquery"]));
     expect(s.find((x) => x.tool === "postgres")).toMatchObject({ level: 1, delivery: "community" });
   });
 
@@ -122,5 +120,77 @@ describe("the browser entry", () => {
     }
     expect(files.has("dataset.ts")).toBe(false);
     expect(files.has("validate.ts")).toBe(false);
+  });
+});
+
+describe("suggestions from the same ecosystem", () => {
+  const stacks: [string[], string][] = [
+    [["aws-s3"], "band:govern.masking@store"],
+    [["snowflake"], "band:observe.lineage@transform"],
+    [["snowflake", "dbt"], "band:govern.catalog@store"],
+    [["postgres"], "empty-stage:serve"],
+    [["databricks"], "band:quality.contracts@store"],
+    [["azure-data-factory"], "band:govern.catalog@ingest"],
+  ];
+  const cases = stacks.flatMap(([tools, id]) => {
+    const found = computeGaps(model, { tools }).gaps.find((g) => g.id === id);
+    return found ? [{ tools, id, s: suggestTools(model, found, tools) }] : [];
+  });
+
+  it("put a tool from a vendor you already use first, even ahead of a stronger one from elsewhere", () => {
+    const s = suggest(["aws-s3"], "band:govern.masking@store");
+    expect(s[0]).toMatchObject({ tool: "aws-redshift", level: 2, affinity: "ecosystem", related: ["aws-s3"] });
+    // BigQuery is a stronger fit for masking on paper, and still comes after the AWS option.
+    expect(s.findIndex((x) => x.tool === "gcp-bigquery")).toBeGreaterThan(0);
+    expect(s.find((x) => x.tool === "gcp-bigquery")).toMatchObject({ level: 3, affinity: "other" });
+  });
+
+  it("then put tools that are commonly paired with yours, naming which of yours", () => {
+    const s = suggest(["snowflake"], "band:observe.lineage@transform");
+    expect(s[0]).toMatchObject({ tool: "dbt-core", affinity: "paired", related: ["snowflake"] });
+    const otherFirst = s.findIndex((x) => x.affinity === "other");
+    expect(s.slice(0, otherFirst).every((x) => x.affinity !== "other")).toBe(true);
+  });
+
+  it("order tools that are good enough to use by fit: ecosystem, then paired, then the rest", () => {
+    const rank = { ecosystem: 0, paired: 1, other: 2 } as const;
+    expect(cases.length).toBeGreaterThan(3);
+    for (const { tools, id, s } of cases) {
+      const proper = s.filter((x) => x.level >= 2).map((x) => rank[x.affinity]);
+      expect(proper, `${tools} ${id}`).toEqual([...proper].sort((a, b) => a - b));
+    }
+  });
+
+  it("never let a tool that only reaches level 1 outrank one that provides it properly", () => {
+    for (const { tools, id, s } of cases) {
+      const firstWeak = s.findIndex((x) => x.level === 1);
+      if (firstWeak === -1) continue;
+      expect(s.slice(firstWeak).every((x) => x.level === 1), `${tools} ${id}`).toBe(true);
+    }
+  });
+
+  it("only call a tool related to your stack when it is, and name real tools of yours", () => {
+    for (const { tools, s } of cases) {
+      for (const x of s) {
+        if (x.affinity === "other") expect(x.related).toEqual([]);
+        else expect(x.related.length).toBeGreaterThan(0);
+        for (const r of x.related) expect(tools).toContain(r);
+      }
+    }
+  });
+
+  it("treat Azure, Fabric and Power BI as one vendor", () => {
+    expect(vendorFamily("Microsoft Azure")).toBe("Microsoft");
+    expect(vendorFamily("Microsoft")).toBe("Microsoft");
+    expect(vendorFamily("Google Cloud")).toBe("Google Cloud");
+    const s = suggest(["azure-data-factory"], "empty-stage:serve");
+    expect(s.find((x) => x.tool === "power-bi")).toMatchObject({ affinity: "ecosystem" });
+  });
+
+  it("leave a stack with no relatives to the old order: level, then delivery", () => {
+    const s = suggest([], "empty-stage:ingest");
+    expect(s.every((x) => x.affinity === "other")).toBe(true);
+    const proper = s.filter((x) => x.level >= 2).map((x) => x.level);
+    expect(proper).toEqual([...proper].sort((a, b) => b - a));
   });
 });

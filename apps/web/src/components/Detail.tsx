@@ -385,6 +385,11 @@ function GapDetail(props: Props & { gap: Gap }) {
 
       <section>
         <h3>What would close it</h3>
+        {suggestions[0] && suggestions[0].affinity !== "other" && suggestions[0].level >= 2 && (
+          <p className="muted">
+            {suggestions[0].affinity === "ecosystem" ? "Tools from vendors you already use come first." : "Tools that are commonly used with yours come first."}
+          </p>
+        )}
         {suggestions.length === 0 ? (
           <p className="muted">No tool in the data provides this without a constraint yet.</p>
         ) : (
@@ -398,6 +403,12 @@ function GapDetail(props: Props & { gap: Gap }) {
                     </button>
                     <LevelBadge level={s.level} />
                     <DeliveryBadge delivery={s.delivery} />
+                    {s.affinity !== "other" && (
+                      <span className={`fit fit--${s.affinity}`}>
+                        {s.affinity === "ecosystem" ? "Same vendor as " : "Pairs with "}
+                        {joinNames(s.related.map((r) => lookup.toolName(r)))}
+                      </span>
+                    )}
                   </div>
                   <button type="button" className="secondary" aria-label={`Add ${lookup.toolName(s.tool)} to your stack`} onClick={() => onAddTools([s.tool])}>
                     Add

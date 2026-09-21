@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { computeGaps, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
-import { ExampleGallery } from "./components/ExampleGallery";
+import { Landing } from "./components/Landing";
 import { FilterRow } from "./components/FilterRow";
 import { GapList } from "./components/GapList";
 import { Legend } from "./components/Legend";
@@ -35,13 +35,21 @@ export function Root() {
       </div>
     );
   }
-  return <Builder model={loaded.model} />;
+  return <Builder model={loaded.model} startOnLanding />;
 }
 
-export function Builder({ model }: { model: RenderModel }) {
+/**
+ * `startOnLanding` opens the guided start for a visitor with nothing chosen. An address that already
+ * carries a stack goes straight to the builder, so a shared link shows what was shared.
+ */
+export function Builder({ model, startOnLanding = false }: { model: RenderModel; startOnLanding?: boolean }) {
   const lookup = useMemo(() => buildLookup(model), [model]);
   const [state, setState] = useState<StackState>(() => parseState(window.location.search, model));
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [mode, setMode] = useState<"landing" | "builder">(() => {
+    const initial = parseState(window.location.search, model);
+    return startOnLanding && initial.tools.length === 0 && initial.needs.length === 0 ? "landing" : "builder";
+  });
 
   // The address is the state: copy it and someone else sees the same stack.
   useEffect(() => {
@@ -71,6 +79,35 @@ export function Builder({ model }: { model: RenderModel }) {
   const tools = useMemo(() => state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t), [state.tools, lookup]);
 
   const canReset = state.tools.length > 0 || state.needs.length > 0 || state.skip.length > 0;
+  const reset = () => {
+    setState(emptyState(model));
+    setDetail(null);
+    if (startOnLanding) setMode("landing");
+  };
+
+  if (mode === "landing") {
+    return (
+      <div className="app">
+        <header className="top">
+          <h1>Data stack builder</h1>
+          <p className="lede">Choose the tools you use, or start from a stack people really build. Then see what it covers, what it is missing, and why each gap matters.</p>
+        </header>
+        <main>
+        <Landing
+          model={model}
+          lookup={lookup}
+          state={state}
+          onChange={change}
+          onDone={() => setMode("builder")}
+          onLoadExample={(e) => {
+            change({ tools: [...e.tools], needs: e.needs ?? [], skip: [] });
+            setMode("builder");
+          }}
+        />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
@@ -79,7 +116,7 @@ export function Builder({ model }: { model: RenderModel }) {
         <p className="lede">Pick the tools you use. See what your stack covers, what it is missing, and how much each gap matters. Every claim opens to its score, its note and its source.</p>
       </header>
 
-      <FilterRow model={model} state={state} onChange={change} canReset={canReset} onReset={() => { setState(emptyState(model)); setDetail(null); }} />
+      <FilterRow model={model} state={state} onChange={change} canReset={canReset} onReset={reset} onGuide={startOnLanding ? () => setMode("landing") : undefined} />
 
       <div className="layout">
         <aside className="side" aria-label="Build your stack">
@@ -87,7 +124,15 @@ export function Builder({ model }: { model: RenderModel }) {
         </aside>
 
         <main className="main">
-          {state.tools.length === 0 && <ExampleGallery lookup={lookup} onLoad={(e) => change({ tools: [...e.tools], needs: e.needs ?? [], skip: [] })} />}
+          {state.tools.length === 0 && (
+            <p className="emptyhint">
+              Nothing picked yet. Choose tools on the left, or{" "}
+              <button type="button" className="linkish" onClick={() => setMode("landing")}>
+                use the guided start
+              </button>
+              .
+            </p>
+          )}
 
           <section aria-labelledby="coverage">
             <h2 id="coverage">Coverage by stage</h2>

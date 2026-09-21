@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GLYPH_ROLES } from "../components/glyphs";
 import { coversStage, groupByVendor } from "../picker";
 import { EXAMPLES } from "../examples";
+import { CLOUDS, NEED_CARDS, TOOL_STEPS, cardIsOn } from "../landing";
 import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
 import { RAMP_ORDER, ROLE_RAMP, rampOf } from "../roles";
@@ -234,3 +235,44 @@ describe("the example stacks", () => {
   });
 });
 
+describe("the guided start's choices", () => {
+  const spine = new Set(model.capabilities.filter((c) => c.kind === "spine").map((c) => c.id));
+
+  it("offer only records that exist, each on one screen", () => {
+    const seen = new Set<string>();
+    for (const step of TOOL_STEPS) {
+      for (const id of step.tiles) {
+        expect(isSelectable(model, id), `${step.id}: ${id}`).toBe(true);
+        expect(seen.has(id), `${id} appears twice`).toBe(false);
+        seen.add(id);
+      }
+    }
+  });
+
+  it("offer clouds that are portfolios, so choosing one leads to its services", () => {
+    for (const id of CLOUDS) {
+      const p = model.tools.find((t) => t.id === id);
+      expect(p?.kind, id).toBe("portfolio");
+      expect(p!.includes!.length, id).toBeGreaterThan(5);
+    }
+  });
+
+  it("stand for real spine capabilities, without overlap between cards", () => {
+    const used = new Set<string>();
+    for (const card of NEED_CARDS) {
+      expect(card.needs.length, card.id).toBeGreaterThan(0);
+      for (const n of card.needs) {
+        expect(spine.has(n), `${card.id}: ${n}`).toBe(true);
+        expect(used.has(n), `${n} is on two cards`).toBe(false);
+        used.add(n);
+      }
+    }
+  });
+
+  it("are on only when the stack needs everything they stand for", () => {
+    const card = NEED_CARDS.find((c) => c.needs.length > 1)!;
+    expect(cardIsOn(card, [])).toBe(false);
+    expect(cardIsOn(card, [card.needs[0]!])).toBe(false);
+    expect(cardIsOn(card, [...card.needs, "ingest.cdc"])).toBe(true);
+  });
+});
