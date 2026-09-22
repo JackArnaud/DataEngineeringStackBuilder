@@ -27,15 +27,19 @@ describe("stack state in the address", () => {
   });
 
   it("starts empty", () => {
-    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [] });
+    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [], tiers: [] });
   });
 
   it("round-trips: what is written is what is read back", () => {
     // team: multiple-teams confirms no profile tag, so it never adds a capability to skip on its own.
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const] };
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const], tiers: ["dbt-core"] };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss&tiers=dbt-core");
     expect(parseState(query, model)).toEqual(state);
+  });
+
+  it("drops a tier confirmed for a tool that is not selectable", () => {
+    expect(parseState("?tiers=dbt-core,aws,ghost", model).tiers).toEqual(["dbt-core"]);
   });
 
   it("pre-fills set aside for capabilities a profile answer confirms, additively and without duplicates", () => {
@@ -70,7 +74,7 @@ describe("stack state in the address", () => {
 
   it("drops anything the model no longer has, rather than failing", () => {
     const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope", model);
-    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, profile: {}, resources: [] });
+    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, profile: {}, resources: [], tiers: [] });
   });
 
   it("does not let a portfolio be selected, only its services", () => {

@@ -1,4 +1,4 @@
-import { DELIVERY_RANK } from "./derive.js";
+import { applyTier, DELIVERY_RANK } from "./derive.js";
 import type { Cell, ConditionalLevel, Delivery } from "./derive.js";
 import type { RenderModel, RenderTool } from "./render-model.js";
 
@@ -105,6 +105,8 @@ export interface StackInput {
    * A choice for a tool that does not provide it is ignored.
    */
   use?: Record<string, string>;
+  /** Tool ids the user has confirmed are on the tier named by that tool's `tier_name`. */
+  tiers?: string[];
 }
 
 /** What a user-stated need ranks as. */
@@ -168,10 +170,14 @@ export function computeGaps(model: RenderModel, input: StackInput): GapReport {
     if (!selected.includes(tool)) throw new Error(`"${tool}" is not in the stack, so it cannot be the one used for ${capability}`);
   }
 
-  // The stack's coverage: for every cell, the best any selected tool reaches.
+  // The stack's coverage: for every cell, the best any selected tool reaches. A tool the user
+  // confirmed is on its named tier has its enterprise-only conditional levels counted as real.
+  const tierSet = new Set(input.tiers ?? []);
   const holders = new Map<string, Holder[]>();
   for (const id of selected) {
-    for (const cell of toolsById.get(id)!.cells) {
+    const tiered = tierSet.has(id);
+    for (const raw of toolsById.get(id)!.cells) {
+      const cell = applyTier(raw, tiered);
       const list = holders.get(cell.key);
       if (list) list.push({ tool: id, cell });
       else holders.set(cell.key, [{ tool: id, cell }]);

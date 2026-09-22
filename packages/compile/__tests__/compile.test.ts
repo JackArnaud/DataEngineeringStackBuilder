@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { compileDataset, CompileError } from "../src/compile.js";
+import { applyTier } from "../src/derive.js";
+import { projectTool } from "../src/project.js";
 import type { RenderModel, RenderTool } from "../src/render-model.js";
 import { stableStringify } from "../src/stable.js";
-import { derivation, ds } from "./helpers.js";
+import { derivation, ds, lens as lensById, taxonomy } from "./helpers.js";
 
 const model: RenderModel = compileDataset(ds);
 const tool = (id: string): RenderTool => {
@@ -126,6 +128,21 @@ describe("composites in the real dataset", () => {
   it("lets the platform outrank the open-source record where it is genuinely better", () => {
     expect(cell("dbt-core", "serve.semantic-layer@serve").level).toBe(2);
     expect(cell("dbt-platform", "serve.semantic-layer@serve")).toMatchObject({ level: 3, via: ["dbt-platform-services"] });
+  });
+});
+
+describe("tiered lens views", () => {
+  it("gives a tool with an enterprise-tier-only conditional an alternate view matching a projection off its promoted cells", () => {
+    const grid = view("grid", "dbt-platform");
+    expect(grid.tiered).toBeDefined();
+    const boosted = tool("dbt-platform").cells.map((c) => applyTier(c, true));
+    expect(grid.tiered).toEqual(projectTool(lensById("grid"), taxonomy, boosted));
+    // The promotion is real: the two views are not the same object.
+    expect(grid.tiered).not.toEqual(grid);
+  });
+
+  it("gives no alternate view to a tool with nothing to promote", () => {
+    expect(view("grid", "postgres").tiered).toBeUndefined();
   });
 });
 

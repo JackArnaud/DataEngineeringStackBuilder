@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCells, contributionsOf } from "../src/derive.js";
+import { applyTier, buildCells, contributionsOf, hasEnterpriseTierUnlock } from "../src/derive.js";
 import type { Cell } from "../src/derive.js";
 import type { ToolRecord } from "../src/types.js";
 
@@ -232,6 +232,46 @@ describe("inherited scores", () => {
       bundle("s", ["a", "b"]),
     ]);
     expect(at(mixed, "transform.sql-transform@transform").inherited).toBeUndefined();
+  });
+});
+
+describe("confirming a tier", () => {
+  const enterprise = { constraint: ["enterprise-tier"] };
+
+  it("promotes an enterprise-tier-only conditional into the base level", () => {
+    const cell = at(cellsFor("paid", [tool("paid", { "orchestrate.dependency-dag": sc(3, "native", enterprise) })]), "orchestrate.dependency-dag@orchestrate");
+    const promoted = applyTier(cell, true);
+    expect(promoted).toMatchObject({ level: 3, delivery: "native", maturity: "ga", via: ["paid"], conditional: [] });
+    expect(hasEnterpriseTierUnlock([cell])).toBe(true);
+  });
+
+  it("leaves the cell alone when not tiered up, or when it has nothing to promote", () => {
+    const cell = at(cellsFor("paid", [tool("paid", { "orchestrate.dependency-dag": sc(3, "native", enterprise) })]), "orchestrate.dependency-dag@orchestrate");
+    expect(applyTier(cell, false)).toBe(cell);
+    const plain = at(cellsFor("a", [tool("a", { "orchestrate.dependency-dag": sc(2) })]), "orchestrate.dependency-dag@orchestrate");
+    expect(applyTier(plain, true)).toBe(plain);
+    expect(hasEnterpriseTierUnlock([plain])).toBe(false);
+  });
+
+  it("never promotes a constraint that is not settled by tier alone", () => {
+    const cell = at(cellsFor("t", [tool("t", { "orchestrate.dependency-dag": sc(3, "native", { constraint: ["enterprise-tier", "region-limited"] }) })]), "orchestrate.dependency-dag@orchestrate");
+    expect(applyTier(cell, true)).toBe(cell);
+    expect(hasEnterpriseTierUnlock([cell])).toBe(false);
+  });
+
+  it("keeps a higher, differently-constrained conditional after promoting the enterprise-tier one", () => {
+    const cell = at(
+      cellsFor("s", [
+        tool("a", { "orchestrate.dependency-dag": sc(2, "native", enterprise) }),
+        tool("b", { "orchestrate.dependency-dag": sc(3, "native", { constraint: ["region-limited"] }) }),
+        bundle("s", ["a", "b"]),
+      ]),
+      "orchestrate.dependency-dag@orchestrate",
+    );
+    const promoted = applyTier(cell, true);
+    expect(promoted.level).toBe(2);
+    expect(promoted.via).toEqual(["a"]);
+    expect(promoted.conditional).toEqual([{ level: 3, delivery: "bundled", maturity: "ga", constraint: ["region-limited"], via: ["b"] }]);
   });
 });
 

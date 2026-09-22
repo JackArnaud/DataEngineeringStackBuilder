@@ -1,5 +1,6 @@
 import type { Cell } from "./derive.js";
 import { place } from "./lens.js";
+import type { RenderLens } from "./render-model.js";
 import { capabilityKind, prefixOf } from "./taxonomy.js";
 import type { Lens, Taxonomy } from "./types.js";
 
@@ -25,6 +26,12 @@ export interface ToolLensView {
   rail: string[];
   /** True when a per-tool lens override replaced the derived spine placement. */
   overridden: boolean;
+  /**
+   * The same projection, computed with this tool's enterprise-tier-only conditional levels
+   * promoted into the base level. Only present when a tool has one to promote. Swap to this view
+   * once the user confirms the tool is on that tier; never set on the swapped-to view itself.
+   */
+  tiered?: ToolLensView;
 }
 
 /**
@@ -83,4 +90,16 @@ export function projectTool(lens: Lens, taxonomy: Taxonomy, cells: Cell[], overr
   const span = top === 0 ? [] : lens.zones.filter((z) => basis[z] === top);
 
   return { span, zones, bands, rail: rail.sort(), overridden: override !== undefined };
+}
+
+/**
+ * A lens with every named tool's view swapped for its tiered one, so the matrix (spine marks and
+ * cross-cutting bars alike) reflects a tier the user has confirmed. A tool with nothing to promote,
+ * or not named here, keeps its ordinary view.
+ */
+export function effectiveLens(lens: RenderLens, tiers: string[]): RenderLens {
+  if (tiers.length === 0) return lens;
+  const tierSet = new Set(tiers);
+  const tools = Object.fromEntries(Object.entries(lens.tools).map(([id, view]) => [id, tierSet.has(id) && view.tiered ? view.tiered : view]));
+  return { ...lens, tools };
 }

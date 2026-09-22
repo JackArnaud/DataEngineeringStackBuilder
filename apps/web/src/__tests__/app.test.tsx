@@ -117,12 +117,12 @@ describe("building a stack", () => {
 
   it("restores a whole stack from the address", async () => {
     const user = setup("/?tools=postgres,dbt-core&needs=ingest.cdc");
-    expect(screen.getByText("You need Change data capture, and nothing provides it")).toBeTruthy();
+    expect(screen.getByRole("group", { name: /Where your tools sit in the Audit grid lens/ })).toBeTruthy();
     await openEditor(user);
     expect(within(chips()).getByText("PostgreSQL")).toBeTruthy();
     await user.keyboard("{Escape}");
-    await openTab(user, /Coverage/);
-    expect(screen.getByRole("group", { name: /Where your tools sit in the Audit grid lens/ })).toBeTruthy();
+    await openTab(user, /What.s missing/);
+    expect(screen.getByText("You need Change data capture, and nothing provides it")).toBeTruthy();
   });
 });
 
@@ -152,7 +152,7 @@ describe("the guided start", () => {
     await user.click(screen.getByRole("button", { name: /Start from an example/ }));
     await user.click(screen.getByRole("button", { name: "Load Features to a model on Google Cloud" }));
     expect(screen.queryByRole("heading", { name: "How would you like to start?" })).toBeNull();
-    expect(screen.getByRole("heading", { name: "What’s missing" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
     await openEditor(user);
     expect(within(chips()).getByText("BigQuery")).toBeTruthy();
     expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("ML serving")).toBeTruthy();
@@ -214,8 +214,8 @@ describe("the guided start", () => {
     expect(review).toContain("Just me");
     expect(review).toContain("Prefer free and open-source");
 
-    await user.click(screen.getByRole("button", { name: "Show me what's missing" }));
-    expect(screen.getByRole("heading", { name: "What’s missing" })).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Show me my stack" }));
+    expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
     await openEditor(user);
     expect(within(chips()).getByText("Snowflake")).toBeTruthy();
     expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("BI and visualisation")).toBeTruthy();
@@ -266,7 +266,7 @@ describe("the guided start", () => {
     await user.click(screen.getByRole("checkbox", { name: /Machine learning in production/ }));
     await user.click(screen.getByRole("button", { name: "Next" }));
     for (let i = 0; i < 4; i += 1) await next(user); // profile x3, resources, all skipped
-    await user.click(screen.getByRole("button", { name: "Show me what's missing" }));
+    await user.click(screen.getByRole("button", { name: "Show me my stack" }));
     await openEditor(user);
     await user.click(screen.getByRole("tab", { name: /What you need/ }));
     expect((screen.getByRole("checkbox", { name: /Feature engineering/ }) as HTMLInputElement).checked).toBe(true);
@@ -276,7 +276,7 @@ describe("the guided start", () => {
   it("lets someone who knows their stack skip straight to the builder", async () => {
     const user = setupLanding();
     await user.click(screen.getByRole("button", { name: /go straight to the builder/ }));
-    expect(screen.getByRole("heading", { name: "What’s missing" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
   });
 
   it("goes straight to the guidance for an address that already carries a stack", async () => {
@@ -625,7 +625,7 @@ describe("profile and resources", () => {
   });
 
   it("orders a gap's suggestions by the resources answered, open-source ahead of an equally good paid tool", async () => {
-    const user = setup("/?resources=prefer-oss");
+    const user = setup(missing("/?resources=prefer-oss"));
     const transformGap = gapButtons().find((b) => b.textContent?.includes("Nothing in your stack covers Transform"))!;
     await user.click(transformGap);
     const dialog = screen.getByRole("dialog");
@@ -777,6 +777,28 @@ describe("receipts", () => {
     expect(dialog.textContent).toContain("Not counted as coverage");
   });
 
+  it("confirming a tool's tier promotes what it gates into real coverage, everywhere", async () => {
+    const user = setup(missing("/?tools=dbt-platform-services&needs=orchestrate.dependency-dag"));
+    const dagGap = () => gapButtons().some((b) => /Dependency DAG/.test(b.textContent ?? ""));
+    expect(dagGap()).toBe(true);
+
+    await openEditor(user);
+    await user.click(within(chips()).getByRole("button", { name: "dbt platform (hosted services)" }));
+    const checkbox = screen.getByRole("checkbox", { name: /I.m on dbt platform Enterprise or Enterprise\+ plan/ }) as HTMLInputElement;
+    expect(checkbox.checked).toBe(false);
+
+    await user.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+    // The tool's own receipts now count it, not just note it.
+    expect(screen.queryByText(/Reaches core only on/)).toBeNull();
+    await waitFor(() => expect(window.location.search).toContain("tiers=dbt-platform-services"));
+
+    await user.click(screen.getByRole("button", { name: "Close details" }));
+    await openTab(user, /What.s missing/);
+    // The gap needing exactly what the confirmed tier now provides is gone.
+    expect(dagGap()).toBe(false);
+  });
+
   it("open a gap to why it matters and what would close it, and let you add a fix", async () => {
     const user = setup(missing());
     await user.click(gapButtons()[0]!);
@@ -845,40 +867,40 @@ describe("loading the data", () => {
 describe("one thing at a time", () => {
   const tabNamed = (name: RegExp) => screen.getByRole("tab", { name });
 
-  it("opens on what's missing, with coverage and overlaps a tab away and counted", () => {
+  it("opens on coverage, with the gaps and overlaps a tab away and counted", () => {
     setup("/?tools=snowflake,dbt,github");
-    expect(tabNamed(/What.s missing/).getAttribute("aria-selected")).toBe("true");
+    expect(tabNamed(/Coverage/).getAttribute("aria-selected")).toBe("true");
     expect(tabNamed(/What.s missing/).textContent).toMatch(/\d+/);
     expect(tabNamed(/Overlaps/).textContent).toMatch(/\d+/);
-    expect(screen.queryByRole("group", { name: /Where your tools sit/ })).toBeNull();
-    expect(document.querySelector(".gaplist")).toBeTruthy();
+    expect(screen.queryByRole("group", { name: /Where your tools sit/ })).toBeTruthy();
+    expect(document.querySelector(".gaplist")).toBeNull();
   });
 
   it("opens on the tab an address names, and writes the tab back to it", async () => {
-    const user = setup("/?tools=postgres#coverage");
-    expect(tabNamed(/Coverage/).getAttribute("aria-selected")).toBe("true");
-    expect(document.querySelector(".matrix")).toBeTruthy();
-
-    await user.click(tabNamed(/What.s missing/));
-    expect(window.location.hash).toBe("");
+    const user = setup("/?tools=postgres#missing");
+    expect(tabNamed(/What.s missing/).getAttribute("aria-selected")).toBe("true");
     expect(document.querySelector(".gaplist")).toBeTruthy();
+
     await user.click(tabNamed(/Coverage/));
-    expect(window.location.hash).toBe("#coverage");
+    expect(window.location.hash).toBe("");
+    expect(document.querySelector(".matrix")).toBeTruthy();
+    await user.click(tabNamed(/What.s missing/));
+    expect(window.location.hash).toBe("#missing");
   });
 
-  it("falls back to what's missing when the tab asked for has nothing to show", () => {
+  it("falls back to coverage when the tab asked for has nothing to show", () => {
     setup("/?tools=aws-s3#overlaps");
-    expect(tabNamed(/What.s missing/).getAttribute("aria-selected")).toBe("true");
+    expect(tabNamed(/Coverage/).getAttribute("aria-selected")).toBe("true");
     expect(screen.queryByRole("tab", { name: /Overlaps/ })).toBeNull();
   });
 
   it("moves between the tabs with the arrow keys", async () => {
     const user = setup("/?tools=postgres");
     // Only the selected tab is in the natural tab order; a keyboard user reaches the tablist here first.
-    tabNamed(/What.s missing/).focus();
+    tabNamed(/Coverage/).focus();
     await user.keyboard("{ArrowRight}");
-    expect(tabNamed(/Coverage/).getAttribute("aria-selected")).toBe("true");
-    expect(document.activeElement).toBe(tabNamed(/Coverage/));
+    expect(tabNamed(/What.s missing/).getAttribute("aria-selected")).toBe("true");
+    expect(document.activeElement).toBe(tabNamed(/What.s missing/));
   });
 
   it("puts the ties that need a decision first, and folds the tasks where one tool clearly leads", () => {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { computeGaps, groupGaps, projectGaps, stackBands } from "@compile";
+import { computeGaps, effectiveLens, groupGaps, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
 import { Landing } from "./components/Landing";
@@ -17,13 +17,13 @@ import { add, emptyState, parseState, profileSkips, serializeState, toggle } fro
 import type { StackState } from "./state";
 import type { Detail } from "./types";
 
-type MainTab = "missing" | "coverage" | "overlaps";
-const MAIN_TABS: MainTab[] = ["missing", "coverage", "overlaps"];
+type MainTab = "coverage" | "missing" | "overlaps";
+const MAIN_TABS: MainTab[] = ["coverage", "missing", "overlaps"];
 
-/** The tab an address asks for, so a link can open on the gaps. Anything else opens on what's missing. */
+/** The tab an address asks for, so a link can open on the gaps. Anything else opens on coverage. */
 const tabFromHash = (): MainTab => {
   const id = window.location.hash.replace(/^#/, "");
-  return (MAIN_TABS as string[]).includes(id) ? (id as MainTab) : "missing";
+  return (MAIN_TABS as string[]).includes(id) ? (id as MainTab) : "coverage";
 };
 
 /** Loads the render model, the only data the site reads, then hands it to the builder. */
@@ -60,7 +60,7 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   const [tab, setTabState] = useState<MainTab>(tabFromHash);
   const setTab = (next: MainTab) => {
     setTabState(next);
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${next === "missing" ? "" : `#${next}`}`);
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${next === "coverage" ? "" : `#${next}`}`);
   };
   const [mode, setMode] = useState<"landing" | "builder">(() => {
     const initial = parseState(window.location.search, model);
@@ -82,15 +82,18 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   const change = (patch: Partial<StackState>) =>
     setState((s) => {
       const next = { ...s, ...patch };
-      // A choice of tool for a task goes when the tool does.
-      if (patch.tools) next.use = Object.fromEntries(Object.entries(next.use).filter(([, tool]) => next.tools.includes(tool)));
+      // A choice of tool for a task goes when the tool does, and so does a tier confirmed for it.
+      if (patch.tools) {
+        next.use = Object.fromEntries(Object.entries(next.use).filter(([, tool]) => next.tools.includes(tool)));
+        next.tiers = next.tiers.filter((id) => next.tools.includes(id));
+      }
       // Answering a profile question pre-fills the same "set aside" a user could tick by hand; it
       // only ever adds, so a manual restore afterwards is never silently undone by a later change.
       if (patch.profile) next.skip = add(next.skip, ...profileSkips(model, next.profile));
       return next;
     });
 
-  const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs, use: state.use }), [model, state.tools, state.needs, state.use]);
+  const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs, use: state.use, tiers: state.tiers }), [model, state.tools, state.needs, state.use, state.tiers]);
   // A capability the user set aside is left out of the list and the matrix alike, so the two agree.
   // The report itself stays the full, factual set.
   const { gaps, setAside } = useMemo(() => {
@@ -100,8 +103,10 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   }, [report.gaps, state.skip]);
   // The only lens the app shows: its zones are the six pipeline stages, one to one.
   const lens = model.lenses.find((l) => l.id === "grid") ?? model.lenses[0]!;
+  // With every confirmed tier's view swapped in, so the matrix agrees with the gap list.
+  const effLens = useMemo(() => effectiveLens(lens, state.tiers), [lens, state.tiers]);
   const placement = useMemo(() => projectGaps(model, lens.id, gaps), [model, lens.id, gaps]);
-  const bands = useMemo(() => stackBands(model, lens.id, state.tools), [model, lens.id, state.tools]);
+  const bands = useMemo(() => stackBands(model, effLens, state.tools), [model, effLens, state.tools]);
   const tools = useMemo(() => state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t), [state.tools, lookup]);
 
   const canReset = state.tools.length > 0 || state.needs.length > 0 || state.skip.length > 0 || Object.keys(state.use).length > 0;
@@ -136,11 +141,11 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
     );
   }
 
-  // Overlaps only get a tab while there is something to say; a link to a tab that is gone shows what's missing.
-  const active: MainTab = tab === "overlaps" && report.overlaps.length === 0 ? "missing" : tab;
+  // Overlaps only get a tab while there is something to say; a link to a tab that is gone shows coverage.
+  const active: MainTab = tab === "overlaps" && report.overlaps.length === 0 ? "coverage" : tab;
   const tabs = [
-    { id: "missing" as const, label: "What\u2019s missing", count: groupGaps(model, gaps).length },
     { id: "coverage" as const, label: "Coverage" },
+    { id: "missing" as const, label: "What\u2019s missing", count: groupGaps(model, gaps).length },
     ...(report.overlaps.length > 0 ? [{ id: "overlaps" as const, label: "Overlaps", count: report.overlaps.length }] : []),
   ];
 
@@ -177,7 +182,7 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
 
               <section aria-labelledby="where">
                 <h2 id="where">Where your tools sit</h2>
-                <LensMatrix model={model} lookup={lookup} lens={lens} tools={tools} stages={report.stages} placement={placement} bands={bands} overlaps={report.overlaps} onOpen={setDetail} />
+                <LensMatrix model={model} lookup={lookup} lens={effLens} tools={tools} stages={report.stages} placement={placement} bands={bands} overlaps={report.overlaps} onOpen={setDetail} />
                 <Legend model={model} />
               </section>
             </>
@@ -200,7 +205,7 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
         <DetailPanel
           model={model}
           lookup={lookup}
-          lens={lens}
+          lens={effLens}
           state={state}
           report={report}
           placement={placement}

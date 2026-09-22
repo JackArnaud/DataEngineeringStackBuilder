@@ -204,6 +204,22 @@ describe("how the stack covers each cell", () => {
   });
 });
 
+describe("confirming a tier", () => {
+  it("closes a gap a higher plan would remedy, once the tool's tier is confirmed", () => {
+    const withGap = computeGaps(model, { tools: ["dbt-platform-services"], needs: ["orchestrate.dependency-dag"] });
+    expect(ids(withGap)).toContain("needed-capability:orchestrate.dependency-dag@orchestrate");
+
+    const tiered = computeGaps(model, { tools: ["dbt-platform-services"], needs: ["orchestrate.dependency-dag"], tiers: ["dbt-platform-services"] });
+    expect(ids(tiered)).not.toContain("needed-capability:orchestrate.dependency-dag@orchestrate");
+    expect(cell(tiered, "orchestrate.dependency-dag@orchestrate")).toMatchObject({ level: 3, via: ["dbt-platform-services"], conditional: [] });
+  });
+
+  it("has no effect on a tool that is not in the stack", () => {
+    const r = computeGaps(model, { tools: ["postgres"], tiers: ["dbt-platform-services"] });
+    expect(r).toEqual(computeGaps(model, { tools: ["postgres"] }));
+  });
+});
+
 describe("selection", () => {
   it("accepts bundles, which are one purchase", () => {
     expect(stage(report(["databricks"]), "serve").best_level).toBe(3);

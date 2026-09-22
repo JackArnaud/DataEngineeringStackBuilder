@@ -9,6 +9,7 @@ import { suggestTools, vendorFamily } from "../src/suggest.js";
 import { ds } from "./helpers.js";
 
 const model = compileDataset(ds);
+const lensOf = (id: string) => model.lenses.find((l) => l.id === id)!;
 const gapOf = (tools: string[], id: string, needs?: string[]) => {
   const gap = computeGaps(model, { tools, needs }).gaps.find((g) => g.id === id);
   if (!gap) throw new Error(`no gap ${id}`);
@@ -73,26 +74,25 @@ describe("suggestions", () => {
 
 describe("stack band coverage", () => {
   it("shows the best level any selected tool reaches, by band and zone", () => {
-    const bands = stackBands(model, "medallion", ["unity-catalog"]);
+    const bands = stackBands(model, lensOf("medallion"), ["unity-catalog"]);
     expect(bands.govern).toEqual({ source: 0, bronze: 3, silver: 3, gold: 3, consume: 3 });
     // Anomaly detection is scored on the store stage, which medallion spreads over bronze, silver and gold.
     expect(bands.quality).toEqual({ source: 0, bronze: 2, silver: 2, gold: 2, consume: 0 });
   });
 
   it("takes the best across tools", () => {
-    const bands = stackBands(model, "grid", ["aws-s3", "aws-lake-formation"]);
+    const bands = stackBands(model, lensOf("grid"), ["aws-s3", "aws-lake-formation"]);
     expect(bands.govern!.store).toBe(3); // Lake Formation's 3 over S3's 2
   });
 
   it("has a zero row for every band and zone when nothing is selected", () => {
-    const bands = stackBands(model, "medallion", []);
+    const bands = stackBands(model, lensOf("medallion"), []);
     expect(Object.keys(bands)).toEqual(["govern", "quality", "observe", "platform"]);
     for (const row of Object.values(bands)) expect(Object.values(row).every((v) => v === 0)).toBe(true);
   });
 
-  it("ignores unknown tools and refuses an unknown lens", () => {
-    expect(stackBands(model, "grid", ["nope"]).govern!.store).toBe(0);
-    expect(() => stackBands(model, "kappa", [])).toThrow(/unknown lens/);
+  it("ignores unknown tools", () => {
+    expect(stackBands(model, lensOf("grid"), ["nope"]).govern!.store).toBe(0);
   });
 });
 

@@ -1067,6 +1067,68 @@
             "orchestrate",
             "serve"
           ],
+          "tiered": {
+            "bands": {
+              "serve": {
+                "govern": 2
+              },
+              "store": {
+                "govern": 3
+              },
+              "transform": {
+                "observe": 2,
+                "quality": 3
+              }
+            },
+            "overridden": false,
+            "rail": [],
+            "span": [
+              "ingest",
+              "store",
+              "transform",
+              "orchestrate",
+              "serve"
+            ],
+            "zones": {
+              "ingest": {
+                "cells": [
+                  "ingest.batch-extract@ingest",
+                  "ingest.cdc@ingest",
+                  "ingest.reverse-etl@ingest",
+                  "ingest.stream-ingest@ingest"
+                ],
+                "intensity": 3
+              },
+              "orchestrate": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate"
+                ],
+                "intensity": 3
+              },
+              "serve": {
+                "cells": [
+                  "serve.query-engine@serve"
+                ],
+                "intensity": 3
+              },
+              "store": {
+                "cells": [
+                  "store.object-store@store",
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              },
+              "transform": {
+                "cells": [
+                  "transform.feature-eng@transform",
+                  "transform.sql-transform@transform"
+                ],
+                "intensity": 3
+              }
+            }
+          },
           "zones": {
             "ingest": {
               "cells": [
@@ -1218,6 +1280,57 @@
             "orchestrate",
             "serve"
           ],
+          "tiered": {
+            "bands": {
+              "serve": {
+                "govern": 2
+              },
+              "store": {
+                "govern": 3
+              },
+              "transform": {
+                "observe": 2,
+                "quality": 3
+              }
+            },
+            "overridden": false,
+            "rail": [],
+            "span": [
+              "store",
+              "transform",
+              "orchestrate",
+              "serve"
+            ],
+            "zones": {
+              "orchestrate": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate"
+                ],
+                "intensity": 3
+              },
+              "serve": {
+                "cells": [
+                  "serve.query-engine@serve"
+                ],
+                "intensity": 3
+              },
+              "store": {
+                "cells": [
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              },
+              "transform": {
+                "cells": [
+                  "transform.feature-eng@transform",
+                  "transform.sql-transform@transform"
+                ],
+                "intensity": 3
+              }
+            }
+          },
           "zones": {
             "orchestrate": {
               "cells": [
@@ -1263,6 +1376,36 @@
             "store",
             "serve"
           ],
+          "tiered": {
+            "bands": {
+              "serve": {
+                "govern": 2
+              },
+              "store": {
+                "govern": 3
+              }
+            },
+            "overridden": false,
+            "rail": [],
+            "span": [
+              "store",
+              "serve"
+            ],
+            "zones": {
+              "serve": {
+                "cells": [
+                  "serve.query-engine@serve"
+                ],
+                "intensity": 3
+              },
+              "store": {
+                "cells": [
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              }
+            }
+          },
           "zones": {
             "serve": {
               "cells": [
@@ -1815,6 +1958,96 @@
             "gold",
             "consume"
           ],
+          "tiered": {
+            "bands": {
+              "bronze": {
+                "govern": 3
+              },
+              "consume": {
+                "govern": 2
+              },
+              "gold": {
+                "govern": 3,
+                "observe": 2,
+                "quality": 3
+              },
+              "silver": {
+                "govern": 3,
+                "observe": 2,
+                "quality": 3
+              }
+            },
+            "overridden": false,
+            "rail": [
+              "ingest.reverse-etl@ingest"
+            ],
+            "span": [
+              "source",
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ],
+            "zones": {
+              "bronze": {
+                "cells": [
+                  "ingest.batch-extract@ingest",
+                  "ingest.cdc@ingest",
+                  "ingest.stream-ingest@ingest",
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "store.object-store@store",
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              },
+              "consume": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "serve.query-engine@serve"
+                ],
+                "intensity": 3
+              },
+              "gold": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "store.object-store@store",
+                  "store.warehouse@store",
+                  "transform.feature-eng@transform",
+                  "transform.sql-transform@transform"
+                ],
+                "intensity": 3
+              },
+              "silver": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "store.object-store@store",
+                  "store.warehouse@store",
+                  "transform.feature-eng@transform",
+                  "transform.sql-transform@transform"
+                ],
+                "intensity": 3
+              },
+              "source": {
+                "cells": [
+                  "ingest.batch-extract@ingest",
+                  "ingest.cdc@ingest",
+                  "ingest.stream-ingest@ingest",
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate"
+                ],
+                "intensity": 3
+              }
+            }
+          },
           "zones": {
             "bronze": {
               "cells": [
@@ -2057,6 +2290,84 @@
             "gold",
             "consume"
           ],
+          "tiered": {
+            "bands": {
+              "bronze": {
+                "govern": 3
+              },
+              "consume": {
+                "govern": 2
+              },
+              "gold": {
+                "govern": 3,
+                "observe": 2,
+                "quality": 3
+              },
+              "silver": {
+                "govern": 3,
+                "observe": 2,
+                "quality": 3
+              }
+            },
+            "overridden": false,
+            "rail": [],
+            "span": [
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ],
+            "zones": {
+              "bronze": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              },
+              "consume": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "serve.query-engine@serve"
+                ],
+                "intensity": 3
+              },
+              "gold": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "store.warehouse@store",
+                  "transform.feature-eng@transform",
+                  "transform.sql-transform@transform"
+                ],
+                "intensity": 3
+              },
+              "silver": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate",
+                  "store.warehouse@store",
+                  "transform.feature-eng@transform",
+                  "transform.sql-transform@transform"
+                ],
+                "intensity": 3
+              },
+              "source": {
+                "cells": [
+                  "orchestrate.ci-cd@orchestrate",
+                  "orchestrate.dependency-dag@orchestrate",
+                  "orchestrate.scheduling@orchestrate"
+                ],
+                "intensity": 3
+              }
+            }
+          },
           "zones": {
             "bronze": {
               "cells": [
@@ -2131,6 +2442,56 @@
             "gold",
             "consume"
           ],
+          "tiered": {
+            "bands": {
+              "bronze": {
+                "govern": 3
+              },
+              "consume": {
+                "govern": 2
+              },
+              "gold": {
+                "govern": 3
+              },
+              "silver": {
+                "govern": 3
+              }
+            },
+            "overridden": false,
+            "rail": [],
+            "span": [
+              "bronze",
+              "silver",
+              "gold",
+              "consume"
+            ],
+            "zones": {
+              "bronze": {
+                "cells": [
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              },
+              "consume": {
+                "cells": [
+                  "serve.query-engine@serve"
+                ],
+                "intensity": 3
+              },
+              "gold": {
+                "cells": [
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              },
+              "silver": {
+                "cells": [
+                  "store.warehouse@store"
+                ],
+                "intensity": 3
+              }
+            }
+          },
           "zones": {
             "bronze": {
               "cells": [

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { suggestTools } from "@compile";
+import { applyTier, hasEnterpriseTierUnlock, isEnterpriseTierOnly, suggestTools } from "@compile";
 import type { Gap, GapReport, GapsInLens, RenderLens, RenderModel, RenderTool } from "@compile";
 import { ARCHETYPE_LABEL, constraintPhrase, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural } from "../labels";
 import type { Lookup } from "../lookup";
 import { groupCells, joinNames } from "../receipts";
+import { toggle } from "../state";
 import type { StackState } from "../state";
 import type { Detail } from "../types";
 import { CellGroups } from "./CellGroups";
@@ -87,15 +88,21 @@ export function DetailPanel(props: Props) {
 
 // ------------------------------------------------------------------------------------ a tool
 
-function ToolDetail({ model, lookup, state, tool, onOpen, onToggleTool, onAddTools }: Props & { tool: RenderTool }) {
+function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool, onAddTools }: Props & { tool: RenderTool }) {
   const stageIds = model.stages.map((s) => s.id);
   const capabilityIds = model.capabilities.map((c) => c.id);
-  const groups = useMemo(() => groupCells(tool.cells, stageIds, capabilityIds), [tool, model]);
+  const tiered = state.tiers.includes(tool.id);
+  const groups = useMemo(() => groupCells(tool.cells.map((c) => applyTier(c, tiered)), stageIds, capabilityIds), [tool, model, tiered]);
   const spine = groups.filter((g) => lookup.capability(g.capability)?.kind === "spine");
   const band = groups.filter((g) => lookup.capability(g.capability)?.kind === "band");
   const inStack = state.tools.includes(tool.id);
   const members = (tool.includes ?? []).map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t);
   const parents = lookup.includedBy(tool.id);
+  const canTier = hasEnterpriseTierUnlock(tool.cells);
+  const tierLabel = useMemo(() => {
+    const via = tool.cells.flatMap((c) => c.conditional.filter(isEnterpriseTierOnly).flatMap((cd) => cd.via));
+    return constraintPhrase(["enterprise-tier"], [...new Set(via)], lookup);
+  }, [tool, lookup]);
 
   return (
     <>
@@ -110,6 +117,13 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onToggleTool, onAddToo
           </button>
         )}
       </div>
+
+      {canTier && (
+        <label className="tiercheck">
+          <input type="checkbox" checked={tiered} onChange={() => onChange({ tiers: toggle(state.tiers, tool.id) })} />
+          I&rsquo;m on {tierLabel}
+        </label>
+      )}
 
       {tool.tagline && <p className="lede">{tool.tagline}</p>}
 

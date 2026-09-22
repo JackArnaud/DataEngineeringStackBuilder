@@ -1,5 +1,5 @@
 import type { Dataset } from "./dataset.js";
-import { buildCells, contributionsOf } from "./derive.js";
+import { applyTier, buildCells, contributionsOf, hasEnterpriseTierUnlock } from "./derive.js";
 import type { Contribution } from "./derive.js";
 import { allCells, place } from "./lens.js";
 import { projectTool } from "./project.js";
@@ -90,7 +90,14 @@ export function compileRenderModel(input: CompileInput): RenderModel {
     const views: RenderLens["tools"] = {};
     for (const tool of tools) {
       const zones = records.get(tool.id)!.lens_overrides?.find((o) => o.lens === lens.id)?.zones;
-      views[tool.id] = projectTool(lens, taxonomy, tool.cells, zones ? [...zones] : undefined);
+      const override = zones ? [...zones] : undefined;
+      views[tool.id] = projectTool(lens, taxonomy, tool.cells, override);
+      // A tool with an enterprise-tier-only conditional also gets the view it would have on that
+      // tier, so the client can swap to it once the user confirms they have it.
+      if (hasEnterpriseTierUnlock(tool.cells)) {
+        const boosted = tool.cells.map((c) => applyTier(c, true));
+        views[tool.id] = { ...views[tool.id]!, tiered: projectTool(lens, taxonomy, boosted, override) };
+      }
     }
     return { id: lens.id, name: lens.name, zones: [...lens.zones], unmapped: lens.unmapped, placement, stage_placement: stagePlacement, tools: views };
   });

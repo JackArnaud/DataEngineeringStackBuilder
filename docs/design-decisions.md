@@ -99,6 +99,31 @@ scale as band cells, where 0 means not applicable.
 is covered, and the report carries `best_level` so a view can show it as thin. A score that needs a
 higher plan does not count as coverage: it appears on the gap as a remedy (`conditional`).
 
+**A confirmed tier promotes its remedy into real coverage — everywhere, not just the gap list.**
+Masking scored `conditional` on `constraint: ["enterprise-tier"]` used to read as missing for
+Snowflake even for someone who already pays for Enterprise, with no way to say so. `StackInput.tiers`
+(tool ids) and `apps/web/src/state.ts`'s matching `StackState.tiers` let a user confirm they're on
+the tier named by a tool's `tier_name`; `applyTier` (`packages/compile/src/derive.ts`) then promotes
+the best `enterprise-tier`-only conditional level into the cell's base level before `computeGaps`
+reads it, so the gap, its stage strip contribution and the tool's own receipts ("Reaches core only
+on…") all agree. Only a conditional whose constraint is exactly `["enterprise-tier"]` is ever
+promoted — `own-cloud-only`, `region-limited` and any multi-constraint combination are left alone,
+since those are not settled by "which SKU you bought." The check on the tool's own detail panel is
+labelled with the real plan name via the existing `constraintPhrase` helper, not a generic "an
+Enterprise plan" — important for a bundle like Snowflake, whose own record carries no `tier_name`
+even though a part it includes (`snowflake-horizon`) does.
+
+The matrix reads a *compiled* per-tool, per-lens projection (`ToolLensView`, built once at compile
+time by `projectTool`), which already discards conditional detail — deliberately, since a tool sits
+"where it is as sold," not where a higher plan would put it. Rather than re-deriving that projection
+client-side, the compiler now calls `projectTool` a second time for any tool with something to
+promote, over the same cells run through `applyTier`, and ships the result as `ToolLensView.tiered`.
+`effectiveLens(lens, tiers)` (also in `project.ts`) swaps a tiered tool's view in for both `LensMatrix`
+and `stackBands`, so the matrix's spine marks and cross-cutting band bars move too, with zero line
+changes inside `LensMatrix.tsx` itself — the swap already happened before the lens object reached it.
+The extra `.tiered` view is only computed and shipped for tools that actually have something to
+promote, so it adds negligible weight to `render-model.json`.
+
 **A lens can only place a gap, never hide one.** `projectGaps` puts each gap in zones or, when the
 lens has no zone for it, in its rail. This is invariant 2, enforced three ways: statically, the
 validator rejects any lens with `unmapped: "drop"` that leaves a cell unmapped which could be a gap
@@ -265,17 +290,19 @@ answered, since an empty array must mean "never asked," not "confirmed no budget
 was a real bug caught by a pre-existing test before it shipped. Gap severity, the gap list and the
 matrix are entirely unaffected — only the order of a gap's "What would close it" list moves.
 
-**What's missing is the page; the stack is a fact about it.** The builder used to open on Coverage,
-with a permanent sidebar for adding and removing tools beside it — so the first thing anyone saw was
-an editor, not an answer. What's missing is now the default tab and opens first; Coverage and
-Overlaps sit beside it. The sidebar is gone. In its place, a one-line bar under the masthead names
-the stack and what it needs ("Snowflake, dbt (v2) and GitHub · needs BI and visualisation") with a
-single "Edit stack" action. That action opens the same picker as before — chips, the two tabs, the
-vendor list — in the existing side-sliding detail panel (a new `editStack` kind alongside tool, zone
-and gap), so adding and removing a tool costs one extra click instead of a permanent column, and nets
-out to more room for the page's actual subject. *Chosen over* keeping the sidebar and only
-re-defaulting the tab: that would have left the picker just as prominent as the gaps it now sits
-behind.
+**What's missing is a tab, not a permanent sidebar.** The builder used to have a permanent sidebar
+for adding and removing tools beside the chart. The sidebar is gone. In its place, a one-line bar
+under the masthead names the stack and what it needs ("Snowflake, dbt (v2) and GitHub · needs BI and
+visualisation") with a single "Edit stack" action. That action opens the same picker as before —
+chips, the two tabs, the vendor list — in the existing side-sliding detail panel (a new `editStack`
+kind alongside tool, zone and gap), so adding and removing a tool costs one extra click instead of a
+permanent column, and nets out to more room for the page's actual subject. *Chosen over* keeping the
+sidebar and only re-defaulting the tab: that would have left the picker just as prominent as the gaps
+it now sits behind. Coverage is the default tab (What's missing and Overlaps sit beside it) — this
+briefly went the other way, defaulting to What's missing on the reasoning that the tool should lead
+with the gaps; it reverted once the coverage-first flow was live, since the chart is what most visits
+are actually there to read, and the gap count on its tab already surfaces "what's missing" without
+having to open on it.
 
 **One lens, no table twin.** The Medallion architecture lens and the chart's table view were cut:
 they read as options to weigh, not information anyone needed, and the audit grid's zones are

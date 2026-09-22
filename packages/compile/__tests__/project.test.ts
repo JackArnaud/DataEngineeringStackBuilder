@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { projectTool } from "../src/project.js";
+import { applyTier } from "../src/derive.js";
+import { effectiveLens, projectTool } from "../src/project.js";
+import type { ToolLensView } from "../src/project.js";
+import type { RenderLens } from "../src/render-model.js";
 import { cellsOf, lens, sc, taxonomy } from "./helpers.js";
 import type { Json } from "./helpers.js";
 
@@ -123,6 +126,43 @@ describe("conditional levels", () => {
   it("are not placed: a tool sits where it is as sold, not where a higher plan would put it", () => {
     const view = project({}, [{ band: "govern.masking", ...sc(3, "native", { constraint: ["enterprise-tier"] }), scope: ["store"] }]);
     expect(view).toMatchObject({ zones: {}, bands: {}, rail: [], span: [] });
+  });
+
+  it("place where a confirmed tier would put them, when projected from cells promoted by applyTier", () => {
+    const cells = cellsOf({}, [{ band: "govern.masking", ...sc(3, "native", { constraint: ["enterprise-tier"] }), scope: ["store"] }]);
+    const boosted = projectTool(medallion, taxonomy, cells.map((c) => applyTier(c, true)));
+    expect(boosted.bands.bronze).toEqual({ govern: 3 });
+  });
+});
+
+describe("effectiveLens", () => {
+  const view = (bands: ToolLensView["bands"]): ToolLensView => ({ span: [], zones: {}, bands, rail: [], overridden: false });
+  const fake: RenderLens = {
+    id: "grid",
+    name: "Grid",
+    zones: ["store"],
+    unmapped: "drop",
+    placement: {},
+    stage_placement: {},
+    tools: {
+      plain: view({}),
+      tiered: { ...view({ store: { govern: 0 } }), tiered: view({ store: { govern: 3 } }) },
+    },
+  };
+
+  it("leaves the lens untouched when nothing is tiered", () => {
+    expect(effectiveLens(fake, [])).toBe(fake);
+  });
+
+  it("swaps in a named tool's tiered view", () => {
+    const eff = effectiveLens(fake, ["tiered"]);
+    expect(eff.tools.tiered).toEqual(view({ store: { govern: 3 } }));
+    expect(eff.tools.plain).toBe(fake.tools.plain!);
+  });
+
+  it("leaves a tool with nothing to promote alone, even when named", () => {
+    const eff = effectiveLens(fake, ["plain"]);
+    expect(eff.tools.plain).toBe(fake.tools.plain!);
   });
 });
 

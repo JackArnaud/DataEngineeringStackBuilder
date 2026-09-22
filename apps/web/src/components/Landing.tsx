@@ -240,7 +240,7 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
           Back
         </button>
         <button type="button" className="primary" onClick={isLast ? onDone : () => go(place + 1)}>
-          {isLast ? "Show me what's missing" : pickedHere === 0 ? "Skip" : "Next"}
+          {isLast ? "Show me my stack" : pickedHere === 0 ? "Skip" : "Next"}
         </button>
       </div>
     </section>

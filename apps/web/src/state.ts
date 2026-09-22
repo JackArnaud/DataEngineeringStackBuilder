@@ -22,6 +22,8 @@ export interface StackState {
   profile: ProfileAnswers;
   /** What the guided start's resources step said the person already has; reorders suggestions only. */
   resources: Resource[];
+  /** Tools the user has confirmed are on the tier named by that tool's `tier_name`. */
+  tiers: string[];
 }
 
 const PROFILE_KEYS = ["team", "sensitivity", "stakes"] as const;
@@ -60,7 +62,7 @@ export const isSelectable = (model: RenderModel, id: string): boolean => model.t
 const canonical = (items: string[]): string[] => [...new Set(items)].sort();
 
 export function emptyState(_model: RenderModel): StackState {
-  return { tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [] };
+  return { tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [], tiers: [] };
 }
 
 /** Read a query string against the model, quietly dropping anything that no longer exists. */
@@ -82,6 +84,7 @@ export function parseState(search: string, model: RenderModel): StackState {
     if (v && (PROFILE_KEYS as readonly string[]).includes(k)) profile[k as (typeof PROFILE_KEYS)[number]] = v;
   }
   const resources = canonical(list("resources").filter((t): t is Resource => (RESOURCE_TAGS as string[]).includes(t))) as Resource[];
+  const tiers = canonical(list("tiers").filter((id) => isSelectable(model, id)));
 
   return {
     tools,
@@ -96,6 +99,7 @@ export function parseState(search: string, model: RenderModel): StackState {
     ),
     profile,
     resources,
+    tiers,
   };
 }
 
@@ -110,6 +114,7 @@ export function serializeState(state: StackState, _model: RenderModel): string {
   const profile = PROFILE_KEYS.filter((k) => state.profile[k]).map((k) => `${k}:${state.profile[k]}`);
   if (profile.length) params.set("profile", profile.join(","));
   if (state.resources.length) params.set("resources", canonical(state.resources).join(","));
+  if (state.tiers.length) params.set("tiers", canonical(state.tiers).join(","));
   // Commas are the list separator and are safe in a query string; keep the address readable.
   const query = params.toString().replace(/%2C/g, ",").replace(/%3A/g, ":");
   return query ? `?${query}` : "";

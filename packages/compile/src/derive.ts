@@ -69,6 +69,34 @@ export interface Cell {
   evidence: Evidence[];
 }
 
+/** A conditional level gated on nothing but which plan was bought, so a user can confirm they have it. */
+export const isEnterpriseTierOnly = (c: ConditionalLevel): boolean => c.constraint.length === 1 && c.constraint[0] === "enterprise-tier";
+
+/** True when confirming this tool's tier could promote at least one of its cells. */
+export const hasEnterpriseTierUnlock = (cells: Cell[]): boolean => cells.some((c) => c.conditional.some(isEnterpriseTierOnly));
+
+/**
+ * With `tiered`, promote the best enterprise-tier-only conditional level into the base level: what
+ * a user on that plan actually has, not a remedy they still need. Constraints that are not settled
+ * by "which SKU you bought" (`own-cloud-only`, `region-limited`, or any combination with one of
+ * those) are left exactly as scored.
+ */
+export function applyTier(cell: Cell, tiered: boolean): Cell {
+  if (!tiered) return cell;
+  const unlockable = cell.conditional.filter(isEnterpriseTierOnly);
+  if (unlockable.length === 0) return cell;
+  const best = unlockable.reduce((a, b) => (b.level > a.level ? b : a));
+  if (best.level <= cell.level) return cell;
+  return {
+    ...cell,
+    level: best.level,
+    delivery: best.delivery,
+    maturity: best.maturity,
+    via: [...new Set(best.via)].sort(),
+    conditional: cell.conditional.filter((c) => c.level > best.level),
+  };
+}
+
 interface ScoreFields {
   level: 1 | 2 | 3;
   delivery: Delivery;
