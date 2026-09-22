@@ -97,7 +97,7 @@ export const EXAMPLE_GROUPS: ExampleGroup[] = [
         label: "Google Cloud analytics on GitLab",
         hint: "Datastream into BigQuery, Dataform models, Composer schedules, Looker serves, GitLab ships.",
         tools: ["gcp-datastream", "gcp-bigquery", "gcp-dataform", "gcp-composer", "gcp-looker", "gcp-dataplex", "gitlab"],
-        notice: "Every stage has a tool, yet data tests, contracts and anomaly detection are still critical. A tool covering a capability at one stage does not cover it at all of them.",
+        notice: "Every stage has a tool, yet masking, data tests, contracts and anomaly detection are still critical. BigQuery's own masking needs the Enterprise edition, so it counts as closable, not covered.",
       },
       {
         label: "Azure data platform with Azure DevOps",
@@ -146,7 +146,7 @@ export const EXAMPLE_GROUPS: ExampleGroup[] = [
         hint: "BigQuery and Dataform build features, Vertex AI serves the model, Composer schedules, Dataplex governs.",
         tools: ["gcp-bigquery", "gcp-dataform", "gcp-vertex-ai", "gcp-composer", "gcp-dataplex"],
         needs: ["transform.feature-eng", "serve.ml-serving"],
-        notice: "Data tests, contracts and anomaly detection are the critical gaps: a model cannot tell bad data from good, so it has to be caught before the model.",
+        notice: "Masking, data tests, contracts and anomaly detection are the critical gaps: a model cannot tell bad data from good, and it can just as easily memorise what masking should have hidden.",
       },
       {
         label: "Features to a model on AWS",

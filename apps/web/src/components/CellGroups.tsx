@@ -1,5 +1,5 @@
 import type { Evidence } from "@compile";
-import { constraintText, plural, safeHref, sourceHost } from "../labels";
+import { constraintPhrase, plural, safeHref, sourceHost } from "../labels";
 import type { Lookup } from "../lookup";
 import type { CellGroup } from "../receipts";
 import { joinNames } from "../receipts";
@@ -20,7 +20,7 @@ export function EvidenceList({ evidence, lookup }: { evidence: Evidence[]; looku
             <DeliveryBadge delivery={e.delivery} />
             {e.scored_delivery && <span className="muted">scored as {e.scored_delivery}</span>}
             {e.maturity !== "ga" && <span className="badge badge--warn">{e.maturity}</span>}
-            {e.constraint && <span className="badge badge--plain">only on {constraintText(e.constraint)}</span>}
+            {e.constraint && <span className="badge badge--plain">only on {constraintPhrase(e.constraint, [e.tool], lookup)}</span>}
             {e.inherited && <span className="badge badge--warn">not yet re-scored</span>}
           </div>
           <p className="evidence__note">{e.note}</p>
@@ -48,7 +48,7 @@ export function CellGroups({ groups, lookup }: { groups: CellGroup[]; lookup: Lo
             </div>
             {g.conditional.map((c) => (
               <p key={`${c.level}${c.constraint.join()}`} className="cellgroup__conditional">
-                Reaches <strong>{c.level === 3 ? "core" : c.level === 2 ? "native" : "extended"}</strong> only on {constraintText(c.constraint)}
+                Reaches <strong>{c.level === 3 ? "core" : c.level === 2 ? "native" : "extended"}</strong> only on {constraintPhrase(c.constraint, c.via, lookup)}
                 {c.via.length > 0 && <> ({joinNames(c.via.map((v) => lookup.toolName(v)))})</>}. Not counted as coverage.
               </p>
             ))}

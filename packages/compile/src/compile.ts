@@ -54,6 +54,7 @@ export function compileRenderModel(input: CompileInput): RenderModel {
       vendor: record.vendor,
       kind: record.kind,
       sku: record.sku,
+      tier_name: record.tier_name,
       license: record.license,
       deployment: [...record.deployment],
       pricing_model: record.pricing_model,

@@ -4,7 +4,8 @@
   "name": "BigQuery",
   "vendor": "Google Cloud",
   "kind": "tool",
-  "sku": "BigQuery. BigQuery ML and Dataform are not scored here; Dataform has its own record.",
+  "sku": "BigQuery Standard edition. Governance features that need Enterprise or Enterprise Plus carry an enterprise-tier constraint. BigQuery ML and Dataform are not scored here; Dataform has its own record.",
+  "tier_name": "BigQuery Enterprise or Enterprise Plus edition",
   "license": "proprietary",
   "deployment": ["cloud-managed"],
   "pricing_model": "usage",
@@ -53,17 +54,18 @@
       "band": "govern.masking",
       "level": 3,
       "delivery": "native",
-      "scope": ["store", "serve"],
-      "note": "Dynamic data masking obscures a column for chosen users while still letting them query it, with rules such as nullify, SHA-256 hash, default value, email mask and random hash, attached through policy tags.",
-      "source": "https://docs.cloud.google.com/bigquery/docs/column-data-masking-intro"
+      "constraint": ["enterprise-tier"],
+      "scope": ["ingest", "store", "transform", "serve"],
+      "note": "Dynamic data masking obscures a column for chosen users while still letting them query it, with rules such as nullify, SHA-256 hash, default value, email mask and random hash, attached through policy tags. The editions page lists it under Enterprise and Enterprise Plus only; Standard has no access to fine-grained security controls.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/editions-intro"
     },
     {
       "band": "govern.access-control",
       "level": 2,
       "delivery": "native",
-      "scope": ["store", "serve"],
-      "note": "Column-level security through policy tags in inheriting taxonomies, with a Fine-Grained Reader role for unmasked access.",
-      "source": "https://docs.cloud.google.com/bigquery/docs/column-data-masking-intro"
+      "scope": ["ingest", "store", "transform", "serve"],
+      "note": "IAM predefined roles and permissions at the project, dataset, table, view and routine level, available on every edition. Column-level policy tags add finer control but need Enterprise or Enterprise Plus, so they are scored under masking instead.",
+      "source": "https://docs.cloud.google.com/bigquery/docs/access-control"
     }
   ],
   "presentation": {

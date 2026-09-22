@@ -205,6 +205,11 @@
           "type": "string",
           "minLength": 1
         },
+        "tier_name": {
+          "description": "The name this tool's own docs use for the plan, edition or licence that an enterprise-tier constraint means, e.g. \"Snowflake Enterprise edition\" or \"Tableau Data Management\". Required if any score on this record carries an enterprise-tier constraint, so the UI can say what it actually means instead of a generic \"Enterprise plan\".",
+          "type": "string",
+          "minLength": 1
+        },
         "license": {
           "enum": [
             "open-source",

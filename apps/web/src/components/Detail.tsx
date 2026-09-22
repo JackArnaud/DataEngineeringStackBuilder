@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { suggestTools } from "@compile";
 import type { Gap, GapReport, GapsInLens, RenderLens, RenderModel, RenderTool } from "@compile";
-import { ARCHETYPE_LABEL, constraintText, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural } from "../labels";
+import { ARCHETYPE_LABEL, constraintPhrase, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural } from "../labels";
 import type { Lookup } from "../lookup";
 import { groupCells, joinNames } from "../receipts";
 import type { StackState } from "../state";
@@ -344,7 +344,7 @@ function GapDetail(props: Props & { gap: Gap }) {
           <ul>
             {gap.conditional.map((c) => (
               <li key={`${c.level}${c.constraint.join()}`}>
-                <LevelBadge level={c.level} /> on {constraintText(c.constraint)}, via {joinNames(c.via.map((v) => lookup.toolName(v)))}
+                <LevelBadge level={c.level} /> on {constraintPhrase(c.constraint, c.via, lookup)}, via {joinNames(c.via.map((v) => lookup.toolName(v)))}
               </li>
             ))}
           </ul>

@@ -133,6 +133,7 @@ describe("seed dataset structure", () => {
     );
     expect(constrained.sort()).toEqual([
       "dbt-platform-services:orchestrate.dependency-dag",
+      "gcp-bigquery:govern.masking",
       "snowflake-horizon:govern.masking",
       "snowflake-horizon:govern.policy",
       "snowflake-horizon:observe.lineage",

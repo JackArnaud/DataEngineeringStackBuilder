@@ -5,6 +5,7 @@
   "vendor": "Salesforce",
   "kind": "tool",
   "sku": "Tableau Cloud and Server, base edition. Data Management (Catalog, Prep Conductor, virtual connections, data policies) is only available with Tableau Enterprise, Cloud+ or Tableau+, so those features carry an enterprise-tier constraint. Tableau Next is not scored.",
+  "tier_name": "Tableau Data Management",
   "license": "proprietary",
   "deployment": ["saas", "self-hosted", "desktop"],
   "pricing_model": "per-seat",

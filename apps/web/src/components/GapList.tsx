@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { groupGaps, isFixFirst } from "@compile";
 import type { Gap, GapGroup, GapsInLens, RenderLens, RenderModel } from "@compile";
-import { constraintText, GAP_KIND_LABEL, groupTitle, listNames, NAMED_STAGES_MAX, plural } from "../labels";
+import { constraintPhrase, GAP_KIND_LABEL, groupTitle, listNames, NAMED_STAGES_MAX, plural } from "../labels";
 import type { Lookup } from "../lookup";
 import { SeverityChip } from "./parts";
 
@@ -61,7 +61,7 @@ export function GapList({ model, lookup, lens, gaps, setAside, placement, hasToo
             <span className="gap__meta">
               {GAP_KIND_LABEL[g.kind]}
               {where && <> · {where}</>}
-              {remedy && <> · closable on {constraintText(remedy.constraint)}</>}
+              {remedy && <> · closable on {constraintPhrase(remedy.constraint, remedy.via, lookup)}</>}
             </span>
           </span>
         </button>

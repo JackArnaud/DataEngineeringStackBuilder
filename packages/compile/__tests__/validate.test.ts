@@ -174,12 +174,31 @@ describe("tool scores", () => {
 
   it("accepts flags, and rejects a value outside them", () => {
     const flagged = specialist({
+      tier_name: "Fixture Co Enterprise plan",
       coverage: { "transform.sql-transform": score(3, "native", { maturity: "preview", constraint: ["enterprise-tier", "region-limited"] }) },
     });
     expect(run({ tools: one(flagged) })).toEqual([]);
 
     const bad = specialist({ coverage: { "transform.sql-transform": score(3, "native", { maturity: "alpha" }) } });
     expect(has(run({ tools: one(bad) }), "schema", { path: "/coverage/transform.sql-transform/maturity" })).toBe(true);
+  });
+
+  it("needs a tier_name wherever enterprise-tier is used, on a spine score or a band", () => {
+    const noTierName = specialist({
+      coverage: { "transform.sql-transform": score(3, "native", { constraint: ["enterprise-tier"] }) },
+    });
+    expect(has(run({ tools: one(noTierName) }), "tier-name-missing", { path: "/coverage/transform.sql-transform" })).toBe(true);
+
+    const bandNoTierName = specialist({
+      bands: [{ band: "quality.tests", ...score(3, "native", { constraint: ["enterprise-tier"] }), scope: ["transform"] }],
+    });
+    expect(has(run({ tools: one(bandNoTierName) }), "tier-name-missing", { path: "/bands/0" })).toBe(true);
+
+    const named = specialist({
+      tier_name: "Fixture Co Enterprise plan",
+      coverage: { "transform.sql-transform": score(3, "native", { constraint: ["enterprise-tier"] }) },
+    });
+    expect(has(run({ tools: one(named) }), "tier-name-missing")).toBe(false);
   });
 
   it("rejects unknown properties, including a hand-assigned archetype", () => {

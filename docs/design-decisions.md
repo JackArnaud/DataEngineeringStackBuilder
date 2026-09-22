@@ -160,6 +160,18 @@ a tint, and lists (the landing choices, examples, gaps, overlaps) are ruled rows
 arrow rather than buttons in tiles. None of this touches the data colours above: the ramps and status
 colours are unchanged, and axe still reports no violations in light, dark and at phone width.
 
+**A tier is named, not generic.** Every `enterprise-tier` constraint used to render as the same
+sentence, "an Enterprise plan," regardless of which tool or which real plan it meant. Tool records
+now carry an optional `tier_name` (e.g. "Snowflake Enterprise edition," "Tableau Data Management"),
+and every place that renders a constraint substitutes it in — a gap row can say "closable on
+Snowflake Enterprise edition" instead of the generic phrase. *Chosen over* tracking actual list
+prices: prices change constantly, vary by negotiation and region, and would break the rule that a
+score only claims what a stable source backs; a tier's *name* is durable in the way a dollar figure
+is not. The substitution only fires when every tool behind a remedy agrees on one tier name — a gap
+closable through two vendors with different plans still falls back to the generic phrase, since one
+sentence cannot name two tiers at once. `npm run validate` now rejects any `enterprise-tier` score on
+a record with no `tier_name`.
+
 **One thing at a time.** The builder page stacked six sections and a control bar, and read as a wall.
 The main column now has three tabs: Coverage (the stage strip and the chart), What's missing, and
 Overlaps (only while two of your tools share a task). The tab is in the address (`#missing`,

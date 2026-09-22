@@ -322,6 +322,9 @@ function checkTool(rec: ToolRecord, file: string, t: Taxonomy, lenses: Map<strin
     else if (kind === "band") sink.error("capability-wrong-kind", file, ptr, `"${id}" is a band capability; record it under bands`);
     else checkStatus(t, id, file, ptr, sink);
     if (score.inherited) sink.warn("inherited-unscored", file, ptr, "copied by a taxonomy migration and not yet re-scored");
+    if (score.constraint?.includes("enterprise-tier") && !rec.tier_name) {
+      sink.error("tier-name-missing", file, ptr, `scored with the enterprise-tier constraint, so the record needs a top-level "tier_name" naming the plan this tool's own docs use`);
+    }
   }
 
   const claimed = new Map<string, number>();
@@ -332,6 +335,9 @@ function checkTool(rec: ToolRecord, file: string, t: Taxonomy, lenses: Map<strin
     else if (kind === "spine") sink.error("capability-wrong-kind", file, `${ptr}/band`, `"${entry.band}" is a spine capability; record it under coverage`);
     else checkStatus(t, entry.band, file, `${ptr}/band`, sink);
     if (entry.inherited) sink.warn("inherited-unscored", file, ptr, "copied by a taxonomy migration and not yet re-scored");
+    if (entry.constraint?.includes("enterprise-tier") && !rec.tier_name) {
+      sink.error("tier-name-missing", file, ptr, `scored with the enterprise-tier constraint, so the record needs a top-level "tier_name" naming the plan this tool's own docs use`);
+    }
 
     for (const stage of bandStages(rec, entry)) {
       if (!stageIds.has(stage)) {

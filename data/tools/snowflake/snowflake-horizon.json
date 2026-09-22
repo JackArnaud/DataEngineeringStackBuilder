@@ -5,6 +5,7 @@
   "vendor": "Snowflake",
   "kind": "tool",
   "sku": "Snowflake Standard edition. Governance and quality features that need the Enterprise edition carry an enterprise-tier constraint, so they count as a remedy and never as coverage.",
+  "tier_name": "Snowflake Enterprise edition",
   "license": "proprietary",
   "deployment": ["saas"],
   "pricing_model": "usage",

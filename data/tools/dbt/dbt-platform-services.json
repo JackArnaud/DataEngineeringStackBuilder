@@ -5,6 +5,7 @@
   "vendor": "dbt Labs",
   "kind": "tool",
   "sku": "dbt platform Starter plan. Capability that needs the Enterprise or Enterprise+ plan carries an enterprise-tier constraint. Excludes the dbt framework itself, which the dbt-platform bundle takes from the dbt OSS record and the dbt v2 additions.",
+  "tier_name": "dbt platform Enterprise or Enterprise+ plan",
   "license": "proprietary",
   "deployment": ["saas"],
   "pricing_model": "hybrid",

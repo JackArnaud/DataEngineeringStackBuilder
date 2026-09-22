@@ -32,6 +32,18 @@ export const CONSTRAINT_LABEL: Record<string, string> = {
 
 export const constraintText = (constraint: string[]): string => constraint.map((c) => CONSTRAINT_LABEL[c] ?? c).join(" and ");
 
+/**
+ * The same phrase, but naming the actual plan when every tool it comes from agrees on one: "an
+ * Enterprise plan" is true of nobody in particular, but "Snowflake Enterprise edition" is a claim
+ * with a source. Falls back to the generic word where a tool has no tier_name, or where two tools
+ * in `via` name different plans and a single phrase can't speak for both.
+ */
+export const constraintPhrase = (constraint: string[], via: string[], lookup: Lookup): string => {
+  const names = via.map((id) => lookup.tool(id)?.tier_name);
+  const named = constraint.includes("enterprise-tier") && via.length > 0 && names.every((n) => n && n === names[0]) ? names[0] : undefined;
+  return constraint.map((c) => (c === "enterprise-tier" && named ? named : (CONSTRAINT_LABEL[c] ?? c))).join(" and ");
+};
+
 export type Tone = "critical" | "serious" | "warning" | "low";
 
 /**

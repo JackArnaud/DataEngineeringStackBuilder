@@ -73,6 +73,7 @@ const sentinel = base("fx-sentinel", {
 
 /** Masking at level 3 exists only on the enterprise tier. */
 const warehouse = base("fx-warehouse", {
+  tier_name: "Fixture Co Enterprise plan",
   coverage: { "store.warehouse": score(3), "serve.query-engine": score(3) },
   bands: [
     { band: "govern.access-control", ...score(2), scope: ["store", "serve"] },

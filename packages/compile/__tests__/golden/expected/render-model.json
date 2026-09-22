@@ -3877,6 +3877,7 @@
       "role": "engine",
       "role_source": "derived",
       "taxonomy_version": "1.0.0",
+      "tier_name": "Fixture Co Enterprise plan",
       "vendor": "Fixture Co"
     }
   ]

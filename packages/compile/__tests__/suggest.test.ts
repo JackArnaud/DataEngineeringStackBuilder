@@ -38,9 +38,10 @@ describe("suggestions", () => {
 
   it("offer tools that provide a missing band capability, and never one that only has it as an extra", () => {
     const s = suggest(["aws-s3"], "band:govern.masking@store");
-    // Snowflake Horizon scores masking only on Enterprise, so it is not offered for it.
+    // Snowflake Horizon and BigQuery both score masking only on a higher edition, so neither is offered for it.
     expect(s.map((x) => x.tool)).not.toContain("snowflake-horizon");
-    expect(s.map((x) => x.tool)).toEqual(expect.arrayContaining(["unity-catalog", "gcp-bigquery"]));
+    expect(s.map((x) => x.tool)).not.toContain("gcp-bigquery");
+    expect(s.map((x) => x.tool)).toEqual(expect.arrayContaining(["unity-catalog", "aws-redshift"]));
     expect(s.find((x) => x.tool === "postgres")).toMatchObject({ level: 1, delivery: "community" });
   });
 
@@ -140,9 +141,9 @@ describe("suggestions from the same ecosystem", () => {
   it("put a tool from a vendor you already use first, even ahead of a stronger one from elsewhere", () => {
     const s = suggest(["aws-s3"], "band:govern.masking@store");
     expect(s[0]).toMatchObject({ tool: "aws-redshift", level: 2, affinity: "ecosystem", related: ["aws-s3"] });
-    // BigQuery is a stronger fit for masking on paper, and still comes after the AWS option.
-    expect(s.findIndex((x) => x.tool === "gcp-bigquery")).toBeGreaterThan(0);
-    expect(s.find((x) => x.tool === "gcp-bigquery")).toMatchObject({ level: 3, affinity: "other" });
+    // Unity Catalog is a stronger fit for masking on paper, and still comes after the AWS option.
+    expect(s.findIndex((x) => x.tool === "unity-catalog")).toBeGreaterThan(0);
+    expect(s.find((x) => x.tool === "unity-catalog")).toMatchObject({ level: 3, affinity: "other" });
   });
 
   it("then put tools that are commonly paired with yours, naming which of yours", () => {

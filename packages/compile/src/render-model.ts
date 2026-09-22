@@ -57,6 +57,8 @@ export interface RenderTool {
   vendor: string;
   kind: "tool" | "bundle" | "portfolio";
   sku?: string;
+  /** What this tool's own docs call the plan an enterprise-tier constraint means. Set whenever any of its scores carry one. */
+  tier_name?: string;
   license: string;
   deployment: string[];
   pricing_model: string;

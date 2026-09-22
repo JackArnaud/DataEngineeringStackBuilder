@@ -501,6 +501,15 @@ describe("the gap list", () => {
     for (const b of rows) expect(b.querySelector(".gap__why")?.textContent?.length ?? 0, b.textContent ?? "").toBeGreaterThan(20);
   });
 
+  it("names the actual plan a gap is closable on, not a generic \"Enterprise plan\"", async () => {
+    const user = setup(missing("/?tools=snowflake,dbt,github"));
+    const masking = gapButtons().find((b) => /^Masking is missing/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
+    expect(masking.textContent).toContain("closable on Snowflake Enterprise edition");
+    await user.click(masking);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.textContent).toContain("on Snowflake Enterprise edition, via Snowflake Horizon Catalog");
+  });
+
   it("explains a cross-cutting gap in plain words: consequence, example, AI, and when to skip it", async () => {
     const user = setup(stack);
     const masking = gapButtons().find((b) => /^Masking is missing/.test(b.querySelector(".gap__title")?.textContent ?? ""))!;
@@ -650,11 +659,12 @@ describe("receipts", () => {
     expect(dialog.textContent).toContain("Part of Databricks");
   });
 
-  it("show a higher plan's level as a note, never as coverage", async () => {
+  it("show a higher plan's level as a note, never as coverage, naming the plan by its own name", async () => {
     const user = setup("/?tools=dbt-platform-services");
     await user.click(within(chips()).getByRole("button", { name: "dbt platform (hosted services)" }));
     const dialog = screen.getByRole("dialog");
-    expect(dialog.textContent).toMatch(/Reaches core only on an Enterprise plan/);
+    // Named from the record's own tier_name, not the generic "an Enterprise plan".
+    expect(dialog.textContent).toMatch(/Reaches core only on dbt platform Enterprise or Enterprise\+ plan/);
     expect(dialog.textContent).toContain("Not counted as coverage");
   });
 
