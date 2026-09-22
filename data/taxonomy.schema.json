@@ -43,7 +43,11 @@
         "matters": { "description": "One sentence: what goes wrong without it.", "type": "string", "minLength": 20, "maxLength": 200 },
         "example": { "description": "A concrete story of it going wrong.", "type": "string", "minLength": 40 },
         "ai": { "description": "How using the data for AI (assistants, retrieval, model training and serving) changes the stakes.", "type": "string", "minLength": 20 },
-        "skip_when": { "description": "When it is reasonable not to have it.", "type": "string", "minLength": 10 }
+        "skip_when": { "description": "When it is reasonable not to have it.", "type": "string", "minLength": 10 },
+        "profile_tag": {
+          "description": "Which fact about the user's project this skip_when is really about, so the guided start's profile questions can pre-fill it as set aside without a new severity system. team-size: skip_when is about how few people know the whole estate. sensitivity: skip_when is about the data holding nothing personal or regulated. stakes: skip_when is about the work being exploratory rather than depended on. Left unset where skip_when is really about which tool was picked (a flat plan, a managed service), not a fact about the user.",
+          "enum": ["team-size", "sensitivity", "stakes"]
+        }
       }
     },
     "stage": {

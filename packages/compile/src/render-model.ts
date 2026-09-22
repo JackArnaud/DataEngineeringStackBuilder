@@ -25,6 +25,9 @@ export interface RenderModel {
   lenses: RenderLens[];
 }
 
+/** Which fact about the user's project a capability's `skip_when` is really about. */
+export type ProfileTag = "team-size" | "sensitivity" | "stakes";
+
 /**
  * Why something matters, in plain words, for the person reading a gap. It explains and never ranks:
  * ranking comes from criticality.
@@ -38,6 +41,8 @@ export interface Impact {
   ai?: string;
   /** When it is reasonable not to have it. */
   skip_when?: string;
+  /** Which profile question, if any, this skip_when answers; drives the guided start's pre-fill. */
+  profile_tag?: ProfileTag;
 }
 
 export interface RenderCapability {

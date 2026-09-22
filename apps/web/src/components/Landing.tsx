@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import type { RenderModel, RenderTool } from "@compile";
+import type { RenderModel, RenderTool, Resource } from "@compile";
 import { ExampleGallery } from "./ExampleGallery";
 import type { Example } from "../examples";
 import { listNames, plural } from "../labels";
 import type { Lookup } from "../lookup";
-import { CLOUDS, NEED_CARDS, cardIsOn, TOOL_STEPS } from "../landing";
-import type { NeedCard, ToolStep } from "../landing";
+import { CLOUDS, NEED_CARDS, PROFILE_QUESTIONS, RESOURCE_CARDS, cardIsOn, TOOL_STEPS } from "../landing";
+import type { NeedCard, ProfileOption, ProfileQuestion, ToolStep } from "../landing";
 import { add, toggle } from "../state";
 import type { StackState } from "../state";
 
@@ -23,6 +23,8 @@ type Screen =
   | { kind: "tools"; key: string; step: ToolStep }
   | { kind: "cloud"; key: string; cloud: RenderTool }
   | { kind: "needs"; key: string }
+  | { kind: "profile"; key: string; question: ProfileQuestion }
+  | { kind: "resources"; key: string }
   | { kind: "review"; key: string };
 
 type Place = "welcome" | "examples" | number;
@@ -43,7 +45,9 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
       screens.push({ kind: "tools", key: step.id, step });
       if (step.id === "platform") for (const p of portfolios) if (chosen.includes(p.id)) screens.push({ kind: "cloud", key: `cloud-${p.id}`, cloud: p });
     }
-    screens.push({ kind: "needs", key: "needs" }, { kind: "review", key: "review" });
+    screens.push({ kind: "needs", key: "needs" });
+    for (const q of PROFILE_QUESTIONS) screens.push({ kind: "profile", key: `profile-${q.key}`, question: q });
+    screens.push({ kind: "resources", key: "resources" }, { kind: "review", key: "review" });
     return screens;
   }, [chosen, portfolios]);
 
@@ -100,7 +104,16 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
         ? (screen.cloud.includes ?? []).filter((id) => selected.has(id)).length
         : screen.kind === "needs"
           ? NEED_CARDS.filter((c) => cardIsOn(c, state.needs)).length
-          : 0;
+          : screen.kind === "profile"
+            ? (state.profile[screen.question.key] ? 1 : 0)
+            : screen.kind === "resources"
+              ? state.resources.length
+              : 0;
+
+  // What the profile and resources screens say, for the review: the option label picked for each
+  // question that got one, and the label of every resource ticked.
+  const profileLabels = PROFILE_QUESTIONS.flatMap((q) => q.options.filter((o) => state.profile[q.key] === o.id).map((o) => o.label));
+  const resourceLabels = RESOURCE_CARDS.filter((c) => state.resources.includes(c.id)).map((c) => c.label);
 
   return (
     <section className="landing" aria-labelledby="step-title">
@@ -162,22 +175,59 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
         </>
       )}
 
+      {screen.kind === "profile" && (
+        <>
+          <h2 id="step-title">{screen.question.title}</h2>
+          <p className="muted">{screen.question.help}</p>
+          <ul className="tiles">
+            {screen.question.options.map((o) => (
+              <ProfileTile
+                key={o.id}
+                groupKey={screen.question.key}
+                option={o}
+                on={state.profile[screen.question.key] === o.id}
+                onSelect={() => onChange({ profile: { ...state.profile, [screen.question.key]: o.id } })}
+              />
+            ))}
+          </ul>
+        </>
+      )}
+
+      {screen.kind === "resources" && (
+        <>
+          <h2 id="step-title">What do you already have?</h2>
+          <p className="muted">Tick anything that applies. It only changes which tool is suggested first to close a gap; what's missing stays the same either way.</p>
+          <ul className="tiles">
+            {RESOURCE_CARDS.map((card) => (
+              <Tile key={card.id} name={card.label} blurb={card.help} on={state.resources.includes(card.id)} onToggle={() => onChange({ resources: toggle(state.resources, card.id) as Resource[] })} />
+            ))}
+          </ul>
+        </>
+      )}
+
       {screen.kind === "review" && (
         <>
           <h2 id="step-title">Here is your stack</h2>
-          {state.tools.length === 0 && state.needs.length === 0 ? (
+          {state.tools.length === 0 && state.needs.length === 0 && profileLabels.length === 0 && resourceLabels.length === 0 ? (
             <p className="muted">You have not picked anything yet. You can still continue and pick tools in the builder, or go back and choose some.</p>
           ) : (
             <>
               <p className="muted">
-                {plural(state.tools.length, "tool")}
-                {state.needs.length > 0 && ` and ${plural(state.needs.length, "need")}`}. Next: what they cover, what they leave open, and why each gap matters.
+                {state.tools.length === 0 && state.needs.length === 0
+                  ? "No tools yet, but here's what you told us about the project."
+                  : `${plural(state.tools.length, "tool")}${state.needs.length > 0 ? ` and ${plural(state.needs.length, "need")}` : ""}. Next: what they cover, what they leave open, and why each gap matters.`}
               </p>
               {state.tools.length > 0 && <p className="review__line">{listNames(state.tools.map((id) => lookup.toolName(id)))}</p>}
               {state.needs.length > 0 && (
                 <p className="review__line">
                   <span className="muted">You need </span>
                   {listNames(state.needs.map((id) => lookup.capabilityName(id)))}
+                </p>
+              )}
+              {(profileLabels.length > 0 || resourceLabels.length > 0) && (
+                <p className="review__line">
+                  <span className="muted">About your project: </span>
+                  {listNames([...profileLabels, ...resourceLabels])}
                 </p>
               )}
             </>
@@ -197,16 +247,21 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
   );
 }
 
-function Tile({ name, blurb, on, onToggle }: { name: string; blurb?: string; on: boolean; onToggle: () => void }) {
+function Tile({ name, blurb, on, onToggle, type = "checkbox", group }: { name: string; blurb?: string; on: boolean; onToggle: () => void; type?: "checkbox" | "radio"; group?: string }) {
   return (
     <li>
       <label className="tile" data-on={on}>
-        <input type="checkbox" checked={on} onChange={onToggle} />
+        <input type={type} name={group} checked={on} onChange={onToggle} />
         <span className="tile__name">{name}</span>
         {blurb && <span className="tile__blurb">{blurb}</span>}
       </label>
     </li>
   );
+}
+
+/** One of three mutually exclusive answers, grouped by the question's own key so only one can hold at a time. */
+function ProfileTile({ groupKey, option, on, onSelect }: { groupKey: string; option: ProfileOption; on: boolean; onSelect: () => void }) {
+  return <Tile name={option.label} on={on} onToggle={onSelect} type="radio" group={groupKey} />;
 }
 
 function ToolTile({ tool, on, onToggle }: { tool: RenderTool | undefined; on: boolean; onToggle: () => void }) {

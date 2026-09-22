@@ -5,7 +5,7 @@ import { SeverityChip } from "./parts";
 
 /**
  * Coverage by pipeline stage, before any lens. The plain answer to "does my stack touch every
- * step?", with the level spelled out in words as well as pips.
+ * step?" — one status line in words, not a second, unexplained encoding beside it.
  */
 export function StageStrip({ model, lookup, report }: { model: RenderModel; lookup: Lookup; report: GapReport }) {
   const overlapsIn = (stage: string) => report.overlaps.filter((o) => o.stage === stage).length;
@@ -18,11 +18,6 @@ export function StageStrip({ model, lookup, report }: { model: RenderModel; look
         return (
           <li key={s.stage} className={`stage stage--${state}`}>
             <span className="stage__name">{stage.name}</span>
-            <span className="stage__pips" aria-hidden="true">
-              {[1, 2, 3].map((n) => (
-                <span key={n} className={n <= s.best_level ? "pip pip--on" : "pip"} />
-              ))}
-            </span>
             <span className="stage__status">
               {state === "empty" && (stage.criticality === 0 ? "Usually outside your stack" : <SeverityChip criticality={stage.criticality} />)}
               {state === "thin" && "Thin: extended only"}

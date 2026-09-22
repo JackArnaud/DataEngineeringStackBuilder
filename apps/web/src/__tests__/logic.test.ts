@@ -8,7 +8,7 @@ import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
 import { RAMP_ORDER, ROLE_RAMP, rampOf } from "../roles";
 import { computeGaps, groupGaps } from "@compile";
-import { add, emptyState, isSelectable, parseState, serializeState, toggle } from "../state";
+import { add, emptyState, isSelectable, parseState, profileSkips, profileTags, serializeState, toggle } from "../state";
 import { dataset, model } from "./fixture";
 
 describe("stack state in the address", () => {
@@ -27,14 +27,34 @@ describe("stack state in the address", () => {
   });
 
   it("starts empty", () => {
-    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {} });
+    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [] });
   });
 
   it("round-trips: what is written is what is read back", () => {
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" } };
+    // team: multiple-teams confirms no profile tag, so it never adds a capability to skip on its own.
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const] };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss");
     expect(parseState(query, model)).toEqual(state);
+  });
+
+  it("pre-fills set aside for capabilities a profile answer confirms, additively and without duplicates", () => {
+    // sensitivity: none confirms "sensitivity", which govern.masking, govern.access-control and govern.policy are about.
+    const state = parseState("?tools=aws-s3&skip=govern.catalog&profile=sensitivity:none", model);
+    expect(state.profile).toEqual({ sensitivity: "none" });
+    expect(state.skip).toEqual(["govern.access-control", "govern.catalog", "govern.masking", "govern.policy"]);
+    expect(profileTags(state.profile)).toEqual(["sensitivity"]);
+  });
+
+  it("confirms no tag for an answer that does not name the fact a skip_when is about", () => {
+    expect(profileTags({ team: "multiple-teams", sensitivity: "some", stakes: "decisions" })).toEqual([]);
+    expect(profileSkips(model, { team: "multiple-teams" })).toEqual([]);
+  });
+
+  it("drops a profile answer to a question it does not recognise, and an unknown resource", () => {
+    const state = parseState("?profile=team:solo,mood:great&resources=prefer-oss,telepathy", model);
+    expect(state.profile).toEqual({ team: "solo" });
+    expect(state.resources).toEqual(["prefer-oss"]);
   });
 
   it("leaves defaults out, so an empty stack has an empty address", () => {
@@ -50,7 +70,7 @@ describe("stack state in the address", () => {
 
   it("drops anything the model no longer has, rather than failing", () => {
     const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope", model);
-    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {} });
+    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, profile: {}, resources: [] });
   });
 
   it("does not let a portfolio be selected, only its services", () => {
@@ -100,16 +120,22 @@ describe("colour and shape for roles", () => {
     expect(new Set(roles.roles.map((r) => r.label)).size).toBe(roles.roles.length);
   });
 
-  it("use at most three colour families", () => {
-    expect(new Set(ids.map(rampOf)).size).toBeLessThanOrEqual(3);
-    expect(RAMP_ORDER).toHaveLength(3);
+  it("use at most four colour families: a fifth fails the all-pairs colour-vision check", () => {
+    expect(new Set(ids.map(rampOf)).size).toBeLessThanOrEqual(4);
+    expect(RAMP_ORDER).toHaveLength(4);
   });
 
-  it("group movers, transformers and structure", () => {
+  it("group movers, transformers, where data lives, and what watches over the pipeline", () => {
     expect(rampOf("mover")).toBe("movement");
     expect(rampOf("modeller")).toBe("transform");
     expect(rampOf("engine")).toBe("transform");
-    expect(rampOf("gatekeeper")).toBe("structural");
+    // Holds or hands out data.
+    expect(rampOf("substrate")).toBe("structural");
+    expect(rampOf("surface")).toBe("structural");
+    // Watches or coordinates the pipeline; no data values pass through these.
+    expect(rampOf("gatekeeper")).toBe("oversight");
+    expect(rampOf("conductor")).toBe("oversight");
+    expect(rampOf("sentinel")).toBe("oversight");
   });
 });
 

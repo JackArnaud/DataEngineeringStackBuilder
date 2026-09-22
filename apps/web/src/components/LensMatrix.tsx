@@ -240,7 +240,7 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
                       {zone && (
                         <button
                           type="button"
-                          className={[core ? "mark mark--core" : "mark mark--reach", shadowed && "mark--shadow"].filter(Boolean).join(" ")}
+                          className={["mark", shadowed && "mark--shadow"].filter(Boolean).join(" ")}
                           data-ramp={ramp}
                           data-level={zone.intensity}
                           data-tip={`mark|${tool.id}|${z}`}
@@ -274,7 +274,7 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
                     {perZone[z]! > 0 && (
                       <button
                         type="button"
-                        className="mark mark--reach"
+                        className="mark"
                         data-ramp={ramp}
                         data-level={perZone[z]}
                         data-tip={`cross|${tool.id}|${z}`}
@@ -289,9 +289,26 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
           })}
 
           <h3 className="matrix__section">Cross-cutting coverage</h3>
-          {model.bands.map((band) => (
+          {model.bands.map((band) => {
+            // Who provides this band at all, anywhere in the stack, best level first: an anonymous
+            // bar says "something covers this," not what. This says which of your tools does.
+            const providers = tools
+              .map((t) => ({ t, level: Math.max(0, ...lens.zones.map((z) => lens.tools[t.id]?.bands[z]?.[band.id] ?? 0)) }))
+              .filter((p) => p.level > 0)
+              .sort((a, b) => b.level - a.level);
+            const providerNames = providers.map((p) => `${p.t.name} (${LEVEL_LABEL[p.level]})`);
+            return (
             <Fragment key={band.id}>
-              <div className="lane__label lane__label--band">{band.name}</div>
+              <div className="lane__label lane__label--band">
+                <span className="lane__text">
+                  <span className="lane__name">{band.name}</span>
+                  {providers.length > 0 && (
+                    <span className="lane__note" title={listNames(providerNames)}>
+                      {providers.length > 2 ? `${plural(providers.length, "tool")} provide this` : listNames(providerNames)}
+                    </span>
+                  )}
+                </span>
+              </div>
               {lens.zones.map((z) => {
                 const level = bands[band.id]?.[z] ?? 0;
                 return (
@@ -309,7 +326,8 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
                 );
               })}
             </Fragment>
-          ))}
+            );
+          })}
         </div>
         {tip && (
           <div className="tooltip" role="presentation" aria-hidden="true" style={{ left: tip.x, top: tip.y }}>

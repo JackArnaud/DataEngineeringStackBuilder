@@ -191,6 +191,80 @@ own validated set, not a flip.
 **The site imports only a browser-safe entry point** (`packages/compile/src/browser.ts`), and a test
 fails if anything reachable from it touches Node.
 
+**A mark encodes one "how well," not two.** Every mark used to draw height (22px core, 12px reach)
+on top of colour shade (level) on top of hue (role family) on top of row and column — five
+channels in a small rectangle, and the height distinction was never explained anywhere on the
+page. Height is now fixed; shade is the only "how well" signal, and core position moved entirely
+into words (the tooltip, the aria-label, the detail panel), where it already lived alongside the
+drawing. *Chosen over* keeping height and adding a legend entry for it: a channel that needs
+explaining is a channel to cut, not to document harder.
+
+**The colour key is a sentence, not a click.** The full role/ramp/level table stays behind a fold
+— it's genuinely a lot (three ramps × three levels × eight roles) — but the one sentence that
+actually matters, "colour says what a tool does to the data; how light or dark it is says how
+well," is now always visible above the chart (`Legend.tsx`), not hidden behind "How to read the
+colours and marks." Five of eight roles still share the one "structural" hue (storage, orchestration,
+governance, monitoring, serving), which is a real limit on how much the colour alone can
+discriminate — noted, not fixed here: the three-hue trio is CVD-validated (`dataviz` skill,
+`docs/design-decisions.md`'s earlier entry), so widening it is a deliberate palette change to make
+through the skill's validator, not a quick add.
+
+**Cross-cutting bands name who, not just how much.** A "Govern" row used to be four unlabeled bars;
+it's now "4 tools provide this" (or the names, for two or fewer), reusing the exact data the
+tooltip already read (`lens.tools[t.id]?.bands[z]?.[band.id]`) but surfacing it on the page instead
+of behind a hover. The stage strip lost its pips (`stage__pips`) for the same reason: a third,
+unlabeled encoding of a level the status line or `SeverityChip` already states in words.
+
+**Scale reuses "set aside," it doesn't invent a second severity system.** Eleven capabilities
+already carried a `skip_when` — "one small team owns every table," "no personal, financial or
+otherwise regulated values," "used for exploration rather than decisions" — written for the gap
+detail, in prose. Each now also carries a `profile_tag` (`team-size` | `sensitivity` | `stakes`,
+`data/taxonomy.schema.json`), naming which of three guided-start questions that prose is really
+answering. Answering "Just me" or "No personal, financial or health data" doesn't lower a
+criticality number or add a parallel scoring axis: it just ticks the same "Not relevant" a user
+could tick by hand on that exact capability (`apps/web/src/state.ts`'s `profileSkips`, called from
+`change()` and `parseState`), so it stays visible in the "set aside" fold and one click from being
+brought back. *Chosen over* a numeric severity multiplier: a second axis a criticality score
+travels through is a second thing to get wrong silently; reusing set-aside means the worst outcome
+of a wrong guess is a fold with an extra row in it, not a gap that quietly reads as less severe
+than it is. Spine gaps (nowhere to store data, nothing schedules jobs) carry no `profile_tag` and
+are never touched — those aren't optional at any scale.
+
+**A fourth colour, found rather than invented.** Five of eight roles shared the one
+"structural" hue, which was a real limit on how much colour alone could tell tools apart — but the
+existing trio (blue, orange, aqua) was the *only* three-hue subset of the documented eight-hue
+palette that clears the all-pairs colour-vision check (`dataviz` skill), the harder bar a matrix
+needs, where any two rows can end up side by side, not just the adjacent-pairs bar a bar chart or
+line needs. Before touching anything, every remaining documented hue was tried as a fourth slot
+against that trio, in both modes, through `validate_palette.js`: yellow (documented to fail),
+magenta, red and green all failed the all-pairs floor. Violet passed — the light step already in
+the reference palette (`#4a3aa7`) as-is, and a new dark step derived and validated for this project
+(`#6b46c1`; the documented dark violet sat too close to dark-mode blue and failed). Its own 3-step
+ordinal ramp (extended/native/core) was derived and validated the same way the other three ramps
+were, in both modes. *Chosen over* leaving it at three hues and trying to fix the crowding some
+other way: shape (the glyph) already carries role identity within a hue, so a fourth *hue* is the
+one channel that was actually short.
+
+Adding the slot made it worth asking what the five "structural" roles actually have in common, and
+the honest answer was "not much beyond `not movement or transform`." Two of them — `substrate`
+(storage) and `surface` (serving) — are about *where data lives*; data is genuinely at rest or in
+transit through them. The other three — `conductor` (orchestration), `gatekeeper` (governance) and
+`sentinel` (observability) — coordinate or watch the pipeline without any data value passing
+through them (already true elsewhere in the data: orchestration carries an explicit note that "no
+data values pass through" it). That split is what the new violet "Oversight" ramp takes; "Structure"
+keeps the two roles that still fit it. `ROLE_RAMP` in `apps/web/src/roles.ts` is the only place this
+mapping lives.
+
+**Resources reorder suggestions, they never touch what's missing.** Two checkboxes in a new guided-
+start step — prefer free and open-source, can sign a vendor contract — feed `suggestTools`
+(`packages/compile/src/suggest.ts`) as a tie-breaker between the existing "is this tool good
+enough" and "is it from a vendor I already use" checks, using `license` and `pricing_model`, both
+already on every tool record. An unanswered resources step (the default) changes nothing — the
+demotion for a capacity- or subscription-priced tool only starts once the step has actually been
+answered, since an empty array must mean "never asked," not "confirmed no budget"; that distinction
+was a real bug caught by a pre-existing test before it shipped. Gap severity, the gap list and the
+matrix are entirely unaffected — only the order of a gap's "What would close it" list moves.
+
 **What's missing is the page; the stack is a fact about it.** The builder used to open on Coverage,
 with a permanent sidebar for adding and removing tools beside it — so the first thing anyone saw was
 an editor, not an answer. What's missing is now the default tab and opens first; Coverage and

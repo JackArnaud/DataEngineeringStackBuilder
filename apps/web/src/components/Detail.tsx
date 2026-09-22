@@ -300,7 +300,7 @@ function ZoneDetail({ model, lookup, lens, state, placement, bands, zone, onOpen
 function GapDetail(props: Props & { gap: Gap }) {
   const { model, lookup, lens, state, placement, gap, onOpen, onAddTools } = props;
   const [showAll, setShowAll] = useState(false);
-  const suggestions = useMemo(() => suggestTools(model, gap, state.tools), [model, gap, state.tools]);
+  const suggestions = useMemo(() => suggestTools(model, gap, state.tools, state.resources), [model, gap, state.tools, state.resources]);
   const shown = showAll ? suggestions : suggestions.slice(0, 5);
 
   const stage = model.stages.find((s) => s.id === gap.stage)!;

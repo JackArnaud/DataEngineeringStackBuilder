@@ -191,11 +191,28 @@ describe("the guided start", () => {
     await user.click(screen.getByRole("checkbox", { name: /Dashboards and reports/ }));
     await next(user);
 
+    expect(title()).toBe("How many people work on this?");
+    await user.click(screen.getByRole("radio", { name: "Just me" }));
+    await next(user);
+
+    expect(title()).toBe("Does the data include anything sensitive or regulated?");
+    await user.click(screen.getByRole("radio", { name: /No personal, financial or health data/ }));
+    await next(user);
+
+    expect(title()).toBe("What happens with this data?");
+    await next(user); // skipped
+
+    expect(title()).toBe("What do you already have?");
+    await user.click(screen.getByRole("checkbox", { name: /Prefer free and open-source/ }));
+    await next(user);
+
     expect(title()).toBe("Here is your stack");
     const review = document.querySelector(".landing")!.textContent!;
     expect(review).toContain("Snowflake");
     expect(review).toContain("Amazon S3");
     expect(review).toContain("BI and visualisation");
+    expect(review).toContain("Just me");
+    expect(review).toContain("Prefer free and open-source");
 
     await user.click(screen.getByRole("button", { name: "Show me what's missing" }));
     expect(screen.getByRole("heading", { name: "What’s missing" })).toBeTruthy();
@@ -203,6 +220,20 @@ describe("the guided start", () => {
     expect(within(chips()).getByText("Snowflake")).toBeTruthy();
     expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("BI and visualisation")).toBeTruthy();
     await waitFor(() => expect(window.location.search).toContain("needs=serve.bi-viz"));
+    await waitFor(() => expect(window.location.search).toContain("profile=team:solo,sensitivity:none"));
+    await waitFor(() => expect(window.location.search).toContain("resources=prefer-oss"));
+  });
+
+  it("does not say nothing was picked once the profile or resources questions were answered", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Build my own/ }));
+    for (let i = 0; i < 6; i += 1) await next(user); // 5 tool steps + needs, none picked
+    await user.click(screen.getByRole("radio", { name: "Just me" }));
+    for (let i = 0; i < 4; i += 1) await next(user); // team, sensitivity, stakes, resources
+    expect(title()).toBe("Here is your stack");
+    expect(screen.queryByText(/have not picked anything yet/)).toBeNull();
+    expect(screen.getByText(/what you told us about the project/)).toBeTruthy();
+    expect(screen.getByText("Just me")).toBeTruthy();
   });
 
   it("lets a group of services be selected or cleared at once", async () => {
@@ -234,6 +265,7 @@ describe("the guided start", () => {
     for (let i = 0; i < 5; i += 1) await next(user);
     await user.click(screen.getByRole("checkbox", { name: /Machine learning in production/ }));
     await user.click(screen.getByRole("button", { name: "Next" }));
+    for (let i = 0; i < 4; i += 1) await next(user); // profile x3, resources, all skipped
     await user.click(screen.getByRole("button", { name: "Show me what's missing" }));
     await openEditor(user);
     await user.click(screen.getByRole("tab", { name: /What you need/ }));
@@ -576,6 +608,37 @@ describe("the gap list", () => {
   });
 });
 
+describe("profile and resources", () => {
+  it("pre-fills set aside for what a profile answer confirms, straight from a shared link", () => {
+    setup(missing("/?tools=aws-s3&profile=sensitivity:none"));
+    const titles = gapButtons().map((b) => b.querySelector(".gap__title")?.textContent);
+    expect(titles.some((t) => t?.startsWith("Masking"))).toBe(false);
+    expect(screen.getByText(/capabilit(y|ies) set aside as not relevant/)).toBeTruthy();
+  });
+
+  it("still lets a pre-filled capability be brought back, same as a manual one", async () => {
+    const user = setup(missing("/?tools=aws-s3&profile=sensitivity:none"));
+    await user.click(screen.getByText(/capabilit(y|ies) set aside as not relevant/));
+    await user.click(screen.getAllByRole("button", { name: /^Bring back: / })[0]!);
+    const titles = gapButtons().map((b) => b.querySelector(".gap__title")?.textContent);
+    expect(titles.some((t) => t?.startsWith("Masking") || t?.startsWith("Policy") || t?.startsWith("Access"))).toBe(true);
+  });
+
+  it("orders a gap's suggestions by the resources answered, open-source ahead of an equally good paid tool", async () => {
+    const user = setup("/?resources=prefer-oss");
+    const transformGap = gapButtons().find((b) => b.textContent?.includes("Nothing in your stack covers Transform"))!;
+    await user.click(transformGap);
+    const dialog = screen.getByRole("dialog");
+    const showAll = within(dialog).queryByRole("button", { name: /Show all/ });
+    if (showAll) await user.click(showAll);
+    const names = within(dialog)
+      .getAllByRole("button")
+      .filter((b) => b.classList.contains("linkish") && b.closest(".suggestion"))
+      .map((b) => b.textContent);
+    expect(names.indexOf("dbt OSS (dbt Core)")).toBeLessThan(names.indexOf("Databricks Runtime and Delta Lake"));
+  });
+});
+
 describe("the lens", () => {
   it("always shows the audit grid: the six pipeline stages, with no switcher and no table twin", () => {
     setup("/?tools=aws-s3,aws-glue#coverage");
@@ -616,6 +679,28 @@ describe("the marks", () => {
     expect(github.classList.contains("mark--shadow")).toBe(false);
     expect(snowflake.classList.contains("mark--shadow")).toBe(true);
     expect(snowflake.getAttribute("aria-label")).toContain("not the tool used here");
+  });
+
+  it("shows an always-visible key for colour and level, not only behind a fold", () => {
+    setup("/?tools=dbt-core#coverage");
+    expect(screen.getByText(/Colour says what a tool does to the data/)).toBeTruthy();
+    const legend = document.querySelector("details.legend") as HTMLDetailsElement;
+    expect(legend.open).toBe(false);
+  });
+
+  it("names who provides a cross-cutting band, not just a bare colour bar", () => {
+    setup("/?tools=aws-lake-formation#coverage");
+    const matrix = screen.getByRole("group", { name: /Where your tools sit/ });
+    const govern = Array.from(matrix.querySelectorAll(".lane__label--band")).find((n) => n.textContent?.startsWith("Govern"))!;
+    expect(govern.textContent).toContain("AWS Lake Formation");
+  });
+
+  it("gives a fourth colour family to the roles that watch or coordinate rather than hold or move data", () => {
+    setup("/?tools=aws-lake-formation,aws-s3#coverage");
+    const matrix = screen.getByRole("group", { name: /Where your tools sit/ });
+    const labelFor = (name: string) => Array.from(matrix.querySelectorAll(".lane__label")).find((n) => n.textContent?.startsWith(name))!;
+    expect(labelFor("AWS Lake Formation").querySelector(".lane__glyph")!.getAttribute("data-ramp")).toBe("oversight");
+    expect(labelFor("Amazon S3").querySelector(".lane__glyph")!.getAttribute("data-ramp")).toBe("structural");
   });
 
   it("flags a zone nothing covers in the column header itself, not only at the bottom", () => {

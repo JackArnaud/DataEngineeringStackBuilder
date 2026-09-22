@@ -1,3 +1,5 @@
+import type { Resource } from "@compile";
+
 /**
  * The guided start: a short run of choice screens that build a stack before any guidance is shown.
  * It follows the pipeline in order, from where the data starts to how changes are shipped, then asks
@@ -78,3 +80,67 @@ export const NEED_CARDS: NeedCard[] = [
 
 /** A card is on when the stack already needs everything it stands for, so the needs tab and the cards agree. */
 export const cardIsOn = (card: NeedCard, needs: string[]): boolean => card.needs.every((n) => needs.includes(n));
+
+/**
+ * One question about the project, one pick among a few plain answers. The ids of the answer that
+ * confirms a fact (`solo`, `none`, `exploration`, below) are a small vocabulary of their own, kept
+ * in sync with `state.ts`'s `PROFILE_TAG_WHEN` by hand: state parsing never imports this UI content,
+ * so a shared link's meaning does not depend on this file's wording.
+ */
+export interface ProfileOption {
+  id: string;
+  label: string;
+}
+
+export interface ProfileQuestion {
+  /** Matches a key of `StackState["profile"]`. */
+  key: "team" | "sensitivity" | "stakes";
+  title: string;
+  help: string;
+  options: ProfileOption[];
+}
+
+export const PROFILE_QUESTIONS: ProfileQuestion[] = [
+  {
+    key: "team",
+    title: "How many people work on this?",
+    help: "Shapes how much of the governance below actually earns its place.",
+    options: [
+      { id: "solo", label: "Just me" },
+      { id: "small-team", label: "A small team" },
+      { id: "multiple-teams", label: "Multiple teams depend on it" },
+    ],
+  },
+  {
+    key: "sensitivity",
+    title: "Does the data include anything sensitive or regulated?",
+    help: "Shapes how much masking, access control and policy matter here.",
+    options: [
+      { id: "none", label: "No personal, financial or health data" },
+      { id: "some", label: "Some regulated data" },
+      { id: "heavy", label: "Heavily regulated, such as finance or health" },
+    ],
+  },
+  {
+    key: "stakes",
+    title: "What happens with this data?",
+    help: "Shapes how much testing and monitoring matter here.",
+    options: [
+      { id: "exploration", label: "Exploration or a prototype" },
+      { id: "decisions", label: "Real decisions get made from it" },
+      { id: "customer-facing", label: "Customers or revenue depend on it" },
+    ],
+  },
+];
+
+/** A plain-language resource the guided start's resources step can tick. */
+export interface ResourceCard {
+  id: Resource;
+  label: string;
+  help: string;
+}
+
+export const RESOURCE_CARDS: ResourceCard[] = [
+  { id: "prefer-oss", label: "Prefer free and open-source", help: "Suggestions favour an open-source tool over an equally good paid one." },
+  { id: "procurement", label: "Can sign a vendor contract", help: "Left unticked, suggestions favour tools you can start on without a sales conversation." },
+];

@@ -331,6 +331,7 @@
         "ai": "An assistant picking tables to answer a question has only names and columns to go on. Without descriptions and owners it guesses, and answers with confidence from the wrong table.",
         "example": "Two teams each build a customers table with different definitions. A director sees two revenue figures and nobody can say which is official.",
         "matters": "People cannot find the data that exists, or tell which copy to trust, so they rebuild it or use the wrong one.",
+        "profile_tag": "team-size",
         "skip_when": "One small team owns every table and can list them from memory."
       },
       "kind": "band",
@@ -345,6 +346,7 @@
         "ai": "An AI agent acts with the permissions of whoever runs it. Without fine-grained access it can read, summarise and repeat data the person asking was never meant to see.",
         "example": "A shared analyst login can read payroll and delete a finance table, and nothing records who did it.",
         "matters": "Anyone who can reach the platform can read or change data they should not.",
+        "profile_tag": "sensitivity",
         "skip_when": "A single-user or throwaway stack that holds nothing sensitive."
       },
       "kind": "band",
@@ -359,6 +361,7 @@
         "ai": "Models and assistants can memorise and repeat what they read. Masking keeps personal data out of prompts, embeddings and training sets.",
         "example": "A developer copies production data into a test schema and now has customers' real phone numbers on their laptop.",
         "matters": "Sensitive values such as emails, card numbers and health data are readable in plain text by everyone with access to the table.",
+        "profile_tag": "sensitivity",
         "skip_when": "The data holds no personal, financial or otherwise regulated values."
       },
       "kind": "band",
@@ -373,6 +376,7 @@
         "ai": "Policy decides what may be used to train or ground a model. Without classification, restricted data can end up in an AI system unnoticed.",
         "example": "A rule says customer data must be deleted after twelve months. It is still in three tables, and nobody finds out until an audit.",
         "matters": "Rules for keeping, locating and classifying data exist on paper, but nothing enforces them.",
+        "profile_tag": "sensitivity",
         "skip_when": "No retention, residency or classification rules apply to your data."
       },
       "kind": "band",
@@ -387,6 +391,7 @@
         "ai": "A model cannot tell wrong data from right data. It repeats a bad figure with the same confidence as a good one.",
         "example": "A source starts sending nulls in an ID column. A join drops half the orders and the weekly revenue report is quietly 30 percent low.",
         "matters": "Bad data reaches dashboards and models before anyone notices, so problems are found from a wrong number.",
+        "profile_tag": "stakes",
         "skip_when": "The data is small, hand-checked, and used for exploration rather than decisions."
       },
       "kind": "band",
@@ -401,6 +406,7 @@
         "ai": "AI applications depend on the shape of the tables they read. A silent schema change can break a feature pipeline or a prompt template without any error.",
         "example": "An application team renames a field. The pipeline keeps running, but a downstream metric silently changes meaning.",
         "matters": "A change to a source's columns or meaning breaks what is built on it, and the people affected hear last.",
+        "profile_tag": "team-size",
         "skip_when": "One team owns both the source and everything downstream of it."
       },
       "kind": "band",
@@ -415,6 +421,7 @@
         "ai": "Stale or drifting data quietly degrades a model's answers, with no error to catch.",
         "example": "A feed stops on Friday. Every test still passes because the old rows are fine, and Monday's report shows last week's numbers.",
         "matters": "Problems nobody wrote a rule for, such as a sudden drop in volume or a table that stopped updating, go unseen.",
+        "profile_tag": "team-size",
         "skip_when": "You have few tables and someone looks at each of them daily."
       },
       "kind": "band",
@@ -429,6 +436,7 @@
         "ai": "AI features that depend on fresh data fail quietly when a pipeline stalls: the answers just get older.",
         "example": "A nightly job fails at 2am. The team learns at 9am when the executive dashboard is empty.",
         "matters": "Failures and delays are found by users rather than by the team.",
+        "profile_tag": "team-size",
         "skip_when": "Runs are manual and occasional, and watched by the person who starts them."
       },
       "kind": "band",
@@ -443,6 +451,7 @@
         "ai": "To trust or audit an AI answer you have to trace it back to the tables and sources it came from. Lineage is the map for that.",
         "example": "A team wants to drop a column but cannot tell which dashboards and models use it, so it stays for years.",
         "matters": "Nobody can say where a number came from or what breaks when a table changes.",
+        "profile_tag": "team-size",
         "skip_when": "You have a handful of tables that one person understands end to end."
       },
       "kind": "band",
@@ -485,6 +494,7 @@
         "ai": "Prompts, models and pipelines all need a safe place to be tried before real users and real data see them.",
         "example": "A new transformation is run directly against production and overwrites a table that finance depends on.",
         "matters": "Changes are tried out on live data because there is nowhere else to test them.",
+        "profile_tag": "team-size",
         "skip_when": "It is a single-user project with no shared production."
       },
       "kind": "band",
@@ -499,6 +509,7 @@
         "ai": "Coding assistants and agents work best with fast local runs, clear errors and text-based definitions. A poor developer loop slows them as much as it slows people.",
         "example": "Testing a change means running the whole pipeline in the cloud and waiting an hour, so people avoid touching it.",
         "matters": "Building and debugging pipelines is slow and error-prone, so changes are rarer, riskier and rest on a few people.",
+        "profile_tag": "stakes",
         "skip_when": "Pipelines rarely change."
       },
       "kind": "band",
@@ -2274,7 +2285,7 @@
       "rationale": "Data nobody can reach has no value."
     }
   ],
-  "taxonomy_version": "1.0.2",
+  "taxonomy_version": "1.0.3",
   "tools": [
     {
       "archetype": "specialist",

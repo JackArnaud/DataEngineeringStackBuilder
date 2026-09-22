@@ -195,3 +195,39 @@ describe("suggestions from the same ecosystem", () => {
     expect(proper).toEqual([...proper].sort((a, b) => b - a));
   });
 });
+
+describe("suggestions and the resources a person already has", () => {
+  const at = (ids: string[], tool: string) => ids.indexOf(tool);
+
+  it("moves an open-source tool ahead of an equally-good proprietary one only once it is preferred", () => {
+    const plain = suggest([], "empty-stage:transform").map((x) => x.tool);
+    // Without a stated preference, id order alone puts the proprietary tool first.
+    expect(at(plain, "databricks-runtime")).toBeLessThan(at(plain, "dbt-core"));
+
+    const withOss = suggestTools(model, gapOf([], "empty-stage:transform"), [], ["prefer-oss"]).map((x) => x.tool);
+    expect(at(withOss, "dbt-core")).toBeLessThan(at(withOss, "databricks-runtime"));
+  });
+
+  it("leaves order alone until the resources step is actually answered", () => {
+    const unanswered = suggest([], "empty-stage:store").map((x) => x.tool);
+    // An unstated resources array means the question was never asked, not "confirmed no procurement".
+    expect(at(unanswered, "fabric-data-warehouse")).toBeLessThan(at(unanswered, "gcp-bigquery"));
+    const explicitEmpty = suggestTools(model, gapOf([], "empty-stage:store"), [], []).map((x) => x.tool);
+    expect(explicitEmpty).toEqual(unanswered);
+  });
+
+  it("sets back a tool priced in a way that usually needs a sales conversation, once resources are answered without ticking it", () => {
+    const answered = suggestTools(model, gapOf([], "empty-stage:store"), [], ["prefer-oss"]).map((x) => x.tool);
+    expect(at(answered, "gcp-bigquery")).toBeLessThan(at(answered, "fabric-data-warehouse"));
+
+    const withProcurement = suggestTools(model, gapOf([], "empty-stage:store"), [], ["prefer-oss", "procurement"]).map((x) => x.tool);
+    expect(at(withProcurement, "fabric-data-warehouse")).toBeLessThan(at(withProcurement, "gcp-bigquery"));
+  });
+
+  it("never lets resources promote a tool that only reaches level 1 above a proper one", () => {
+    const s = suggestTools(model, gapOf([], "empty-stage:ingest"), [], ["prefer-oss"]);
+    const proper = s.filter((x) => x.level >= 2);
+    const weak = s.filter((x) => x.level < 2);
+    if (proper.length > 0 && weak.length > 0) expect(s.indexOf(proper[proper.length - 1]!)).toBeLessThan(s.indexOf(weak[0]!));
+  });
+});

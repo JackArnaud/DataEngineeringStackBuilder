@@ -13,7 +13,7 @@ import { StageStrip } from "./components/StageStrip";
 import { TabBar, panelId, tabId } from "./components/TabBar";
 import { buildLookup } from "./lookup";
 import { useRenderModel } from "./model";
-import { add, emptyState, parseState, serializeState, toggle } from "./state";
+import { add, emptyState, parseState, profileSkips, serializeState, toggle } from "./state";
 import type { StackState } from "./state";
 import type { Detail } from "./types";
 
@@ -84,6 +84,9 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
       const next = { ...s, ...patch };
       // A choice of tool for a task goes when the tool does.
       if (patch.tools) next.use = Object.fromEntries(Object.entries(next.use).filter(([, tool]) => next.tools.includes(tool)));
+      // Answering a profile question pre-fills the same "set aside" a user could tick by hand; it
+      // only ever adds, so a manual restore afterwards is never silently undone by a later change.
+      if (patch.profile) next.skip = add(next.skip, ...profileSkips(model, next.profile));
       return next;
     });
 
@@ -122,7 +125,9 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
           onChange={change}
           onDone={() => setMode("builder")}
           onLoadExample={(e) => {
-            change({ tools: [...e.tools], needs: e.needs ?? [], skip: [], use: {} });
+            // Loading an example clears any hand-picked skips, but keeps what the profile already
+            // said is not relevant to this person, since that describes them, not the old stack.
+            change({ tools: [...e.tools], needs: e.needs ?? [], skip: profileSkips(model, state.profile), use: {} });
             setMode("builder");
           }}
         />

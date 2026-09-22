@@ -30,6 +30,9 @@
   --structural-1: #5cc59f;
   --structural-2: #1baf7a;
   --structural-3: #179366;
+  --oversight-1: #aea6d7;
+  --oversight-2: #4a3aa7;
+  --oversight-3: #352a78;
 
   --sev-critical: #d03b3b;
   --sev-serious: #ec835a;
@@ -64,6 +67,9 @@
     --structural-1: #1a5741;
     --structural-2: #199e70;
     --structural-3: #4eb491;
+    --oversight-1: #56389a;
+    --oversight-2: #6b46c1;
+    --oversight-3: #9074d0;
   }
 }
 
@@ -89,12 +95,16 @@
   --structural-1: #1a5741;
   --structural-2: #199e70;
   --structural-3: #4eb491;
+  --oversight-1: #56389a;
+  --oversight-2: #6b46c1;
+  --oversight-3: #9074d0;
 }
 
 /* A ramp and a level together pick one fill. Everything coloured reads --fill. */
 [data-ramp="movement"] { --r1: var(--movement-1); --r2: var(--movement-2); --r3: var(--movement-3); }
 [data-ramp="transform"] { --r1: var(--transform-1); --r2: var(--transform-2); --r3: var(--transform-3); }
 [data-ramp="structural"] { --r1: var(--structural-1); --r2: var(--structural-2); --r3: var(--structural-3); }
+[data-ramp="oversight"] { --r1: var(--oversight-1); --r2: var(--oversight-2); --r3: var(--oversight-3); }
 [data-level="1"] { --fill: var(--r1); }
 [data-level="2"] { --fill: var(--r2); }
 [data-level="3"] { --fill: var(--r3); }
@@ -225,10 +235,7 @@ a { color: inherit; }
 .stage { min-width: 0; display: grid; gap: 3px; align-content: start; padding: 12px 14px 14px; border-left: 1px solid var(--grid); }
 .stage:first-child { border-left: 0; padding-left: 0; }
 .stage__name { font: 600 18px/1.2 var(--serif); }
-.stage__pips { display: inline-flex; gap: 3px; margin: 2px 0; }
-.pip { width: 14px; height: 4px; border-radius: 0; background: var(--grid); }
-.pip--on { background: var(--ink); }
-.stage__status { font-size: 13px; color: var(--ink-2); }
+.stage__status { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
 .stage__who { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* A stage with nothing in it is hatched, not just empty: the gap is the point. */
 .stage--empty { background: repeating-linear-gradient(135deg, transparent 0 7px, var(--wash) 7px 8px); }
@@ -258,11 +265,12 @@ a { color: inherit; }
 
 .cell { display: flex; align-items: center; min-height: 30px; border-left: 1px solid var(--grid); border-bottom: 1px solid var(--grid); }
 
-/* A thin mark inside a generous hit area: the button is 30px tall, the bar is 12 or 22. */
+/* A thin mark inside a generous hit area: the button is 30px tall, the bar a fixed 18. Height
+   never varies — colour intensity is the only "how well" signal; core position is named in the
+   tooltip and detail panel, not drawn as a second, harder-to-read channel. */
 .mark, .bandmark { position: relative; width: 100%; height: 30px; padding: 0; background: none; border: 0; cursor: pointer; }
 .mark::before, .bandmark::before { content: ""; position: absolute; left: 1px; right: 1px; top: 50%; transform: translateY(-50%); border-radius: 1px; background: var(--fill); }
-.mark--core::before { height: 22px; }
-.mark--reach::before { height: 12px; }
+.mark::before { height: 18px; }
 .bandmark::before { height: 10px; }
 .bandmark--none::before { background: var(--wash); }
 .mark:hover::before, .bandmark:hover::before { outline: 2px solid var(--ink); outline-offset: 1px; }
@@ -293,7 +301,8 @@ a { color: inherit; }
 
 /* -------------------------------------------------------------- legend */
 
-.legend { margin-top: 18px; }
+.legend__key { margin-top: 14px; font-size: 13px; }
+.legend { margin-top: 8px; }
 .legend > summary { cursor: pointer; font-weight: 600; color: var(--ink-2); padding: 2px 0; }
 .legend > summary:hover { color: var(--ink); }
 .legend > table { margin: 10px 0 8px; }

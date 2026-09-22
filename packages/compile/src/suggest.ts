@@ -1,7 +1,7 @@
 import { DELIVERY_RANK } from "./derive.js";
 import type { Delivery } from "./derive.js";
 import type { Gap } from "./gaps.js";
-import type { RenderModel } from "./render-model.js";
+import type { RenderModel, RenderTool } from "./render-model.js";
 
 /**
  * How a suggested tool relates to the stack it would join.
@@ -29,6 +29,28 @@ export const vendorFamily = (vendor: string): string => (vendor.startsWith("Micr
 const AFFINITY_RANK: Record<Affinity, number> = { ecosystem: 0, paired: 1, other: 2 };
 
 /**
+ * What the person already has, from the guided start's resources step. `prefer-oss` favours an
+ * open-source tool over an equally-fitting one that is not; the absence of `procurement` (no
+ * ability to sign a vendor contract) sets back a tool priced in a way that usually needs a sales
+ * conversation. Neither ever excludes a tool, only re-orders among ones that already fit the gap.
+ */
+export type Resource = "prefer-oss" | "procurement";
+
+/**
+ * Lower ranks first. 0 when nothing about the tool works against the stated resources — which is
+ * every tool when nothing was stated at all: an empty `resources` means the question was never
+ * answered, not that the person confirmed having no procurement, so it must never reorder anything
+ * on its own.
+ */
+function resourceRank(tool: RenderTool, resources: readonly Resource[]): number {
+  if (resources.length === 0) return 0;
+  let rank = 0;
+  if (resources.includes("prefer-oss") && tool.license !== "open-source") rank += 1;
+  if (!resources.includes("procurement") && (tool.pricing_model === "capacity" || tool.pricing_model === "subscription")) rank += 1;
+  return rank;
+}
+
+/**
  * Tools not yet in the stack that would close a gap, best first. A tool counts only for what it
  * provides without a constraint, so nothing is suggested on the strength of an Enterprise-only
  * score. Portfolios are never suggested; their services are.
@@ -40,8 +62,12 @@ const AFFINITY_RANK: Record<Affinity, number> = { ecosystem: 0, paired: 1, other
  * never outranks a proper one, however well it fits the stack.
  *
  * For an empty stage, any spine capability in the stage counts, since any of them occupies it.
+ *
+ * `resources` (what the guided start's resources step said the person already has) breaks ties
+ * the same way `affinity` does: only among tools that are good enough to use, never promoting a
+ * weaker fit over a stronger one, and never excluding a tool outright.
  */
-export function suggestTools(model: RenderModel, gap: Gap, selected: string[]): Suggestion[] {
+export function suggestTools(model: RenderModel, gap: Gap, selected: string[], resources: readonly Resource[] = []): Suggestion[] {
   const have = new Set(selected);
   const byId = new Map(model.tools.map((t) => [t.id, t]));
   const spine = new Set(model.capabilities.filter((c) => c.kind === "spine").map((c) => c.id));
@@ -69,10 +95,12 @@ export function suggestTools(model: RenderModel, gap: Gap, selected: string[]): 
   }
 
   const proper = (s: Suggestion) => (s.level >= 2 ? 0 : 1);
+  const fit = (s: Suggestion) => resourceRank(byId.get(s.tool)!, resources);
   return out.sort(
     (a, b) =>
       proper(a) - proper(b) ||
-      // Fit only breaks ties among tools that are good enough to use.
+      // Fit and resources only break ties among tools that are good enough to use.
+      (proper(a) === 0 ? fit(a) - fit(b) : 0) ||
       (proper(a) === 0 ? AFFINITY_RANK[a.affinity] - AFFINITY_RANK[b.affinity] : 0) ||
       b.level - a.level ||
       DELIVERY_RANK[b.delivery] - DELIVERY_RANK[a.delivery] ||
