@@ -145,10 +145,10 @@ panel carry the full count.
 
 **Every mark, zone and gap opens a detail panel with the receipts**: the score, its note and its
 https source link. Bundles list their parts and say nothing is scored by hand; a level that needs a
-higher plan is shown as a note, never as coverage. Tooltips repeat what the table view and the panel
-say; they never gate anything.
+higher plan is shown as a note, never as coverage. Tooltips repeat what the detail panel says; they
+never gate anything.
 
-**State is the URL**, and nothing else is stored: `?tools=...&needs=...&lens=...&view=...`. Lists
+**State is the URL**, and nothing else is stored: `?tools=...&needs=...&use=...`. Lists
 are sorted so the same stack is always the same link, and ids the data no longer has are dropped
 silently.
 
@@ -180,17 +180,55 @@ unseen. What is left on each screen is what you act on first; the rest is one cl
 fold: the colour key, why a gap ranks where it does, each example's "what to look at", and the
 overlaps where one tool clearly leads (only ties need a decision, so only they are open). In a gap's
 detail, what goes wrong and what would close it come before the reasoning. The masthead is the name
-and the three whole-stack actions; the lens and chart/table controls moved next to the chart they
-change, and the stage filter is one select, not seven buttons.
+and the three whole-stack actions; the stage filter is one select, not seven buttons.
 
 **Accessibility was measured, not assumed.** An axe audit in Chrome across ten states (light, dark,
-chart, table, both panels) found no violations, including colour contrast. The checks it could not
+chart, both panels) found no violations, including colour contrast. The checks it could not
 decide are all rows scrolled out of view inside the tool list, using tokens that passed where
-visible. There is a table view for the chart, forced-colours and print get a density texture at 45
-degrees, and the dark palette is its own validated set, not a flip.
+visible. Forced-colours and print get a density texture at 45 degrees, and the dark palette is its
+own validated set, not a flip.
 
 **The site imports only a browser-safe entry point** (`packages/compile/src/browser.ts`), and a test
 fails if anything reachable from it touches Node.
+
+**What's missing is the page; the stack is a fact about it.** The builder used to open on Coverage,
+with a permanent sidebar for adding and removing tools beside it — so the first thing anyone saw was
+an editor, not an answer. What's missing is now the default tab and opens first; Coverage and
+Overlaps sit beside it. The sidebar is gone. In its place, a one-line bar under the masthead names
+the stack and what it needs ("Snowflake, dbt (v2) and GitHub · needs BI and visualisation") with a
+single "Edit stack" action. That action opens the same picker as before — chips, the two tabs, the
+vendor list — in the existing side-sliding detail panel (a new `editStack` kind alongside tool, zone
+and gap), so adding and removing a tool costs one extra click instead of a permanent column, and nets
+out to more room for the page's actual subject. *Chosen over* keeping the sidebar and only
+re-defaulting the tab: that would have left the picker just as prominent as the gaps it now sits
+behind.
+
+**One lens, no table twin.** The Medallion architecture lens and the chart's table view were cut:
+they read as options to weigh, not information anyone needed, and the audit grid's zones are
+already the same six pipeline stages the "Coverage by stage" strip shows above it, so a second lens
+mostly meant a second way to see the same thing. The lens engine itself is untouched — `medallion.json`
+and its generic-engine test coverage (zone spanning, the "unmapped" rail, per-tool overrides) stay in
+`data/` and `packages/compile`, since those are real capabilities worth keeping proven; the app just
+always asks for the `grid` lens and never renders a switcher. *Chosen over* deleting the lens outright,
+which would have meant rewriting the several compile-package tests that use it as their only real,
+multi-zone example — a bigger, riskier change for a UI-only complaint.
+
+**A gap is visible where you're already looking, not only on its own tab.** The matrix used to leave
+an uncovered stage as blank cells, with the only signal a small chip easy to miss at the very bottom,
+under every tool row and all of cross-cutting coverage. The chip row moved to sit directly under the
+column headers, and a column with nothing covering it at all gets the same severity icon used
+everywhere else in the app, in the header itself — reusing `severity()`, not a new colour. The
+"Coverage by stage" strip above it got the matching treatment: an empty stage that matters now shows
+the real `SeverityChip` ("5 Critical") instead of a plain "Nothing yet", so the two views never
+disagree about how bad a gap is. Source stays exempt in both places (criticality 0: having no source
+tool is normal), matching the gap engine's own rule that Source is never a gap.
+
+**The tool actually used for a task stays solid; its competitors fade.** Where two tools can do the
+same thing and one is picked (by score or by hand), the matrix used to draw every provider's mark
+identically, so "who does this" was only in a line of small text on the tool's row. The mark for a
+tool that is not the one used, at the specific zone it lost, is now dimmed (opacity only, not colour,
+so it survives forced-colours and print); the one in use is left at full weight. A tie with no lead
+yet dims neither, since fading one side would look like a decision that has not actually been made.
 
 ## Left out on purpose
 

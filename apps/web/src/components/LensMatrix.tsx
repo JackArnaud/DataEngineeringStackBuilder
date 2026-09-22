@@ -1,9 +1,8 @@
 import { Fragment, useMemo, useRef, useState } from "react";
-import type { Gap, GapsInLens, Overlap, RenderLens, RenderModel, RenderTool, ToolLensView } from "@compile";
+import type { Gap, GapsInLens, Overlap, RenderLens, RenderModel, RenderTool, StageSummary, ToolLensView } from "@compile";
 import { gapTitle, LEVEL_LABEL, listNames, plural, severity } from "../labels";
 import type { Lookup } from "../lookup";
 import { RAMP_ORDER, rampOf } from "../roles";
-import type { View } from "../state";
 import type { Detail } from "../types";
 import { RoleGlyph, SeverityIcon } from "./glyphs";
 
@@ -32,9 +31,10 @@ interface Props {
   lookup: Lookup;
   lens: RenderLens;
   tools: RenderTool[];
+  /** Best spine level per stage, so a zone with nothing at all can be flagged, not just left blank. */
+  stages: StageSummary[];
   placement: GapsInLens;
   bands: Record<string, Record<string, number>>;
-  view: View;
   /** Tasks that more than one of the tools can do; a tool that is not the one used says so on its row. */
   overlaps?: Overlap[];
   onOpen: (detail: Detail) => void;
@@ -47,10 +47,24 @@ interface Tip {
   lines: string[];
 }
 
-export function LensMatrix({ model, lookup, lens, tools, placement, bands, view, overlaps = [], onOpen }: Props) {
+export function LensMatrix({ model, lookup, lens, tools, stages, placement, bands, overlaps = [], onOpen }: Props) {
   const lanes = useMemo(() => buildLanes(lens, tools), [lens, tools]);
   // Where you chose another tool for a task this one can also do, say so on its row.
   const notUsedFor = (id: string) => overlaps.filter((o) => o.used !== null && o.used !== id && o.providers.some((p) => p.tool === id));
+  // Whether a tool's mark at this zone is for a task someone else was chosen for instead.
+  const shadowedAt = (id: string, z: string) => notUsedFor(id).some((o) => o.stage === z);
+  // A zone with no spine coverage at all, and how much a stack loses without it: the same fact the
+  // "Coverage by stage" strip and the gap list use, so the matrix never disagrees with either.
+  const emptyZones = useMemo(() => {
+    const out = new Map<string, number>();
+    for (const s of stages) {
+      if (s.best_level === 0) {
+        const stage = model.stages.find((x) => x.id === s.stage);
+        if (stage && stage.criticality > 0) out.set(s.stage, stage.criticality);
+      }
+    }
+    return out;
+  }, [stages, model.stages]);
   // Said briefly: a few tasks are named, more than that are counted, and the title carries the full list.
   const notUsedNote = (id: string) => {
     const names = notUsedFor(id).map((o) => lookup.capabilityName(o.capability).toLowerCase());
@@ -80,7 +94,7 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
   const wrap = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<Tip | null>(null);
 
-  /** Build the tooltip for a mark. Tooltips only repeat what the table view and the detail panel say. */
+  /** Build the tooltip for a mark. Tooltips only repeat what the detail panel says. */
   function tipFor(id: string): Pick<Tip, "title" | "lines"> | undefined {
     const [kind, a, b] = id.split("|") as [string, string, string];
     if (kind === "mark") {
@@ -136,254 +150,176 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
 
   return (
     <div className="lens">
-      {view === "chart" ? (
-        <div
-          ref={wrap}
-          className="matrix-wrap"
-          onPointerOver={(e) => {
-            const el = target(e);
-            if (el) show(el);
-            else setTip(null);
-          }}
-          onPointerLeave={() => setTip(null)}
-          onFocus={(e) => {
-            const el = target(e);
-            if (el) show(el);
-          }}
-          onBlur={() => setTip(null)}
-        >
-          <div className="matrix" style={{ "--cols": lens.zones.length } as React.CSSProperties} role="group" aria-label={`Where your tools sit in the ${lens.name} lens`}>
-            <div className="matrix__corner" />
-            {lens.zones.map((z) => (
+      <div
+        ref={wrap}
+        className="matrix-wrap"
+        onPointerOver={(e) => {
+          const el = target(e);
+          if (el) show(el);
+          else setTip(null);
+        }}
+        onPointerLeave={() => setTip(null)}
+        onFocus={(e) => {
+          const el = target(e);
+          if (el) show(el);
+        }}
+        onBlur={() => setTip(null)}
+      >
+        <div className="matrix" style={{ "--cols": lens.zones.length } as React.CSSProperties} role="group" aria-label={`Where your tools sit in the ${lens.name} lens`}>
+          <div className="matrix__corner" />
+          {lens.zones.map((z) => {
+            const gapCriticality = emptyZones.get(z);
+            return (
               <button key={z} type="button" className="zonehead" onClick={() => onOpen({ kind: "zone", zone: z })}>
+                {gapCriticality !== undefined && (
+                  <span className="zonehead__gap" data-tone={severity(gapCriticality).tone} aria-hidden="true">
+                    <SeverityIcon tone={severity(gapCriticality).tone} />
+                  </span>
+                )}
                 {zoneName(z)}
+                {gapCriticality !== undefined && <span className="sr-only"> — nothing in your stack covers this</span>}
               </button>
-            ))}
+            );
+          })}
 
-            {lanes.length === 0 && (
-              <p className="matrix__empty">{tools.length === 0 ? "Pick tools and they appear here, in the zone where each is strongest." : "None of your tools has a position in the pipeline yet; see cross-cutting coverage below."}</p>
-            )}
-
-            {lanes.map(({ tool, view: v }) => {
-              const ramp = rampOf(tool.role);
-              return (
-                <Fragment key={tool.id}>
-                  <button type="button" className="lane__label" onClick={() => onOpen({ kind: "tool", id: tool.id })} title={`${tool.name}: ${lookup.roleDescription(tool.role)}`}>
-                    <span className="lane__glyph" data-ramp={ramp}>
-                      <RoleGlyph role={tool.role} />
-                    </span>
-                    <span className="lane__text">
-                      <span className="lane__name lane__name--wrap">{tool.name}</span>
-                      {notUsedFor(tool.id).length > 0 && (
-                      <span className="lane__note lane__note--wrap" title={`Not used for ${notUsedNote(tool.id).full}`}>
-                        not used for {notUsedNote(tool.id).text}
-                      </span>
-                    )}
-                    </span>
+          <div className="lane__label lane__label--band">Gaps here</div>
+          {lens.zones.map((z) => {
+            const gaps = gapsByZone[z] ?? [];
+            // The chip counts the gaps at the worst tier, not every gap that touches the zone: a
+            // gap spanning several zones would otherwise inflate every one of them into a number
+            // nobody can act on. The tooltip and detail panel carry the full count.
+            const top = worst(gaps);
+            const atTop = gaps.filter((g) => g.criticality === top).length;
+            const { tone, word } = severity(top);
+            const lower = gaps.length - atTop;
+            return (
+              <div key={z} className="cell">
+                {gaps.length > 0 && (
+                  <button
+                    type="button"
+                    className={`gapchip sev sev--${tone}`}
+                    data-tip={`gap|${z}`}
+                    aria-label={`${atTop} ${word.toLowerCase()} ${atTop === 1 ? "gap" : "gaps"}${lower > 0 ? ` and ${lower} lower` : ""} in ${zoneName(z)}`}
+                    onClick={() => onOpen({ kind: "zone", zone: z })}
+                  >
+                    <SeverityIcon tone={tone} />
+                    <span className="sev__n">{atTop}</span>
                   </button>
-                  {lens.zones.map((z) => {
-                    const zone = v.zones[z];
-                    const core = v.span.includes(z);
-                    return (
-                      <div key={z} className="cell">
-                        {zone && (
-                          <button
-                            type="button"
-                            className={core ? "mark mark--core" : "mark mark--reach"}
-                            data-ramp={ramp}
-                            data-level={zone.intensity}
-                            data-tip={`mark|${tool.id}|${z}`}
-                            aria-label={`${tool.name}, ${zoneName(z)}: ${LEVEL_LABEL[zone.intensity]}${core ? ", core position" : ""}`}
-                            onClick={() => onOpen({ kind: "tool", id: tool.id })}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </Fragment>
-              );
-            })}
+                )}
+              </div>
+            );
+          })}
 
-            {crossLanes.length > 0 && <h3 className="matrix__section">Cross-cutting tools</h3>}
-            {crossLanes.map(({ tool, perZone, note }) => {
-              const ramp = rampOf(tool.role);
-              return (
-                <Fragment key={tool.id}>
-                  <button type="button" className="lane__label" onClick={() => onOpen({ kind: "tool", id: tool.id })} title={`${tool.name}: ${lookup.roleDescription(tool.role)}`}>
-                    <span className="lane__glyph" data-ramp={ramp}>
-                      <RoleGlyph role={tool.role} />
+          {lanes.length === 0 && (
+            <p className="matrix__empty">{tools.length === 0 ? "Pick tools and they appear here, in the zone where each is strongest." : "None of your tools has a position in the pipeline yet; see cross-cutting coverage below."}</p>
+          )}
+
+          {lanes.map(({ tool, view: v }) => {
+            const ramp = rampOf(tool.role);
+            return (
+              <Fragment key={tool.id}>
+                <button type="button" className="lane__label" onClick={() => onOpen({ kind: "tool", id: tool.id })} title={`${tool.name}: ${lookup.roleDescription(tool.role)}`}>
+                  <span className="lane__glyph" data-ramp={ramp}>
+                    <RoleGlyph role={tool.role} />
+                  </span>
+                  <span className="lane__text">
+                    <span className="lane__name lane__name--wrap">{tool.name}</span>
+                    {notUsedFor(tool.id).length > 0 && (
+                    <span className="lane__note lane__note--wrap" title={`Not used for ${notUsedNote(tool.id).full}`}>
+                      not used for {notUsedNote(tool.id).text}
                     </span>
-                    <span className="lane__text">
-                      <span className="lane__name lane__name--wrap">{tool.name}</span>
-                      <span className="lane__note lane__note--wrap">{note}</span>
-                    </span>
-                  </button>
-                  {lens.zones.map((z) => (
+                  )}
+                  </span>
+                </button>
+                {lens.zones.map((z) => {
+                  const zone = v.zones[z];
+                  const core = v.span.includes(z);
+                  const shadowed = zone && shadowedAt(tool.id, z);
+                  return (
                     <div key={z} className="cell">
-                      {perZone[z]! > 0 && (
+                      {zone && (
                         <button
                           type="button"
-                          className="mark mark--reach"
+                          className={[core ? "mark mark--core" : "mark mark--reach", shadowed && "mark--shadow"].filter(Boolean).join(" ")}
                           data-ramp={ramp}
-                          data-level={perZone[z]}
-                          data-tip={`cross|${tool.id}|${z}`}
-                          aria-label={`${tool.name}, ${zoneName(z)}: ${LEVEL_LABEL[perZone[z]!]}, cross-cutting`}
+                          data-level={zone.intensity}
+                          data-tip={`mark|${tool.id}|${z}`}
+                          aria-label={`${tool.name}, ${zoneName(z)}: ${LEVEL_LABEL[zone.intensity]}${core ? ", core position" : ""}${shadowed ? ", not the tool used here" : ""}`}
                           onClick={() => onOpen({ kind: "tool", id: tool.id })}
                         />
                       )}
                     </div>
-                  ))}
-                </Fragment>
-              );
-            })}
-
-            <h3 className="matrix__section">Cross-cutting coverage</h3>
-            {model.bands.map((band) => (
-              <Fragment key={band.id}>
-                <div className="lane__label lane__label--band">{band.name}</div>
-                {lens.zones.map((z) => {
-                  const level = bands[band.id]?.[z] ?? 0;
-                  return (
-                    <div key={z} className="cell">
-                      <button
-                        type="button"
-                        className={level ? "bandmark" : "bandmark bandmark--none"}
-                        data-ramp="structural"
-                        data-level={level || undefined}
-                        data-tip={`band|${band.id}|${z}`}
-                        aria-label={`${band.name}, ${zoneName(z)}: ${level ? LEVEL_LABEL[level] : "not covered"}`}
-                        onClick={() => onOpen({ kind: "zone", zone: z })}
-                      />
-                    </div>
                   );
                 })}
               </Fragment>
-            ))}
+            );
+          })}
 
-            <h3 className="matrix__section">What’s missing</h3>
-            <div className="lane__label lane__label--band">Gaps</div>
-            {lens.zones.map((z) => {
-              const gaps = gapsByZone[z] ?? [];
-              // The chip counts the gaps at the worst tier, not every gap that touches the zone: a
-              // gap spanning several zones would otherwise inflate every one of them into a number
-              // nobody can act on. The tooltip and detail panel carry the full count.
-              const top = worst(gaps);
-              const atTop = gaps.filter((g) => g.criticality === top).length;
-              const { tone, word } = severity(top);
-              const lower = gaps.length - atTop;
-              return (
-                <div key={z} className="cell">
-                  {gaps.length > 0 && (
+          {crossLanes.length > 0 && <h3 className="matrix__section">Cross-cutting tools</h3>}
+          {crossLanes.map(({ tool, perZone, note }) => {
+            const ramp = rampOf(tool.role);
+            return (
+              <Fragment key={tool.id}>
+                <button type="button" className="lane__label" onClick={() => onOpen({ kind: "tool", id: tool.id })} title={`${tool.name}: ${lookup.roleDescription(tool.role)}`}>
+                  <span className="lane__glyph" data-ramp={ramp}>
+                    <RoleGlyph role={tool.role} />
+                  </span>
+                  <span className="lane__text">
+                    <span className="lane__name lane__name--wrap">{tool.name}</span>
+                    <span className="lane__note lane__note--wrap">{note}</span>
+                  </span>
+                </button>
+                {lens.zones.map((z) => (
+                  <div key={z} className="cell">
+                    {perZone[z]! > 0 && (
+                      <button
+                        type="button"
+                        className="mark mark--reach"
+                        data-ramp={ramp}
+                        data-level={perZone[z]}
+                        data-tip={`cross|${tool.id}|${z}`}
+                        aria-label={`${tool.name}, ${zoneName(z)}: ${LEVEL_LABEL[perZone[z]!]}, cross-cutting`}
+                        onClick={() => onOpen({ kind: "tool", id: tool.id })}
+                      />
+                    )}
+                  </div>
+                ))}
+              </Fragment>
+            );
+          })}
+
+          <h3 className="matrix__section">Cross-cutting coverage</h3>
+          {model.bands.map((band) => (
+            <Fragment key={band.id}>
+              <div className="lane__label lane__label--band">{band.name}</div>
+              {lens.zones.map((z) => {
+                const level = bands[band.id]?.[z] ?? 0;
+                return (
+                  <div key={z} className="cell">
                     <button
                       type="button"
-                      className={`gapchip sev sev--${tone}`}
-                      data-tip={`gap|${z}`}
-                      aria-label={`${atTop} ${word.toLowerCase()} ${atTop === 1 ? "gap" : "gaps"}${lower > 0 ? ` and ${lower} lower` : ""} in ${zoneName(z)}`}
+                      className={level ? "bandmark" : "bandmark bandmark--none"}
+                      data-ramp="structural"
+                      data-level={level || undefined}
+                      data-tip={`band|${band.id}|${z}`}
+                      aria-label={`${band.name}, ${zoneName(z)}: ${level ? LEVEL_LABEL[level] : "not covered"}`}
                       onClick={() => onOpen({ kind: "zone", zone: z })}
-                    >
-                      <SeverityIcon tone={tone} />
-                      <span className="sev__n">{atTop}</span>
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+                    />
+                  </div>
+                );
+              })}
+            </Fragment>
+          ))}
+        </div>
+        {tip && (
+          <div className="tooltip" role="presentation" aria-hidden="true" style={{ left: tip.x, top: tip.y }}>
+            <strong>{tip.title}</strong>
+            {tip.lines.map((l, i) => (
+              <span key={i}>{l}</span>
+            ))}
           </div>
-          {tip && (
-            <div className="tooltip" role="presentation" aria-hidden="true" style={{ left: tip.x, top: tip.y }}>
-              <strong>{tip.title}</strong>
-              {tip.lines.map((l, i) => (
-                <span key={i}>{l}</span>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="tablewrap">
-          <table className="matrix-table">
-            <caption>Where your tools sit in the {lens.name} lens. Bold marks the core position.</caption>
-            <thead>
-              <tr>
-                <th scope="col">Tool</th>
-                {lens.zones.map((z) => (
-                  <th key={z} scope="col">
-                    {zoneName(z)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {lanes.length === 0 && (
-                <tr>
-                  <td colSpan={lens.zones.length + 1} className="muted">
-                    No tools have a position yet.
-                  </td>
-                </tr>
-              )}
-              {lanes.map(({ tool, view: v }) => (
-                <tr key={tool.id}>
-                  <th scope="row">
-                    <button type="button" className="linkish" onClick={() => onOpen({ kind: "tool", id: tool.id })}>
-                      {tool.name}
-                    </button>
-                  </th>
-                  {lens.zones.map((z) => {
-                    const zone = v.zones[z];
-                    return (
-                      <td key={z} className={zone && v.span.includes(z) ? "is-core" : undefined}>
-                        {zone ? LEVEL_LABEL[zone.intensity] : <span className="muted">–</span>}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-              {crossLanes.map(({ tool, perZone, note }) => (
-                <tr key={tool.id}>
-                  <th scope="row">
-                    <button type="button" className="linkish" onClick={() => onOpen({ kind: "tool", id: tool.id })}>
-                      {tool.name}
-                    </button>
-                    <span className="muted"> · cross-cutting: {note}</span>
-                  </th>
-                  {lens.zones.map((z) => (
-                    <td key={z}>{perZone[z]! > 0 ? LEVEL_LABEL[perZone[z]!] : <span className="muted">–</span>}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-            <tbody>
-              <tr className="table-section">
-                <th colSpan={lens.zones.length + 1} scope="colgroup">
-                  Cross-cutting coverage, best level in your stack
-                </th>
-              </tr>
-              {model.bands.map((band) => (
-                <tr key={band.id}>
-                  <th scope="row">{band.name}</th>
-                  {lens.zones.map((z) => {
-                    const level = bands[band.id]?.[z] ?? 0;
-                    return <td key={z}>{level ? LEVEL_LABEL[level] : <span className="muted">–</span>}</td>;
-                  })}
-                </tr>
-              ))}
-              <tr className="table-section">
-                <th colSpan={lens.zones.length + 1} scope="colgroup">
-                  Gaps that touch each zone
-                </th>
-              </tr>
-              <tr>
-                <th scope="row">Gaps</th>
-                {lens.zones.map((z) => {
-                  const gaps = gapsByZone[z] ?? [];
-                  return (
-                    <td key={z}>{gaps.length ? `${gaps.length}, worst ${severity(worst(gaps)).word.toLowerCase()}` : <span className="muted">–</span>}</td>
-                  );
-                })}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
+        )}
+      </div>
 
       {unplaced.length > 0 && (
         <p className="note">
@@ -405,9 +341,7 @@ export function LensMatrix({ model, lookup, lens, tools, placement, bands, view,
           <summary>
             Not shown in the {lens.name} lens <span className="count">{rail.length + railCells.length}</span>
           </summary>
-          <p className="muted">
-            This lens has no honest zone for these, so they sit here instead of disappearing. {lens.unmapped === "rail" ? "Switch to the audit grid to see them in place." : ""}
-          </p>
+          <p className="muted">This lens has no honest zone for these, so they sit here instead of disappearing.</p>
           {rail.length > 0 && (
             <ul className="raillist">
               {rail.map((g) => (

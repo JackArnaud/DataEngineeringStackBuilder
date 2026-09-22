@@ -8,7 +8,7 @@ import { severity } from "../labels";
 import { groupCells, joinNames } from "../receipts";
 import { RAMP_ORDER, ROLE_RAMP, rampOf } from "../roles";
 import { computeGaps, groupGaps } from "@compile";
-import { add, defaultLens, emptyState, isSelectable, parseState, serializeState, toggle } from "../state";
+import { add, emptyState, isSelectable, parseState, serializeState, toggle } from "../state";
 import { dataset, model } from "./fixture";
 
 describe("stack state in the address", () => {
@@ -26,15 +26,14 @@ describe("stack state in the address", () => {
     expect(parseState("?tools=aws-mwaa&use=orchestrate.scheduling:github", model).use).toEqual({});
   });
 
-  it("starts empty, on the medallion lens, as a chart", () => {
-    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, lens: "medallion", view: "chart" });
-    expect(defaultLens(model)).toBe("medallion");
+  it("starts empty", () => {
+    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {} });
   });
 
   it("round-trips: what is written is what is read back", () => {
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, lens: "grid", view: "table" as const };
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" } };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&lens=grid&view=table");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core");
     expect(parseState(query, model)).toEqual(state);
   });
 
@@ -50,8 +49,8 @@ describe("stack state in the address", () => {
   });
 
   it("drops anything the model no longer has, rather than failing", () => {
-    const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope&lens=kappa&view=poster", model);
-    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, lens: "medallion", view: "chart" });
+    const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope", model);
+    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {} });
   });
 
   it("does not let a portfolio be selected, only its services", () => {

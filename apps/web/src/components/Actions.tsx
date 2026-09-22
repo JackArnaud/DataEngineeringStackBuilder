@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import type { RenderModel } from "@compile";
-import type { StackState, View } from "../state";
 
 interface ActionsProps {
   canReset: boolean;
@@ -49,38 +47,5 @@ export function Actions({ canReset, onReset, onGuide }: ActionsProps) {
         Start over
       </button>
     </nav>
-  );
-}
-
-interface ViewProps {
-  model: RenderModel;
-  state: StackState;
-  onChange: (patch: Partial<StackState>) => void;
-}
-
-/** How to draw the chart: which lens, and chart or table. It sits with the chart it controls. */
-export function ViewControls({ model, state, onChange }: ViewProps) {
-  return (
-    <div className="viewcontrols">
-      <fieldset className="seg">
-        <legend>View through</legend>
-        {model.lenses.map((l) => (
-          <label key={l.id} className="seg__opt">
-            <input type="radio" name="lens" value={l.id} checked={state.lens === l.id} onChange={() => onChange({ lens: l.id })} />
-            <span>{l.name}</span>
-          </label>
-        ))}
-      </fieldset>
-
-      <fieldset className="seg">
-        <legend>Show as</legend>
-        {(["chart", "table"] as View[]).map((v) => (
-          <label key={v} className="seg__opt">
-            <input type="radio" name="view" value={v} checked={state.view === v} onChange={() => onChange({ view: v })} />
-            <span>{v === "chart" ? "Chart" : "Table"}</span>
-          </label>
-        ))}
-      </fieldset>
-    </div>
   );
 }

@@ -10,6 +10,7 @@ import { CellGroups } from "./CellGroups";
 import { whereText } from "./GapList";
 import { RoleGlyph } from "./glyphs";
 import { DeliveryBadge, LevelBadge, SeverityChip } from "./parts";
+import { StackPanel } from "./StackPanel";
 
 interface Props {
   model: RenderModel;
@@ -22,6 +23,7 @@ interface Props {
   detail: Detail;
   onClose: () => void;
   onOpen: (detail: Detail) => void;
+  onChange: (patch: Partial<StackState>) => void;
   onToggleTool: (id: string) => void;
   onAddTools: (ids: string[]) => void;
 }
@@ -35,7 +37,7 @@ export function DetailPanel(props: Props) {
   const panel = useRef<HTMLDivElement>(null);
 
   // Move focus into the panel when it opens or changes subject, so keyboard users land in it.
-  const subject = detail.kind === "zone" ? detail.zone : detail.id;
+  const subject = detail.kind === "zone" ? detail.zone : detail.kind === "editStack" ? "editStack" : detail.id;
   useEffect(() => {
     panel.current?.focus();
   }, [detail.kind, subject]);
@@ -49,6 +51,9 @@ export function DetailPanel(props: Props) {
   } else if (detail.kind === "zone") {
     title = `${props.model.stages.some((s) => s.id === detail.zone) ? lookup.stageName(detail.zone) : detail.zone.charAt(0).toUpperCase() + detail.zone.slice(1)}`;
     body = <ZoneDetail {...props} zone={detail.zone} />;
+  } else if (detail.kind === "editStack") {
+    title = "Your stack";
+    body = <StackPanel model={props.model} lookup={lookup} state={props.state} onChange={props.onChange} onOpenTool={(id) => props.onOpen({ kind: "tool", id })} />;
   } else {
     const gap = props.report.gaps.find((g) => g.id === detail.id);
     title = gap ? gapTitle(gap, lookup) : "Gap";

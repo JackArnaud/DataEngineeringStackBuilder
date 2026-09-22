@@ -1,6 +1,7 @@
 import type { GapReport, RenderModel } from "@compile";
 import { LEVEL_LABEL, plural } from "../labels";
 import type { Lookup } from "../lookup";
+import { SeverityChip } from "./parts";
 
 /**
  * Coverage by pipeline stage, before any lens. The plain answer to "does my stack touch every
@@ -23,7 +24,7 @@ export function StageStrip({ model, lookup, report }: { model: RenderModel; look
               ))}
             </span>
             <span className="stage__status">
-              {state === "empty" && (stage.criticality === 0 ? "Usually outside your stack" : "Nothing yet")}
+              {state === "empty" && (stage.criticality === 0 ? "Usually outside your stack" : <SeverityChip criticality={stage.criticality} />)}
               {state === "thin" && "Thin: extended only"}
               {state === "ok" && LEVEL_LABEL[s.best_level]}
             </span>

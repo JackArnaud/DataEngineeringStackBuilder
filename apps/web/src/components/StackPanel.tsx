@@ -18,8 +18,9 @@ interface Props {
 type Tab = "tools" | "needs";
 
 /**
- * The left-hand panel: what you have chosen so far, always on screen, above two short steps. Tools
- * you have and what you need are separate tabs so neither is buried under the other.
+ * What you have chosen so far, and two short steps to change it. It lives inside the "Edit stack"
+ * panel, opened on demand, so adding and removing tools never competes with the gaps for space. The
+ * panel that holds this already carries its own heading, so this has none of its own.
  */
 export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props) {
   const [tab, setTab] = useState<Tab>("tools");
@@ -30,8 +31,7 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
 
   return (
     <div className="panel stack">
-      <section aria-labelledby="mystack">
-        <h2 id="mystack">Your stack</h2>
+      <section>
         {state.tools.length === 0 ? (
           <p className="muted">Pick the tools you use or say what you need below, or load an example stack from the main panel.</p>
         ) : (
