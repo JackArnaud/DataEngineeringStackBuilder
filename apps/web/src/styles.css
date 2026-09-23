@@ -175,6 +175,13 @@ a { color: inherit; }
 .chips__label { margin: 12px 0 6px; font-size: 13px; color: var(--muted); }
 .chip__label { padding: 3px 8px; }
 
+.tierpanel { margin-top: 14px; padding: 12px; border: 1px solid var(--axis); border-radius: var(--r); background: var(--wash); }
+.tierpanel__head { margin-bottom: 8px; color: var(--ink-2); font-size: 14px; }
+.tierpanel__list { display: grid; gap: 6px; }
+.tierpanel__list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tierpanel__list .tiercheck { flex: 1 1 auto; background: var(--page); }
+.tierpanel__more { color: var(--muted); font-size: 13px; }
+
 .search input { width: 100%; padding: 8px 10px; border-radius: var(--r); border: 1px solid var(--axis); background: var(--page); }
 .search input::placeholder { color: var(--muted); }
 
@@ -282,7 +289,9 @@ a { color: inherit; }
 
 .gapchip { margin: 0 auto; cursor: pointer; border: 0; }
 
-.tooltip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 8px)); display: grid; gap: 1px; max-width: 260px; padding: 8px 10px; border-radius: 3px; background: var(--ink); color: var(--page); font-size: 13px; line-height: 1.4; pointer-events: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+/* Fixed and portaled to the body: never clipped by the matrix's own horizontal scrollbar. */
+.tooltip { position: fixed; z-index: 5; transform: translate(-50%, calc(-100% - 8px)); display: grid; gap: 1px; max-width: 260px; padding: 8px 10px; border-radius: 3px; background: var(--ink); color: var(--page); font-size: 13px; line-height: 1.4; pointer-events: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+.tooltip[data-below] { transform: translate(-50%, 8px); }
 .tooltip strong { font-size: 14px; }
 
 .note { color: var(--ink-2); }

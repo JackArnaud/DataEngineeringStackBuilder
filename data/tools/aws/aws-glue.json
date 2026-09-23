@@ -58,6 +58,14 @@
       "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
     },
     {
+      "band": "govern.catalog",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "A Kinesis or Kafka/MSK streaming source used by a Glue streaming ETL job can be registered as a Data Catalog table, the same catalog store used for data at rest. For Kinesis this is optional (a job can read the stream directly instead); for Kafka a table has to be created by hand.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/edit-jobs-source-streaming.html"
+    },
+    {
       "band": "quality.tests",
       "level": 3,
       "delivery": "native",
@@ -80,6 +88,22 @@
       "scope": ["ingest", "transform"],
       "note": "Jobs are monitored with automated tooling, job run insights, CloudTrail and the Spark UI.",
       "source": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    {
+      "band": "quality.contracts",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "Schema Registry lets producers and consumers on Kafka, MSK, Kinesis Data Streams, Managed Flink and Lambda agree a schema, with 8 compatibility modes checked on every new version so an incompatible change is rejected, not silently accepted. Serverless and free to use.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/schema-registry.html"
+    },
+    {
+      "band": "govern.masking",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest", "transform"],
+      "note": "The Detect PII transform in Glue Studio finds sensitive entities in a job's data and can redact, partially redact or SHA-256 hash them, inside batch or streaming ETL jobs. Effective only where a job is built to include the transform, not applied automatically to every job.",
+      "source": "https://docs.aws.amazon.com/glue/latest/dg/detect-PII.html"
     }
   ],
   "presentation": {

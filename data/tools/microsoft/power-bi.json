@@ -48,6 +48,14 @@
       "scope": ["serve"],
       "note": "Every workspace has a lineage view of its data sources, dataflows, semantic models, reports and dashboards, and their external dependencies. It needs a Pro licence and a Contributor role, and covers Power BI artifacts only.",
       "source": "https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-data-lineage"
+    },
+    {
+      "band": "quality.anomaly-detection",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "The analytics pane can add anomaly detection to a line or area chart with a time series axis: it flags points outside the expected range and gives a natural-language explanation of likely contributing factors. No coding or external model. Limited to that chart type, and not applied automatically to a report.",
+      "source": "https://learn.microsoft.com/en-us/power-bi/visuals/power-bi-visualization-anomaly-detection"
     }
   ],
   "proposed_capabilities": [

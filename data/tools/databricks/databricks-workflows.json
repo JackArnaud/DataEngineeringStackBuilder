@@ -52,6 +52,14 @@
       "scope": ["orchestrate"],
       "note": "A bundle is deployed to a target environment, giving consistent dev, staging and production deployments of jobs and pipelines.",
       "source": "https://docs.databricks.com/aws/en/dev-tools/bundles/"
+    },
+    {
+      "band": "quality.tests",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "A validation pipeline's task, built with Lakeflow Declarative Pipelines expectations, can gate a downstream task: the pipeline task fails when its expectations fail, so the dependent task never runs. A quality assertion enforced by the job graph itself, not only inside one pipeline.",
+      "source": "https://learn.microsoft.com/en-us/azure/databricks/ldp/expectations"
     }
   ],
   "presentation": {

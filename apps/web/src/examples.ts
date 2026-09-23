@@ -41,7 +41,7 @@ export const EXAMPLE_GROUPS: ExampleGroup[] = [
         label: "Oracle estate to a cloud warehouse",
         hint: "GoldenGate captures changes from Oracle, Snowflake stores them, Power BI serves them.",
         tools: ["oracle-database", "oracle-goldengate", "snowflake", "power-bi"],
-        notice: "Oracle fills the source stage itself. Policy and anomaly detection are closable on higher Snowflake plans, and monitoring is critical at the edges.",
+        notice: "Oracle fills the source stage itself. Policy is closable only on higher Snowflake plans; anomaly detection is too, except at Serve, which Power BI already covers on its own. Monitoring is critical at the edges.",
       },
       {
         label: "dbt platform on Databricks",
@@ -103,7 +103,7 @@ export const EXAMPLE_GROUPS: ExampleGroup[] = [
         label: "Azure data platform with Azure DevOps",
         hint: "Data Factory, a lake, Synapse, Power BI, Purview and Azure Pipelines.",
         tools: ["azure-data-factory", "azure-data-lake-storage", "azure-synapse", "power-bi", "azure-purview", "azure-devops"],
-        notice: "Purview covers the catalog and policy at Store, Transform and Serve only, so they stay as moderate gaps at the other stages. Masking is fully open.",
+        notice: "Purview covers the catalog and policy at Store, Transform and Serve; Ingest is the one stage neither reaches, so it stays a moderate gap. Masking is fully open.",
       },
     ],
   },

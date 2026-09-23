@@ -76,6 +76,14 @@
       "scope": ["transform", "orchestrate"],
       "note": "Managed deployment environments come in production, staging and general types, each with its own warehouse location, and each needs a connection profile before jobs can run.",
       "source": "https://docs.getdbt.com/docs/deploy/deploy-environments"
+    },
+    {
+      "band": "quality.contracts",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["serve"],
+      "note": "The Semantic Layer is documented as a contract/interface between the data platform and downstream consumers: a metric defined once and served through its API is refreshed everywhere it's invoked, so BI tools stop each defining the same metric differently. Needs the Starter plan or above, same as the Semantic Layer itself.",
+      "source": "https://docs.getdbt.com/docs/use-dbt-semantic-layer/dbt-sl"
     }
   ],
   "proposed_capabilities": [

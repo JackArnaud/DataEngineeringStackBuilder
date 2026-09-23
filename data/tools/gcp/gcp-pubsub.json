@@ -24,6 +24,24 @@
       "source": "https://docs.cloud.google.com/pubsub/docs/overview"
     }
   },
+  "bands": [
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Both a topic and a subscription have their own configurable message retention duration, from 10 minutes up to 31 days. A single retention lever, not the fuller residency or classification policy a governance platform manages.",
+      "source": "https://docs.cloud.google.com/pubsub/docs/subscription-message-retention"
+    },
+    {
+      "band": "quality.contracts",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "A topic can have an Avro or Protocol Buffer schema attached; a published message that does not conform to it is rejected, not delivered. No separate tier or edition needed.",
+      "source": "https://docs.cloud.google.com/pubsub/docs/schemas"
+    }
+  ],
   "presentation": {
     "tagline": "Global event messaging that decouples producers from consumers."
   },

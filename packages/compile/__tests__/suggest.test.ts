@@ -128,14 +128,18 @@ describe("suggestions from the same ecosystem", () => {
   const stacks: [string[], string][] = [
     [["aws-s3"], "band:govern.masking@store"],
     [["snowflake"], "band:observe.lineage@transform"],
-    [["snowflake", "dbt"], "band:govern.catalog@store"],
-    [["postgres"], "empty-stage:serve"],
-    [["databricks"], "band:quality.contracts@store"],
+    [["snowflake", "dbt"], "band:govern.masking@store"],
+    [["aws-s3"], "band:govern.catalog@store"],
+    [["azure-data-factory"], "band:quality.contracts@ingest"],
     [["azure-data-factory"], "band:govern.catalog@ingest"],
   ];
-  const cases = stacks.flatMap(([tools, id]) => {
+  // Every stack above is expected to still produce that exact gap; a silent drop here once let
+  // this run on fewer real cases than it looked like without failing (a `.flatMap` swallowed a
+  // stale pairing instead of naming it), so a stale entry is a hard failure now, not a shrinking count.
+  const cases = stacks.map(([tools, id]) => {
     const found = computeGaps(model, { tools }).gaps.find((g) => g.id === id);
-    return found ? [{ tools, id, s: suggestTools(model, found, tools) }] : [];
+    if (!found) throw new Error(`${tools.join(",")} no longer produces the gap ${id}; update this fixture`);
+    return { tools, id, s: suggestTools(model, found, tools) };
   });
 
   it("put a tool from a vendor you already use first, even ahead of a stronger one from elsewhere", () => {
@@ -155,7 +159,7 @@ describe("suggestions from the same ecosystem", () => {
 
   it("order tools that are good enough to use by fit: ecosystem, then paired, then the rest", () => {
     const rank = { ecosystem: 0, paired: 1, other: 2 } as const;
-    expect(cases.length).toBeGreaterThan(3);
+    expect(cases.length).toBe(stacks.length);
     for (const { tools, id, s } of cases) {
       const proper = s.filter((x) => x.level >= 2).map((x) => rank[x.affinity]);
       expect(proper, `${tools} ${id}`).toEqual([...proper].sort((a, b) => a - b));

@@ -15,9 +15,9 @@
       "band": "govern.catalog",
       "level": 3,
       "delivery": "native",
-      "scope": ["store", "transform", "serve"],
-      "note": "The Data Map inventories data assets and metadata, and the Unified Catalog organises them into governance domains, data products and glossary terms, searchable with an AI-powered copilot.",
-      "source": "https://learn.microsoft.com/en-us/purview/unified-catalog"
+      "scope": ["source", "store", "transform", "serve"],
+      "note": "The Data Map inventories data assets and metadata, and the Unified Catalog organises them into governance domains, data products and glossary terms, searchable with an AI-powered copilot. Scanning and classification reach well beyond Azure: on-premises SQL Server, Oracle, SAP, Salesforce, Snowflake, BigQuery and more can be registered and scanned as sources, so a system the pipeline reads from, not just what it stores, can be catalogued.",
+      "source": "https://learn.microsoft.com/en-us/purview/microsoft-purview-connector-overview"
     },
     {
       "band": "govern.policy",
@@ -31,9 +31,9 @@
       "band": "observe.lineage",
       "level": 2,
       "delivery": "native",
-      "scope": ["store", "transform", "serve"],
-      "note": "The platform keeps an inventory of data assets, their metadata and their lineage, so the topography of the data estate can be understood.",
-      "source": "https://learn.microsoft.com/en-us/purview/unified-catalog"
+      "scope": ["source", "store", "transform", "serve"],
+      "note": "The platform keeps an inventory of data assets, their metadata and their lineage, so the topography of the data estate can be understood. Lineage is captured from many source databases directly (Oracle, PostgreSQL, MySQL, Snowflake, BigQuery, SAP and more, each registered and scanned), not only from what already sits inside the estate.",
+      "source": "https://learn.microsoft.com/en-us/purview/microsoft-purview-connector-overview"
     },
     {
       "band": "quality.tests",

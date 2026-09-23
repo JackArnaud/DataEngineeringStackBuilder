@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Gap, GapsInLens, Overlap, RenderLens, RenderModel, RenderTool, StageSummary, ToolLensView } from "@compile";
 import { gapTitle, LEVEL_LABEL, listNames, plural, severity } from "../labels";
 import type { Lookup } from "../lookup";
@@ -43,6 +44,8 @@ interface Props {
 interface Tip {
   x: number;
   y: number;
+  /** True once there isn't room to show it above the mark, so it opens below instead. */
+  below: boolean;
   title: string;
   lines: string[];
 }
@@ -94,6 +97,10 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
   const wrap = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<Tip | null>(null);
 
+  // "Core"/"Native" both mean built in, no plugin or extra purchase; only "Extended" needs one. Said
+  // plainly in the tooltip, where someone decides what a mark means, not just as a badge word.
+  const builtInWord = (level: number) => (level >= 2 ? "Built in" : "Needs a plugin or add-on");
+
   /** Build the tooltip for a mark. Tooltips only repeat what the detail panel says. */
   function tipFor(id: string): Pick<Tip, "title" | "lines"> | undefined {
     const [kind, a, b] = id.split("|") as [string, string, string];
@@ -105,7 +112,7 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
       const core = lane.view.span.includes(b);
       return {
         title: `${lane.tool.name} in ${zoneName(b)}`,
-        lines: [`${LEVEL_LABEL[zone.intensity]}${core ? ", core position" : ", also reaches here"}`, names.length <= 3 ? names.join(", ") : `${names.slice(0, 3).join(", ")} and ${names.length - 3} more`, "Click for notes and sources"],
+        lines: [`${builtInWord(zone.intensity)} (${LEVEL_LABEL[zone.intensity]})${core ? ", its core position" : ", also reaches here"}`, names.length <= 3 ? names.join(", ") : `${names.slice(0, 3).join(", ")} and ${names.length - 3} more`, "Click for notes and sources"],
       };
     }
     if (kind === "cross") {
@@ -116,9 +123,9 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
       return { title: `${tool.name} in ${zoneName(b)}`, lines: [...here, "Cross-cutting, not a pipeline position. Click for notes"] };
     }
     if (kind === "band") {
-      const level = bands[a]?.[b] ?? 0;
-      const who = tools.filter((t) => (lens.tools[t.id]?.bands[b]?.[a] ?? 0) > 0).map((t) => `${t.name} (${LEVEL_LABEL[lens.tools[t.id]!.bands[b]![a]!]})`);
-      return { title: `${lookup.bandName(a)} in ${zoneName(b)}`, lines: [level ? `Best: ${LEVEL_LABEL[level]}` : "Not covered", ...who] };
+      // Who manages this here, and how well — the thing a colour block alone can't say.
+      const who = tools.filter((t) => (lens.tools[t.id]?.bands[b]?.[a] ?? 0) > 0).map((t) => `${t.name} — ${LEVEL_LABEL[lens.tools[t.id]!.bands[b]![a]!]}`);
+      return { title: `${lookup.bandName(a)} in ${zoneName(b)}`, lines: who.length > 0 ? who : ["Nothing in your stack covers this here"] };
     }
     if (kind === "gap") {
       const gaps = gapsByZone[a] ?? [];
@@ -127,14 +134,21 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
     return undefined;
   }
 
+  // Positioned in viewport coordinates and portaled to the body, so it is never clipped by the
+  // matrix's own horizontal scrollbar, and flips below the mark when there isn't room above it —
+  // the matrix's top rows are exactly where a clipped tooltip used to vanish.
   function show(el: HTMLElement) {
     const id = el.dataset.tip;
-    const box = wrap.current;
-    const content = id && box ? tipFor(id) : undefined;
-    if (!box || !content) return setTip(null);
+    const content = id ? tipFor(id) : undefined;
+    if (!content) return setTip(null);
     const r = el.getBoundingClientRect();
-    const w = box.getBoundingClientRect();
-    setTip({ x: Math.min(Math.max(r.left - w.left + r.width / 2, 120), Math.max(w.width - 120, 120)), y: r.top - w.top, ...content });
+    const below = r.top < 90;
+    setTip({
+      x: Math.min(Math.max(r.left + r.width / 2, 120), Math.max(window.innerWidth - 120, 120)),
+      y: below ? r.bottom : r.top,
+      below,
+      ...content,
+    });
   }
   const target = (e: { target: EventTarget }) => (e.target as HTMLElement).closest<HTMLElement>("[data-tip]");
 
@@ -329,14 +343,16 @@ export function LensMatrix({ model, lookup, lens, tools, stages, placement, band
             );
           })}
         </div>
-        {tip && (
-          <div className="tooltip" role="presentation" aria-hidden="true" style={{ left: tip.x, top: tip.y }}>
-            <strong>{tip.title}</strong>
-            {tip.lines.map((l, i) => (
-              <span key={i}>{l}</span>
-            ))}
-          </div>
-        )}
+        {tip &&
+          createPortal(
+            <div className="tooltip" data-below={tip.below || undefined} role="presentation" aria-hidden="true" style={{ left: tip.x, top: tip.y }}>
+              <strong>{tip.title}</strong>
+              {tip.lines.map((l, i) => (
+                <span key={i}>{l}</span>
+              ))}
+            </div>,
+            document.body,
+          )}
       </div>
 
       {unplaced.length > 0 && (

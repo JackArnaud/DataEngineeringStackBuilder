@@ -24,6 +24,16 @@
       "source": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
     }
   },
+  "bands": [
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "A stream's retention period is a native, per-stream setting: 24 hours by default, adjustable from 24 hours up to 365 days. A single retention lever, not the fuller residency or classification policy a governance platform manages.",
+      "source": "https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html"
+    }
+  ],
   "presentation": {
     "tagline": "Durable managed streams that decouple event producers from consumers."
   },

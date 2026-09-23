@@ -1,6 +1,6 @@
 {
   "$schema": "./taxonomy.schema.json",
-  "taxonomy_version": "1.0.3",
+  "taxonomy_version": "1.0.4",
   "stages": [
     {
       "id": "source",
@@ -558,6 +558,48 @@
         "stage": "orchestrate",
         "weight": 2,
         "rationale": "Lineage traces data, and data moves through the engines that do the work, not the scheduler. Monitoring is what matters at this stage."
+      },
+      {
+        "capability": "quality.contracts",
+        "stage": "orchestrate",
+        "weight": 0,
+        "rationale": "Orchestration passes no data values through, so there is no schema to agree on there."
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "stage": "orchestrate",
+        "weight": 0,
+        "rationale": "Orchestration passes no data values through, so there is nothing whose volume, freshness or distribution could be anomalous there."
+      },
+      {
+        "capability": "govern.catalog",
+        "stage": "orchestrate",
+        "weight": 0,
+        "rationale": "The objects at this stage are pipeline definitions, not data assets; nothing here is inventoried as a governed data asset."
+      },
+      {
+        "capability": "govern.policy",
+        "stage": "orchestrate",
+        "weight": 0,
+        "rationale": "Orchestration passes no data values through, so there is no data to apply a retention, residency or classification rule to."
+      },
+      {
+        "capability": "quality.anomaly-detection",
+        "stage": "source",
+        "weight": 0,
+        "rationale": "The tools that reach a source system at all (a catalog's scan, a stream's own retention and schema) read its metadata and configuration; watching the shape of its data over time needs either runtime access to a system that usually sits outside the stack, or the data to already be flowing into it."
+      },
+      {
+        "capability": "platform.environments",
+        "stage": "source",
+        "weight": 0,
+        "rationale": "Dev, test and production are environments the stack promotes its own code through. A source system is not part of the stack, so it is not one of them."
+      },
+      {
+        "capability": "platform.dev-experience",
+        "stage": "source",
+        "weight": 0,
+        "rationale": "Nothing is authored, run or debugged against a source system itself; that happens against the tools that read from it."
       }
     ]
   }

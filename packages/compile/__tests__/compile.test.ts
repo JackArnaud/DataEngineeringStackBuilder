@@ -21,7 +21,7 @@ const view = (lensId: string, toolId: string) => model.lenses.find((l) => l.id =
 
 describe("the render model of the real dataset", () => {
   it("has the expected envelope", () => {
-    expect(model).toMatchObject({ format: "render-model", format_version: 1, taxonomy_version: "1.0.3", derivation_version: "1.0.0" });
+    expect(model).toMatchObject({ format: "render-model", format_version: 1, taxonomy_version: "1.0.4", derivation_version: "1.0.0" });
     expect(model.stages.map((s) => s.id)).toEqual(["source", "ingest", "store", "transform", "orchestrate", "serve"]);
     expect(model.stages.map((s) => s.criticality)).toEqual([0, 4, 5, 4, 3, 5]);
     expect(model.bands.map((b) => b.id)).toEqual(["govern", "quality", "observe", "platform"]);

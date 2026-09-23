@@ -32,6 +32,14 @@
       "scope": ["orchestrate"],
       "note": "A web-based UI to visualise, manage and debug workflows across deployment scales. It shows workflow runs; it does not check the data the tasks produce.",
       "source": "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "The OpenLineage provider has shipped in Airflow itself since 2.7, automatically emitting lineage events (DAG, task and run metadata, plus dataset input/output where an operator supports it) on every run. It is the emitter, not the graph: a backend such as Marquez or a catalog that consumes OpenLineage events is needed to see the result.",
+      "source": "https://airflow.apache.org/docs/apache-airflow-providers-openlineage/stable/guides/structure.html"
     }
   ],
   "presentation": {

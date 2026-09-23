@@ -52,6 +52,14 @@
       "scope": ["transform"],
       "note": "Notebooks offer real-time coauthoring in several languages, automatic versioning and built-in visualisations.",
       "source": "https://docs.databricks.com/aws/en/notebooks/"
+    },
+    {
+      "band": "quality.contracts",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["store"],
+      "note": "Schema enforcement is Delta Lake's default write behaviour: a write whose columns or types don't match the table's existing schema is rejected outright, so the table's shape is a contract a consumer can rely on rather than a snapshot of whatever last happened to be written. Only applies to Delta tables, not files in other formats.",
+      "source": "https://docs.databricks.com/aws/en/tables/schema-enforcement"
     }
   ],
   "presentation": {

@@ -183,42 +183,10 @@
         "stage": "orchestrate"
       },
       {
-        "capability": "govern.catalog",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:govern.catalog@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
-        "capability": "govern.policy",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:govern.policy@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
         "capability": "observe.cost-visibility",
         "conditional": [],
         "criticality": 1,
         "id": "band:observe.cost-visibility@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
-        "capability": "quality.anomaly-detection",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:quality.anomaly-detection@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
-        "capability": "quality.contracts",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:quality.contracts@orchestrate",
         "kind": "band",
         "stage": "orchestrate"
       },
@@ -374,31 +342,7 @@
             ]
           },
           {
-            "id": "band:govern.catalog@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
-            "id": "band:govern.policy@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
             "id": "band:observe.cost-visibility@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
-            "id": "band:quality.anomaly-detection@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
-            "id": "band:quality.contracts@orchestrate",
             "zones": [
               "orchestrate"
             ]
@@ -580,46 +524,6 @@
           },
           {
             "id": "band:govern.access-control@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:govern.catalog@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:govern.policy@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:quality.anomaly-detection@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:quality.contracts@orchestrate",
             "zones": [
               "source",
               "bronze",
@@ -1861,42 +1765,10 @@
         "stage": "orchestrate"
       },
       {
-        "capability": "govern.catalog",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:govern.catalog@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
-        "capability": "govern.policy",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:govern.policy@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
         "capability": "observe.cost-visibility",
         "conditional": [],
         "criticality": 1,
         "id": "band:observe.cost-visibility@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
-        "capability": "quality.anomaly-detection",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:quality.anomaly-detection@orchestrate",
-        "kind": "band",
-        "stage": "orchestrate"
-      },
-      {
-        "capability": "quality.contracts",
-        "conditional": [],
-        "criticality": 1,
-        "id": "band:quality.contracts@orchestrate",
         "kind": "band",
         "stage": "orchestrate"
       },
@@ -2154,31 +2026,7 @@
             ]
           },
           {
-            "id": "band:govern.catalog@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
-            "id": "band:govern.policy@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
             "id": "band:observe.cost-visibility@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
-            "id": "band:quality.anomaly-detection@orchestrate",
-            "zones": [
-              "orchestrate"
-            ]
-          },
-          {
-            "id": "band:quality.contracts@orchestrate",
             "zones": [
               "orchestrate"
             ]
@@ -2462,46 +2310,6 @@
           },
           {
             "id": "band:govern.access-control@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:govern.catalog@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:govern.policy@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:quality.anomaly-detection@orchestrate",
-            "zones": [
-              "source",
-              "bronze",
-              "silver",
-              "gold",
-              "consume"
-            ]
-          },
-          {
-            "id": "band:quality.contracts@orchestrate",
             "zones": [
               "source",
               "bronze",

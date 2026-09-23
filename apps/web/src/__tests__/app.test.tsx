@@ -158,6 +158,43 @@ describe("the guided start", () => {
     expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("ML serving")).toBeTruthy();
   });
 
+  it("opens straight to the tier question when an example loads a tool with an enterprise-gated capability", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
+    await user.click(screen.getByRole("button", { name: "Load Snowflake, dbt and GitHub" }));
+    // Nobody has to find this by clicking into Snowflake's own detail: it's already open.
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByRole("heading", { name: "Your stack" })).toBeTruthy();
+    const checkbox = within(dialog).getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }) as HTMLInputElement;
+    expect(checkbox.checked).toBe(false);
+
+    await user.click(checkbox);
+    await waitFor(() => expect(window.location.search).toContain("tiers=snowflake"));
+    // Reaches the same place the per-tool checkbox does.
+    expect(checkbox.checked).toBe(true);
+  });
+
+  it("does not open the stack panel unasked when nothing in the example has a tier to confirm", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
+    await user.click(screen.getByRole("button", { name: "Load Databricks lakehouse" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("clears a tier confirmed for one stack when a different example is loaded", async () => {
+    const user = setupLanding();
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
+    await user.click(screen.getByRole("button", { name: "Load Snowflake, dbt and GitHub" }));
+    await user.click(screen.getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }));
+    await waitFor(() => expect(window.location.search).toContain("tiers=snowflake"));
+
+    await user.click(screen.getByRole("button", { name: "Close details" }));
+    await user.click(screen.getByRole("button", { name: "Guided start" }));
+    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
+    await user.click(screen.getByRole("button", { name: "Load Databricks lakehouse" }));
+    expect(window.location.search).not.toContain("tiers=");
+  });
+
   it("builds a stack one question at a time, and lets any step be skipped", async () => {
     const user = setupLanding();
     await user.click(screen.getByRole("button", { name: /Build my own/ }));
@@ -725,6 +762,37 @@ describe("the marks", () => {
     await waitFor(() => expect(screen.getByText("Click for notes and sources")).toBeTruthy());
   });
 
+  it("says a mark is built in rather than leaving Core and Native as bare, unexplained words", async () => {
+    const user = setup("/?tools=dbt-core#coverage");
+    const core = screen.getAllByRole("button").find((b) => b.getAttribute("aria-label")?.startsWith("dbt OSS (dbt Core), Transform"))!;
+    await user.hover(core);
+    expect(screen.getByText(/Built in \(Core\)/)).toBeTruthy();
+  });
+
+  it("says a plugin is needed for an Extended mark, not just the bare word", async () => {
+    // pg_cron gives Postgres scheduling as a community extension, at level 1 (Extended).
+    const user = setup("/?tools=postgres#coverage");
+    const extended = screen.getAllByRole("button").find((b) => b.getAttribute("aria-label")?.includes("Extended"))!;
+    await user.hover(extended);
+    expect(screen.getByText(/Needs a plugin or add-on \(Extended\)/)).toBeTruthy();
+  });
+
+  it("names the tool and its level for a cross-cutting cell on hover, not just a colour block", async () => {
+    const user = setup("/?tools=aws-lake-formation#coverage");
+    const bandMark = document.querySelector(".bandmark:not(.bandmark--none)") as HTMLElement;
+    await user.hover(bandMark);
+    expect(screen.getByText(/AWS Lake Formation — (Core|Native|Extended)/)).toBeTruthy();
+  });
+
+  it("renders the tooltip outside the scrolling matrix, so it is never clipped by its scrollbar", async () => {
+    const user = setup("/?tools=dbt-core#coverage");
+    const mark = screen.getAllByRole("button").find((b) => b.getAttribute("aria-label")?.startsWith("dbt OSS (dbt Core), Transform"))!;
+    await user.hover(mark);
+    const tip = document.querySelector(".tooltip")!;
+    expect(document.querySelector(".matrix-wrap")!.contains(tip)).toBe(false);
+    expect(document.body.contains(tip)).toBe(true);
+  });
+
   it("count gaps at the worst tier in a zone, not every gap that touches it", () => {
     setup("/?tools=databricks,dbt-platform#coverage");
     const chip = screen.getAllByRole("button").find((b) => b.classList.contains("gapchip") && b.getAttribute("aria-label")?.includes("Source"))!;
@@ -797,6 +865,24 @@ describe("receipts", () => {
     await openTab(user, /What.s missing/);
     // The gap needing exactly what the confirmed tier now provides is gone.
     expect(dagGap()).toBe(false);
+  });
+
+  it("lists every tier-eligible tool in one place in the edit-stack panel, not just on each tool's own page", async () => {
+    const user = setup("/?tools=snowflake,tableau,github");
+    await openEditor(user);
+    const dialog = screen.getByRole("dialog");
+    const snowflakeBox = within(dialog).getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }) as HTMLInputElement;
+    const tableauBox = within(dialog).getByRole("checkbox", { name: /I.m on Tableau Data Management/ }) as HTMLInputElement;
+    expect(snowflakeBox.checked).toBe(false);
+    expect(tableauBox.checked).toBe(false);
+    // GitHub has nothing gated behind a plan, so it gets no row here.
+    expect(within(dialog).queryByText(/I.m on GitHub/)).toBeNull();
+
+    await user.click(snowflakeBox);
+    await waitFor(() => expect(window.location.search).toContain("tiers=snowflake"));
+    // Confirming it here is the same fact as confirming it on Snowflake's own page.
+    await user.click(dialog.querySelector<HTMLButtonElement>(".tierpanel__more")!);
+    expect((screen.getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }) as HTMLInputElement).checked).toBe(true);
   });
 
   it("open a gap to why it matters and what would close it, and let you add a fix", async () => {

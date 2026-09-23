@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { applyTier, hasEnterpriseTierUnlock, isEnterpriseTierOnly, suggestTools } from "@compile";
+import { applyTier, hasEnterpriseTierUnlock, suggestTools } from "@compile";
 import type { Gap, GapReport, GapsInLens, RenderLens, RenderModel, RenderTool } from "@compile";
 import { ARCHETYPE_LABEL, constraintPhrase, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural } from "../labels";
 import type { Lookup } from "../lookup";
 import { groupCells, joinNames } from "../receipts";
 import { toggle } from "../state";
 import type { StackState } from "../state";
+import { tierLabel } from "../tiers";
 import type { Detail } from "../types";
 import { CellGroups } from "./CellGroups";
 import { whereText } from "./GapList";
@@ -99,10 +100,7 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool
   const members = (tool.includes ?? []).map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t);
   const parents = lookup.includedBy(tool.id);
   const canTier = hasEnterpriseTierUnlock(tool.cells);
-  const tierLabel = useMemo(() => {
-    const via = tool.cells.flatMap((c) => c.conditional.filter(isEnterpriseTierOnly).flatMap((cd) => cd.via));
-    return constraintPhrase(["enterprise-tier"], [...new Set(via)], lookup);
-  }, [tool, lookup]);
+  const label = useMemo(() => tierLabel(tool, lookup), [tool, lookup]);
 
   return (
     <>
@@ -121,7 +119,7 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool
       {canTier && (
         <label className="tiercheck">
           <input type="checkbox" checked={tiered} onChange={() => onChange({ tiers: toggle(state.tiers, tool.id) })} />
-          I&rsquo;m on {tierLabel}
+          I&rsquo;m on {label}
         </label>
       )}
 

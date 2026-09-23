@@ -32,6 +32,22 @@
       "scope": ["source", "ingest"],
       "note": "Azure Monitor metrics, diagnostic logs and alerts track throughput, latency, errors and consumer lag.",
       "source": "https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Retention is a native, per-hub setting: up to 7 days on Standard, 90 days on Premium and Dedicated. A single retention lever, not the fuller residency or classification policy a governance platform manages.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about"
+    },
+    {
+      "band": "quality.contracts",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Schema Registry lets producers and consumers share an Avro or JSON schema, with client-side enforcement validating events against it before they are sent or after they are received, and forward/backward compatibility modes rejecting a breaking change. Included on Standard tier and above, which this record is scored against; not on Basic.",
+      "source": "https://learn.microsoft.com/en-us/azure/event-hubs/schema-registry-concepts"
     }
   ],
   "presentation": {

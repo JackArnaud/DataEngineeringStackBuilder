@@ -3,10 +3,15 @@ import type { Lookup } from "./lookup";
 
 /** The four coverage levels, in the words the taxonomy defines them. */
 export const LEVEL_LABEL: Record<number, string> = { 3: "Core", 2: "Native", 1: "Extended" };
+/**
+ * What to actually do with a level: Core and Native both mean nothing extra to buy or install —
+ * the difference between them is only how central the capability is to the product, not whether it
+ * works. Extended is the one that changes what you have to do.
+ */
 export const LEVEL_HELP: Record<number, string> = {
-  3: "a primary reason the product exists, first-class, no add-ons",
-  2: "genuinely built in, but secondary",
-  1: "only via a plugin, partner, marketplace or real custom work",
+  3: "Built in, and a primary reason the product exists — no plugin or extra purchase needed.",
+  2: "Built in, same as Core — no plugin or extra purchase needed. Just a secondary feature, not what the product is mainly for.",
+  1: "Needs a plugin, a partner product, a marketplace add-on, or real custom work to get.",
 };
 
 export const DELIVERY_LABEL: Record<Delivery, string> = {

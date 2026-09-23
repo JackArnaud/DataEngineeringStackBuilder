@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { computeGaps, effectiveLens, groupGaps, projectGaps, stackBands } from "@compile";
+import { computeGaps, effectiveLens, groupGaps, hasEnterpriseTierUnlock, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { DetailPanel } from "./components/Detail";
 import { Landing } from "./components/Landing";
@@ -131,9 +131,16 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
           onDone={() => setMode("builder")}
           onLoadExample={(e) => {
             // Loading an example clears any hand-picked skips, but keeps what the profile already
-            // said is not relevant to this person, since that describes them, not the old stack.
-            change({ tools: [...e.tools], needs: e.needs ?? [], skip: profileSkips(model, state.profile), use: {} });
+            // said is not relevant to this person, since that describes them, not the old stack. It
+            // also clears any tier confirmed for the old stack: which plan someone is actually on is
+            // a fact about them applying to a tool they chose, not one that should silently follow a
+            // demo stack they didn't pick.
+            change({ tools: [...e.tools], needs: e.needs ?? [], skip: profileSkips(model, state.profile), use: {}, tiers: [] });
             setMode("builder");
+            // An example can load a tool with an enterprise-only capability without ever showing the
+            // checkbox for it — nobody would find that by clicking through tools one at a time, so
+            // ask directly instead of leaving it for someone to discover.
+            if (e.tools.some((id) => hasEnterpriseTierUnlock(lookup.tool(id)?.cells ?? []))) setDetail({ kind: "editStack" });
           }}
         />
         </main>

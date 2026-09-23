@@ -11,7 +11,9 @@ import { RoleGlyph } from "./glyphs";
 export function Legend({ model }: { model: RenderModel }) {
   return (
     <>
-      <p className="muted legend__key">Colour says what a tool does to the data; how light or dark it is says how well.</p>
+      <p className="muted legend__key">
+        Colour says what a tool does to the data; its shade says how well. Native and Core both mean built in, no plugin or extra purchase needed — Extended is the one shade that means you'd need one.
+      </p>
       <details className="legend">
         <summary>How to read the colours and marks</summary>
         <table>

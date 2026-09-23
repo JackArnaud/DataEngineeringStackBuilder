@@ -331,6 +331,49 @@ tool that is not the one used, at the specific zone it lost, is now dimmed (opac
 so it survives forced-colours and print); the one in use is left at full weight. A tie with no lead
 yet dims neither, since fading one side would look like a decision that has not actually been made.
 
+**A tier confirmation is asked for once, in one flat place, not discovered by clicking into every
+tool.** The per-tool checkbox from the tier-declaration feature above was real but easy to miss: it
+only showed on a tool's own detail page, so a stack with several enterprise-gated tools meant opening
+each one in turn to even find out the question existed. `StackPanel.tsx` (the "Edit stack" panel)
+now lists every tool in the stack with something to confirm — `hasEnterpriseTierUnlock` — as one flat
+"Tiers" section right under the chips, each row a checkbox plus a link to that tool's own page for
+anyone who wants the detail. Loading a pre-built example is the case that matters most: someone who
+didn't hand-pick the tools has the least reason to know one of them has an Enterprise-gated feature,
+so `onLoadExample` now opens straight to this panel whenever the loaded stack has anything to confirm
+— `hasEnterpriseTierUnlock(lookup.tool(id)?.cells ?? [])` checked per tool before the mode switches —
+instead of leaving it to be found. An example also clears any tier confirmed for the *previous* stack
+(`tiers: []` in that same `change()` call): which plan someone is on is a fact about a tool they
+chose, not one that should silently survive loading a demo they didn't. The label logic
+(`constraintPhrase` naming the real plan, correct even for a bundle like Snowflake whose own record
+carries no `tier_name`) is shared between the flat panel and the per-tool page via a new
+`apps/web/src/tiers.ts`, so the two never say it two different ways.
+
+**The matrix's tooltip is portaled to the body, not positioned inside the scrolling matrix.** It used
+to sit `position: absolute` inside `.matrix-wrap`, which needs `overflow-x: auto` to scroll a wide
+matrix — and setting only one overflow axis makes the browser clip the other one too, so a tooltip
+for anything in the first couple of rows (exactly where a hover is most likely to land) rendered
+above the container's own top edge and was silently clipped. It now renders via `createPortal` to
+`document.body` in viewport coordinates, and additionally flips to open below the mark instead of
+above when there genuinely isn't room (`r.top < 90`), so a mark near the very top of the viewport
+still gets a tooltip that's fully on screen rather than relying on clipping never happening to matter.
+
+**A level's tooltip says what to do with it, not just its name.** "Core" and "Native" read as two
+meaningfully different tiers, but both mean the same actionable thing — nothing extra to install or
+buy — and only "Extended" changes what a user has to do. The tooltip line now leads with that fact
+(`Built in (Core)` / `Built in (Native)` / `Needs a plugin or add-on (Extended)`) instead of the bare
+level word; `LEVEL_HELP` in `labels.ts` was reworded the same way for the per-tool detail panel's
+"What do the levels mean?" fold, and the always-visible legend line now says it too, so nobody has to
+open a fold to learn it. `LEVEL_LABEL` itself (the compact word used in badges and aria-labels
+throughout) is untouched — changing that would have rippled through every level badge and a lot of
+tests for a distinction worth keeping at that size, just not leading with.
+
+**A cross-cutting band cell names who covers it and at what level, on hover, not just its colour.**
+The `band` tooltip case already computed this (`tools.filter(...)` reading each tool's level for that
+specific band and zone) but a "Best: Core" summary line buried it above the list. The summary line is
+gone; the tooltip is now just the named tools and their levels ("AWS Lake Formation — Native"), or
+"Nothing in your stack covers this here" when none do — the fact someone asking "how will this be
+managed and by which tool" actually wants, not a level that could belong to any of them.
+
 ## Left out on purpose
 
 **`presentation.hue`** is not in the schema, although the brief's example record has it. The brief
