@@ -1,4 +1,4 @@
-import type { Resource, Scale } from "@compile";
+import type { Resource } from "@compile";
 
 /**
  * The guided start: a short run of choice screens that build a stack before any guidance is shown.
@@ -133,22 +133,47 @@ export const PROFILE_QUESTIONS: ProfileQuestion[] = [
   },
 ];
 
-/** One option for the scale question, its id matching a `Scale` value. */
-export interface ScaleOption {
-  id: Scale;
-  label: string;
-  help: string;
+/**
+ * How much the pipeline moves and runs each month, in GB — distinct from `profile.team`
+ * (headcount): this is about data volume and traffic, and it drives the cost estimate rather than
+ * dampening gap severity. At 10TB/month or more (`tiers.ts`'s `ENTERPRISE_TIER_VOLUME_GB`), a tool
+ * with an enterprise-tier-only capability is also assumed to be on that plan. This used to be a
+ * three-bucket "Scale" question (Prototype/Production/Scale); a real, continuous number replaces
+ * it so cost reflects this pipeline's own volume, not a wide bucket average, and so the underlying
+ * cost model can interpolate between real, sourced checkpoints instead of picking one of three.
+ *
+ * The control is a log-scale slider: cost varies by orders of magnitude with volume, so a linear
+ * slider would waste most of its length on the bottom decade. `VOLUME_SLIDER_STEPS` positions map
+ * exponentially between `VOLUME_MIN_GB` and `VOLUME_MAX_GB`.
+ */
+export const VOLUME_MIN_GB = 1;
+/** 1 PB/month, in GB (1024^2), matching the top checkpoint every cost-scored tool was researched at. */
+export const VOLUME_MAX_GB = 1_048_576;
+export const VOLUME_SLIDER_STEPS = 1000;
+/** Where the slider starts before it has been dragged — about 100GB/month, a plausible starting point. */
+export const DEFAULT_VOLUME_GB = 100;
+
+/** A 0-`VOLUME_SLIDER_STEPS` slider position to a volume in GB, log-scaled. */
+export function volumeFromSlider(pos: number): number {
+  const t = Math.min(Math.max(pos, 0), VOLUME_SLIDER_STEPS) / VOLUME_SLIDER_STEPS;
+  return Math.round(VOLUME_MIN_GB * (VOLUME_MAX_GB / VOLUME_MIN_GB) ** t);
 }
 
-/**
- * How much the pipeline moves and runs — distinct from `profile.team` (headcount): this is about
- * data volume and traffic, and it drives the cost estimate rather than dampening gap severity.
- */
-export const SCALE_OPTIONS: ScaleOption[] = [
-  { id: "prototype", label: "Exploring or a prototype", help: "Low, occasional volume. Most tools fit inside a free tier at this scale." },
-  { id: "production", label: "Steady production traffic", help: "A real pipeline a small-to-mid team relies on." },
-  { id: "scale", label: "High volume, many pipelines", help: "Large volume, or many pipelines running at once." },
-];
+/** The inverse of `volumeFromSlider`, for driving the control's own position from a stored volume. */
+export function sliderFromVolume(volumeGb: number): number {
+  const clamped = Math.min(Math.max(volumeGb, VOLUME_MIN_GB), VOLUME_MAX_GB);
+  return Math.round((Math.log(clamped / VOLUME_MIN_GB) / Math.log(VOLUME_MAX_GB / VOLUME_MIN_GB)) * VOLUME_SLIDER_STEPS);
+}
+
+/** A volume in GB, formatted to whichever unit reads most naturally at that size. */
+export function formatVolume(volumeGb: number): string {
+  if (volumeGb < 1000) return `${Math.round(volumeGb)} GB/month`;
+  if (volumeGb < VOLUME_MAX_GB) {
+    const tb = volumeGb / 1024;
+    return `${tb < 10 ? tb.toFixed(1) : Math.round(tb)} TB/month`;
+  }
+  return `${(volumeGb / VOLUME_MAX_GB).toFixed(2)} PB/month`;
+}
 
 /** A plain-language resource the guided start's resources step can tick. */
 export interface ResourceCard {

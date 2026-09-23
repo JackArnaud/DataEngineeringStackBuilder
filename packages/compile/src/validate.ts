@@ -313,13 +313,23 @@ function checkTool(rec: ToolRecord, file: string, t: Taxonomy, lenses: Map<strin
     }
   });
 
-  const seenScales = new Set<string>();
-  (rec.cost ?? []).forEach((c, i) => {
-    const ptr = `/cost/${i}`;
-    if (c.low > c.high) sink.error("cost-range-inverted", file, ptr, `low (${c.low}) is above high (${c.high})`);
-    if (seenScales.has(c.scale)) sink.error("cost-scale-duplicate", file, ptr, `"${c.scale}" is priced twice; one entry per scale`);
-    seenScales.add(c.scale);
-  });
+  const checkCostRange = (low: number, high: number, ptr: string): void => {
+    if (low > high) sink.error("cost-range-inverted", file, ptr, `low (${low}) is above high (${high})`);
+  };
+  const checkCostPoints = (points: { volumeGb: number; low: number; high: number }[], ptr: string): void => {
+    if (points.length < 2) sink.error("cost-points-too-few", file, ptr, "needs at least 2 points to interpolate between");
+    points.forEach((p, i) => {
+      checkCostRange(p.low, p.high, `${ptr}/${i}`);
+      if (i > 0 && p.volumeGb <= points[i - 1]!.volumeGb) sink.error("cost-points-not-ascending", file, `${ptr}/${i}`, "volumeGb must be strictly ascending");
+    });
+  };
+  if (rec.cost) {
+    const basis = rec.cost.cost;
+    if (basis.basis === "volume") checkCostPoints(basis.points, "/cost/cost/points");
+    else if (basis.basis === "per-seat") checkCostRange(basis.perSeat.low, basis.perSeat.high, "/cost/cost/perSeat");
+    else checkCostRange(basis.amount.low, basis.amount.high, "/cost/cost/amount");
+    if (rec.cost.hosting) checkCostPoints(rec.cost.hosting.points, "/cost/hosting/points");
+  }
 
   if (rec.kind !== "tool") return;
 

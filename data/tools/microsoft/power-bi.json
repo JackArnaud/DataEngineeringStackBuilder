@@ -71,34 +71,15 @@
     "tagline": "Desktop and cloud BI: reports, dashboards and shared semantic models."
   },
   "pairs_with": ["snowflake", "dynamics-365"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 14,
-      "high": 42,
-      "unit": "usd-per-month",
-      "note": "Pro is $14/user/month billed annually; assumes 1-3 people who need to share reports (a sole viewer can work in Desktop for free).",
-      "source": "https://www.alphabold.com/power-bi-pricing-model/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "per-seat",
+      "perSeat": { "low": 14, "high": 24 }
     },
-    {
-      "scale": "production",
-      "low": 70,
-      "high": 210,
-      "unit": "usd-per-month",
-      "note": "Pro, assumes 5-15 people. At real production reporting scale many teams move to Premium Per User ($24/user/month) or Fabric capacity for larger datasets; this record and estimate cover Pro only.",
-      "source": "https://www.alphabold.com/power-bi-pricing-model/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 700,
-      "high": 2100,
-      "unit": "usd-per-month",
-      "note": "Pro seats only, assumes 50-150 people. A real deployment at this size would likely move to Fabric F-SKU capacity (starting near $262/month, replacing Premium per-capacity for new customers) instead of per-seat Pro; that path is not scored on this record.",
-      "source": "https://www.alphabold.com/power-bi-pricing-model/",
-      "as_of": "2026-09-23"
-    }
-  ],
-  "updated": "2026-09-20"
+    "note": "Pro $14.00/user/month billed annually (low end; a sole viewer can work in Desktop for free). Premium Per User $24.00/user/month (high end). Real deployments at high report/dataset volume typically move off per-seat entirely onto Fabric capacity (F-SKUs, from about $262.80/month pay-as-you-go for the smallest F2 tier) instead — that path is genuinely volume-priced, not per-seat, and is not scored on this record, so this figure likely understates cost for a true high-volume BI deployment.",
+    "source": "https://www.microsoft.com/en-us/power-platform/products/power-bi/pricing",
+    "as_of": "2026-09-23"
+  },
+  "updated": "2026-09-23"
 }

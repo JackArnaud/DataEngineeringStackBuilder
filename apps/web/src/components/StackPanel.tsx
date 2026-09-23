@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { hasEnterpriseTierUnlock } from "@compile";
 import type { RenderModel, RenderTool } from "@compile";
-import { plural } from "../labels";
 import type { Lookup } from "../lookup";
 import { toggle } from "../state";
 import type { StackState } from "../state";
-import { tierLabel } from "../tiers";
 import { CostPanel } from "./CostPanel";
 import { NeedsPicker } from "./NeedsPicker";
 import { TabBar, panelId, tabId } from "./TabBar";
@@ -33,7 +30,6 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
     { id: "needs" as const, label: "What you need", count: state.needs.length },
   ];
   const selectedTools = state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t);
-  const tierable = selectedTools.filter((t) => hasEnterpriseTierUnlock(t.cells));
 
   return (
     <div className="panel stack">
@@ -55,31 +51,6 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
               </li>
             ))}
           </ul>
-        )}
-        {tierable.length > 0 && (
-          <div className="tierpanel">
-            <p className="tierpanel__head">
-              {plural(tierable.length, "tool")} in your stack {tierable.length === 1 ? "has" : "have"} capabilities gated behind a higher plan. Tell us which you're actually on, and gaps they
-              close stop showing as missing.
-            </p>
-            <ul className="tierpanel__list">
-              {tierable.map((tool) => (
-                <li key={tool.id}>
-                  <label className="tiercheck">
-                    <input
-                      type="checkbox"
-                      checked={state.tiers.includes(tool.id)}
-                      onChange={() => onChange({ tiers: toggle(state.tiers, tool.id) })}
-                    />
-                    I&rsquo;m on {tierLabel(tool, lookup)}
-                  </label>
-                  <button type="button" className="linkish tierpanel__more" onClick={() => onOpenTool(tool.id)}>
-                    {tool.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
         )}
         {state.tools.length > 0 && <CostPanel state={state} tools={selectedTools} onChange={onChange} compact />}
         {state.needs.length > 0 && (

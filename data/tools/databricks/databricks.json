@@ -26,34 +26,20 @@
     "tagline": "Lakehouse platform: Spark compute, warehouse SQL, orchestration and governance under one contract."
   },
   "pairs_with": ["dbt-core"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 50,
-      "high": 300,
-      "unit": "usd-per-month",
-      "note": "A few notebook sessions and light scheduled jobs. DBU rates run $0.07-0.70/DBU by compute type on top of the underlying cloud compute bill, which this range includes.",
-      "source": "https://www.cloudzero.com/blog/databricks-pricing/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 20, "high": 60 },
+        { "volumeGb": 1024, "low": 250, "high": 600 },
+        { "volumeGb": 102400, "low": 3000, "high": 8000 },
+        { "volumeGb": 1048576, "low": 20000, "high": 50000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 500,
-      "high": 3000,
-      "unit": "usd-per-month",
-      "note": "Third-party estimate: most teams spend $500-5,000+/month, including the underlying cloud infrastructure cost, which typically adds 30-60% on top of the DBU charge alone.",
-      "source": "https://www.cloudzero.com/blog/databricks-pricing/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 5000,
-      "high": 20000,
-      "unit": "usd-per-month",
-      "note": "Third-party estimate for a mid-size team, including cloud infrastructure, was $2,000-10,000/month; widened upward for genuinely high-volume, many-pipeline use.",
-      "source": "https://www.cloudzero.com/blog/databricks-pricing/",
-      "as_of": "2026-09-23"
-    }
-  ],
-  "updated": "2026-09-20"
+    "note": "AWS list rates: Jobs Compute $0.15/DBU, All-Purpose Compute $0.40/DBU, billed on top of the underlying cloud instance cost (~40% more added here, matching Databricks' own rule of thumb). Each point assumes a plausible cluster size and monthly run-hours for a pipeline moving that much data (2-node ~10hr/month at 10GB, up to 64-node ~500hr/month at 1PB) — stated per point, not billed at a flat rate.",
+    "source": "https://www.databricks.com/product/pricing",
+    "as_of": "2026-09-23"
+  },
+  "updated": "2026-09-23"
 }

@@ -16,34 +16,20 @@
     "tagline": "Cloud data platform: warehouse, ingestion, governance, ML and apps under one contract."
   },
   "pairs_with": ["dbt-core", "dbt-platform"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 25,
-      "high": 100,
-      "unit": "usd-per-month",
-      "note": "An X-Small warehouse (1 credit/hour) run a few hours a week, plus a small amount of storage ($23/TB/month on AWS US East), at Standard edition's $2/credit.",
-      "source": "https://www.finout.io/blog/the-complete-guide-to-snowflake-pricing-2025",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 25, "high": 60 },
+        { "volumeGb": 1024, "low": 200, "high": 600 },
+        { "volumeGb": 102400, "low": 3500, "high": 9000 },
+        { "volumeGb": 1048576, "low": 25000, "high": 70000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 200,
-      "high": 800,
-      "unit": "usd-per-month",
-      "note": "Third-party estimates put a small analytics team on Standard edition around $250/month; this widens that into a range for steadier use.",
-      "source": "https://www.finout.io/blog/the-complete-guide-to-snowflake-pricing-2025",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 2000,
-      "high": 10000,
-      "unit": "usd-per-month",
-      "note": "Third-party estimate for a mid-size team running regular ETL on Standard edition.",
-      "source": "https://www.finout.io/blog/the-complete-guide-to-snowflake-pricing-2025",
-      "as_of": "2026-09-23"
-    }
-  ],
-  "updated": "2026-09-20"
+    "note": "Standard edition, AWS US East, on-demand: $2.00/credit, storage $23/TB/month (~$0.0225/GB; capacity contracts cut 20-45%, not modeled). Snowflake's real driver is warehouse compute, not stored volume, so each point assumes a plausible warehouse size and monthly run-hours for a pipeline moving that much data (X-Small ~20hr/month at 10GB, up to 2X-Large ~300hr/month at 1PB) — stated per point, not billed at a flat rate.",
+    "source": "https://www.snowflake.com/en/pricing/",
+    "as_of": "2026-09-23"
+  },
+  "updated": "2026-09-23"
 }

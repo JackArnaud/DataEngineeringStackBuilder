@@ -50,25 +50,24 @@
     "tagline": "Declarative YAML orchestration: any language as a task, one engine for schedules and events."
   },
   "pairs_with": ["dbt-core", "snowflake", "aws-s3"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 10,
-      "high": 50,
-      "unit": "usd-per-month",
-      "note": "No licence cost (Apache 2.0). This range is the small VM or container running the engine and a database continuously, not a Kestra charge.",
-      "source": "https://kestra.io/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "flat",
+      "amount": { "low": 0, "high": 0 }
     },
-    {
-      "scale": "production",
-      "low": 100,
-      "high": 500,
-      "unit": "usd-per-month",
-      "note": "No licence cost. A properly sized instance for more concurrent flows and workers; generic cloud compute pricing, not a Kestra-specific figure.",
-      "source": "https://kestra.io/",
-      "as_of": "2026-09-23"
-    }
-  ],
+    "hosting": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 30, "high": 80 },
+        { "volumeGb": 1024, "low": 120, "high": 300 },
+        { "volumeGb": 102400, "low": 300, "high": 800 },
+        { "volumeGb": 1048576, "low": 1500, "high": 3500 }
+      ]
+    },
+    "note": "No licence cost (Apache 2.0). `hosting` is generic cloud compute pricing sized against a comparable VM plus database at each volume (a single small VM at light use up to a multi-node cluster for high flow concurrency) — not a Kestra-specific figure.",
+    "source": "https://kestra.io/",
+    "as_of": "2026-09-23"
+  },
   "updated": "2026-09-23"
 }

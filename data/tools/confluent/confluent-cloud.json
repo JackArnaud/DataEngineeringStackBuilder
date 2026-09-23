@@ -76,34 +76,20 @@
     "tagline": "Fully managed, multi-cloud Kafka with schema, catalog and lineage governance built in."
   },
   "pairs_with": ["dbt-core", "snowflake", "databricks"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 0,
-      "high": 50,
-      "unit": "usd-per-month",
-      "note": "The Basic cluster tier starts at $0/month base, with usage (ingress, egress, storage) billed on top; low, occasional volume stays cheap.",
-      "source": "https://www.cloudzero.com/blog/confluent-cloud-pricing/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 0, "high": 20 },
+        { "volumeGb": 1024, "low": 400, "high": 700 },
+        { "volumeGb": 102400, "low": 8000, "high": 18000 },
+        { "volumeGb": 1048576, "low": 80000, "high": 180000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 400,
-      "high": 800,
-      "unit": "usd-per-month",
-      "note": "A Standard cluster starts at $385/month base and, per third-party estimate, handles most production workloads for a small team (around 5 engineers) at $500-800/month including usage.",
-      "source": "https://www.cloudzero.com/blog/confluent-cloud-pricing/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 1500,
-      "high": 6000,
-      "unit": "usd-per-month",
-      "note": "An Enterprise cluster starts at $895/month base, plus higher ingress/egress/storage and per-feature meters (connectors, ksqlDB, Schema Registry, Stream Governance) at real volume.",
-      "source": "https://www.cloudzero.com/blog/confluent-cloud-pricing/",
-      "as_of": "2026-09-23"
-    }
-  ],
+    "note": "Cluster base (Confluent's own \"estimated starting costs,\" varies by region): Basic $0/mo, Standard ~$385/mo, Enterprise ~$895/mo. Storage $0.08/GB-month, all tiers; ingress/egress $0.02-0.05/GB depending on tier. eCKU compute usage is treated as bundled into the tier base rather than metered separately, to avoid double-counting. Each point assumes the cluster tier and traffic level a pipeline at that data volume would realistically need, plus per-feature meters (connectors, ksqlDB, Schema Registry, Stream Governance) not separately broken out.",
+    "source": "https://www.confluent.io/confluent-cloud/pricing/",
+    "as_of": "2026-09-23"
+  },
   "updated": "2026-09-23"
 }

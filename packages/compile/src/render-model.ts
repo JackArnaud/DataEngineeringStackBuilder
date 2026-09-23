@@ -72,8 +72,8 @@ export interface RenderTool {
   tagline?: string;
   /** Records this one is commonly used with. A hint for suggestions, never a coverage claim. */
   pairs_with?: string[];
-  /** Real, approximate dollar-per-month ranges, one per scale priced. Absence means not yet estimated. */
-  cost?: CostEstimate[];
+  /** A real, approximate dollar-per-month estimate, keyed on volume, per-seat headcount, or a flat rate — whichever drives this tool's real pricing. Absence means not yet estimated. */
+  cost?: CostEstimate;
   /** Members of a bundle or portfolio. */
   includes?: string[];
   bundling?: string;

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { computeGaps, effectiveLens, groupGaps, hasEnterpriseTierUnlock, projectGaps, stackBands } from "@compile";
+import { computeGaps, effectiveLens, groupGaps, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
 import { CostPanel } from "./components/CostPanel";
 import { DetailPanel } from "./components/Detail";
@@ -16,6 +16,7 @@ import { buildLookup } from "./lookup";
 import { useRenderModel } from "./model";
 import { add, emptyState, parseState, profileSkips, serializeState, toggle } from "./state";
 import type { StackState } from "./state";
+import { tieredTools } from "./tiers";
 import type { Detail } from "./types";
 
 type MainTab = "coverage" | "missing" | "overlaps";
@@ -83,18 +84,21 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   const change = (patch: Partial<StackState>) =>
     setState((s) => {
       const next = { ...s, ...patch };
-      // A choice of tool for a task goes when the tool does, and so does a tier confirmed for it.
-      if (patch.tools) {
-        next.use = Object.fromEntries(Object.entries(next.use).filter(([, tool]) => next.tools.includes(tool)));
-        next.tiers = next.tiers.filter((id) => next.tools.includes(id));
-      }
+      // A choice of tool for a task goes when the tool does.
+      if (patch.tools) next.use = Object.fromEntries(Object.entries(next.use).filter(([, tool]) => next.tools.includes(tool)));
       // Answering a profile question pre-fills the same "set aside" a user could tick by hand; it
       // only ever adds, so a manual restore afterwards is never silently undone by a later change.
       if (patch.profile) next.skip = add(next.skip, ...profileSkips(model, next.profile));
       return next;
     });
 
-  const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs, use: state.use, tiers: state.tiers }), [model, state.tools, state.needs, state.use, state.tiers]);
+  const tools = useMemo(() => state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t), [state.tools, lookup]);
+  // At or above ENTERPRISE_TIER_VOLUME_GB, a tool with an enterprise-tier-only capability is
+  // assumed to be on that plan — folded into the volume question rather than a separate per-tool
+  // choice; see `tiers.ts`.
+  const tierIds = useMemo(() => tieredTools(tools, state.volumeGb).map((t) => t.id), [tools, state.volumeGb]);
+
+  const report = useMemo(() => computeGaps(model, { tools: state.tools, needs: state.needs, use: state.use, tiers: tierIds }), [model, state.tools, state.needs, state.use, tierIds]);
   // A capability the user set aside is left out of the list and the matrix alike, so the two agree.
   // The report itself stays the full, factual set.
   const { gaps, setAside } = useMemo(() => {
@@ -104,11 +108,10 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
   }, [report.gaps, state.skip]);
   // The only lens the app shows: its zones are the six pipeline stages, one to one.
   const lens = model.lenses.find((l) => l.id === "grid") ?? model.lenses[0]!;
-  // With every confirmed tier's view swapped in, so the matrix agrees with the gap list.
-  const effLens = useMemo(() => effectiveLens(lens, state.tiers), [lens, state.tiers]);
+  // With every assumed-tiered tool's view swapped in, so the matrix agrees with the gap list.
+  const effLens = useMemo(() => effectiveLens(lens, tierIds), [lens, tierIds]);
   const placement = useMemo(() => projectGaps(model, lens.id, gaps), [model, lens.id, gaps]);
   const bands = useMemo(() => stackBands(model, effLens, state.tools), [model, effLens, state.tools]);
-  const tools = useMemo(() => state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t), [state.tools, lookup]);
 
   const canReset = state.tools.length > 0 || state.needs.length > 0 || state.skip.length > 0 || Object.keys(state.use).length > 0;
   const reset = () => {
@@ -132,16 +135,13 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
           onDone={() => setMode("builder")}
           onLoadExample={(e) => {
             // Loading an example clears any hand-picked skips, but keeps what the profile already
-            // said is not relevant to this person, since that describes them, not the old stack. It
-            // also clears any tier confirmed for the old stack: which plan someone is actually on is
-            // a fact about them applying to a tool they chose, not one that should silently follow a
-            // demo stack they didn't pick.
-            change({ tools: [...e.tools], needs: e.needs ?? [], skip: profileSkips(model, state.profile), use: {}, tiers: [] });
+            // said is not relevant to this person, since that describes them, not the old stack.
+            // Volume (and with it, which tools are assumed to be on a higher tier) is a fact about
+            // the demo stack's own scale, not this person's answer, so it resets with the example
+            // too — carried over, a hand-picked volume could wrongly promote tools in a stack that
+            // was never meant to imply that.
+            change({ tools: [...e.tools], needs: e.needs ?? [], skip: profileSkips(model, state.profile), use: {}, volumeGb: undefined });
             setMode("builder");
-            // An example can load a tool with an enterprise-only capability without ever showing the
-            // checkbox for it — nobody would find that by clicking through tools one at a time, so
-            // ask directly instead of leaving it for someone to discover.
-            if (e.tools.some((id) => hasEnterpriseTierUnlock(lookup.tool(id)?.cells ?? []))) setDetail({ kind: "editStack" });
           }}
         />
         </main>

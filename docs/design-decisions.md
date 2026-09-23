@@ -331,22 +331,26 @@ tool that is not the one used, at the specific zone it lost, is now dimmed (opac
 so it survives forced-colours and print); the one in use is left at full weight. A tie with no lead
 yet dims neither, since fading one side would look like a decision that has not actually been made.
 
-**A tier confirmation is asked for once, in one flat place, not discovered by clicking into every
-tool.** The per-tool checkbox from the tier-declaration feature above was real but easy to miss: it
-only showed on a tool's own detail page, so a stack with several enterprise-gated tools meant opening
-each one in turn to even find out the question existed. `StackPanel.tsx` (the "Edit stack" panel)
-now lists every tool in the stack with something to confirm — `hasEnterpriseTierUnlock` — as one flat
-"Tiers" section right under the chips, each row a checkbox plus a link to that tool's own page for
-anyone who wants the detail. Loading a pre-built example is the case that matters most: someone who
-didn't hand-pick the tools has the least reason to know one of them has an Enterprise-gated feature,
-so `onLoadExample` now opens straight to this panel whenever the loaded stack has anything to confirm
-— `hasEnterpriseTierUnlock(lookup.tool(id)?.cells ?? [])` checked per tool before the mode switches —
-instead of leaving it to be found. An example also clears any tier confirmed for the *previous* stack
-(`tiers: []` in that same `change()` call): which plan someone is on is a fact about a tool they
-chose, not one that should silently survive loading a demo they didn't. The label logic
-(`constraintPhrase` naming the real plan, correct even for a bundle like Snowflake whose own record
-carries no `tier_name`) is shared between the flat panel and the per-tool page via a new
-`apps/web/src/tiers.ts`, so the two never say it two different ways.
+**Tier confirmation was tried four ways before landing on "don't ask, infer it from a real number."**
+First a per-tool checkbox on a tool's own detail page (real, but easy to miss). Then a flat "Tiers"
+section in the Edit Stack panel listing every eligible tool in one place. Then folding it into a
+3-bucket "Scale" question ("Prototype"/"Production"/"Scale"), assuming a tool was on its higher tier
+only at the top bucket. All three still either asked a question most people can't answer confidently
+("am I on the plan that unlocks masking?"), or drew the line at a bucket boundary nobody could see or
+verify. `StackState.tiers` (the manual array) and later `Scale`/`SCALE_OPTIONS` (the 3-bucket enum)
+are both gone entirely, replaced by `StackState.volumeGb: number` — a real, continuous monthly volume
+— and `tieredTools(tools, volumeGb)` in `apps/web/src/tiers.ts` assumes a tool with an
+enterprise-tier-only capability is on that plan at or above `ENTERPRISE_TIER_VOLUME_GB` (10,000 GB,
+10TB/month, its own named constant with the reasoning in a comment) — a concrete, checkable line in
+place of a bucket label. Below it, every tool stays at the unconstrained level. Nothing else about
+the underlying mechanism changed across any of these four iterations: `computeGaps`'s `tiers` param,
+`effectiveLens`, and `applyTier` are exactly as built for the original feature, just fed a derived id
+list instead of a stored one. The read-only surfacing stayed the same shape throughout too — a
+`callout` on the tool's own detail page ("Counted as covered: at this volume, we assume this is on
+Snowflake Enterprise edition...") and a note in `CostPanel` naming every tool the assumption applies
+to, via the same `constraintPhrase`-based `tierLabel` naming logic. Loading an example resets
+`volumeGb` the same way it used to reset `tiers` then `scale`: a demo stack's assumed volume shouldn't
+silently survive being replaced.
 
 **The matrix's tooltip is portaled to the body, not positioned inside the scrolling matrix.** It used
 to sit `position: absolute` inside `.matrix-wrap`, which needs `overflow-x: auto` to scroll a wide
@@ -384,23 +388,61 @@ mitigation is structural, not a caveat someone has to remember: every `CostEstim
 (`packages/compile/src/cost.ts`) carries its own `source` and the `as_of` date it was recorded, and
 the UI (`CostPanel.tsx`) shows a permanent, unconditional disclaimer next to every figure — "confirm
 current pricing with the vendor before budgeting" — not a one-time warning that scrolls away. A tool
-with no entry for the chosen scale is never treated as free: `estimateCost` puts it in `unpriced` and
-the total is shown as a floor with an explicit count of what's missing from it ("3 tools priced,
-1 tool not yet estimated"), so an incomplete estimate never silently reads as a complete one. Scored
-for an initial ~17 of the tools most likely to appear in a real stack (the ones most used across
-`examples.ts`, plus the eight tools added alongside this feature); the rest are backlog, the same
-"start deep, add more later" shape the project has used since its first pass at tool records.
+with no `cost` entry is never treated as free: `estimateCost` puts it in `unpriced` and the total is
+shown as a floor with an explicit count of what's missing from it ("3 tools priced, 1 tool not yet
+estimated"), so an incomplete estimate never silently reads as a complete one. Scored for an initial
+~17 of the tools most likely to appear in a real stack (the ones most used across `examples.ts`, plus
+the eight tools added alongside the original feature); the rest are backlog, the same "start deep,
+add more later" shape the project has used since its first pass at tool records.
 
-**Scale is asked everywhere a stack can start, without slowing down the fastest path.** Examples
-("quick start templates") deliberately skip every guided-start question, profile and resources
-included, so loading one stays a single click. Rather than adding a step to that path, the scale
-question is a prominent, always-visible, skippable prompt inside the builder itself — on the Coverage
-tab (where every path lands by default) and, in its unanswered form only, in the Edit Stack panel —
-the same shape the tier-declaration work already used for exactly this kind of "must be discoverable,
-must not gate anything" requirement. It's *also* a proper step in the guided "Build my own" flow,
-after resources, for anyone who takes that path and would expect it asked in sequence like
-profile and resources already are. Distinct from `profile.team` (headcount): this question is about
-data volume and traffic, and it drives the cost estimate, not gap severity.
+**Cost went from three qualitative buckets to real checkpoints, interpolated, after the user asked
+directly why the ranges were so wide.** The first pass asked "Prototype/Production/Scale" and priced
+each bucket with one number pulled mostly from third-party "typical cost" blog posts — a bucket
+smears together a light user and a heavy one, and a blog's estimate is one step removed from what a
+vendor actually charges. `packages/compile/src/cost.ts`'s `CostBasis` now holds real numbers sourced
+from each vendor's own rate card at four checkpoints (10GB, 1TB, 100TB, 1PB/month), interpolated in
+**log-log space** between them (`costAt`) — not linearly, and never extrapolated past either end.
+Log-log matters because real pricing has genuine tier breaks (S3's per-GB rate steps down at 50TB and
+again at 500TB) that a straight line between two points would overshoot in the middle; log-log tracks
+a stepped, sub-linear curve far more honestly, and a single invented formula would have asserted false
+precision no checkpoint actually backs. Where a tool's real driver isn't stored volume at all —
+Snowflake and Databricks bill compute (warehouse credits, DBU-hours), not bytes — each checkpoint
+states its own plausible usage assumption for a pipeline of that size, the same honesty pattern the
+old bucket estimates used, just anchored to sourced per-unit rates instead of a blog's whole-number
+guess. `per-seat` (GitHub, dbt Cloud, Power BI) and `flat` (AWS Lake Formation, the open-source
+orchestrators' licence) round out `CostBasis` for tools volume doesn't drive at all.
+
+**Self-hosted tools split licence from hosting, instead of folding infrastructure guesswork into one
+number.** Dagster, Kestra, Airbyte and Prefect are genuinely free to run (Apache 2.0/ELv2) — their
+`cost` is `{ basis: "flat", amount: { low: 0, high: 0 } }`, stated explicitly rather than left as an
+absent field someone might misread as "not estimated." The real spend is infrastructure, kept in a
+separate `hosting` field with its own checkpoint points, sized against `VM_SIZES` — a small, fixed,
+independently-checkable reference table (AWS EC2 on-demand Linux, us-east-1: Small/Medium/Large/
+X-Large) shown alongside in a "What a comparable VM costs" fold, so a hosting figure is checkable
+against a *named* reference instead of asserted on its own. `CostPanel` sums `hosting` separately from
+vendor cost and always shows it as its own line — never folded silently into one total, since it isn't
+money any vendor in the stack is charging. Great Expectations, a library with no service of its own,
+correctly carries no `hosting` field at all rather than a `{0, 0}` placeholder — a real, distinct case
+the schema leaves room for (self-hosted-with-infra-cost vs. self-hosted-with-no-separate-service).
+
+**Volume is asked everywhere a stack can start, without slowing down the fastest path, as a slider
+instead of buttons.** Examples ("quick start templates") deliberately skip every guided-start
+question, profile and resources included, so loading one stays a single click. Rather than adding a
+step to that path, the volume question is a prominent, always-visible, skippable prompt inside the
+builder itself — on the Coverage tab (where every path lands by default) and, in its unanswered form
+only, in the Edit Stack panel — the same shape the tier-declaration work already used for exactly this
+kind of "must be discoverable, must not gate anything" requirement. It's *also* a proper step in the
+guided "Build my own" flow, after resources, for anyone who takes that path and would expect it asked
+in sequence like profile and resources already are. The control itself is a custom-styled
+`<input type="range">` on a **log scale** (1GB to 1PB/month, `VolumeSlider.tsx`) rather than a linear
+one or the old three tiles — cost varies by orders of magnitude with volume, so a linear slider would
+waste most of its length on the bottom decade, and three buttons could never express a real number in
+the first place. `aria-valuetext` carries the live formatted label ("≈500 GB/month") so a screen
+reader announces something a person reads, not a raw 0-1000 position; the native input already
+supplies `aria-valuenow`/min/max from its own attributes, confirmed with an axe pass plus explicit
+keyboard-arrow-key operability (dragging alone is not enough to check for a slider). Distinct from
+`profile.team` (headcount, reused as the multiplier for per-seat tools via `TEAM_SIZE_HEADCOUNT`):
+this question is about data volume and traffic, and it drives the cost estimate, not gap severity.
 
 ## Left out on purpose
 

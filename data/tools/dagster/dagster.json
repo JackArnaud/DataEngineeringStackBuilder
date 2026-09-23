@@ -60,25 +60,24 @@
     "tagline": "Asset-based orchestration: pipelines defined by the data they produce, not the tasks that run."
   },
   "pairs_with": ["dbt-core", "snowflake", "aws-s3"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 10,
-      "high": 50,
-      "unit": "usd-per-month",
-      "note": "No licence cost (Apache 2.0). This range is the small VM or container running the webserver, daemon and a database continuously, not a Dagster charge.",
-      "source": "https://github.com/dagster-io/dagster/blob/master/LICENSE",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "flat",
+      "amount": { "low": 0, "high": 0 }
     },
-    {
-      "scale": "production",
-      "low": 100,
-      "high": 500,
-      "unit": "usd-per-month",
-      "note": "No licence cost. A properly sized instance (or small cluster) and managed Postgres for more concurrent runs; generic cloud compute pricing, not a Dagster-specific figure.",
-      "source": "https://github.com/dagster-io/dagster/blob/master/LICENSE",
-      "as_of": "2026-09-23"
-    }
-  ],
+    "hosting": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 30, "high": 80 },
+        { "volumeGb": 1024, "low": 120, "high": 300 },
+        { "volumeGb": 102400, "low": 300, "high": 800 },
+        { "volumeGb": 1048576, "low": 1500, "high": 3500 }
+      ]
+    },
+    "note": "No licence cost (Apache 2.0; Dagster+ is the separate paid cloud product, not scored here). `hosting` is generic cloud compute pricing sized against a comparable VM plus managed Postgres at each volume (a single small VM at light use up to a multi-node k8s cluster for high run concurrency) — not a Dagster-specific figure.",
+    "source": "https://github.com/dagster-io/dagster/blob/master/LICENSE",
+    "as_of": "2026-09-23"
+  },
   "updated": "2026-09-23"
 }

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { applyTier, hasEnterpriseTierUnlock, suggestTools } from "@compile";
+import { applyTier, costAt, hasEnterpriseTierUnlock, hostingAt, suggestTools } from "@compile";
 import type { Gap, GapReport, GapsInLens, RenderLens, RenderModel, RenderTool } from "@compile";
 import { ARCHETYPE_LABEL, constraintPhrase, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural, safeHref, sourceHost } from "../labels";
 import type { Lookup } from "../lookup";
 import { groupCells, joinNames } from "../receipts";
-import { toggle } from "../state";
+import { teamSize } from "../state";
 import type { StackState } from "../state";
-import { tierLabel } from "../tiers";
+import { ENTERPRISE_TIER_VOLUME_GB, tierLabel } from "../tiers";
 import type { Detail } from "../types";
 import { CellGroups } from "./CellGroups";
 import { whereText } from "./GapList";
@@ -89,18 +89,20 @@ export function DetailPanel(props: Props) {
 
 // ------------------------------------------------------------------------------------ a tool
 
-function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool, onAddTools }: Props & { tool: RenderTool }) {
+function ToolDetail({ model, lookup, state, tool, onOpen, onToggleTool, onAddTools }: Props & { tool: RenderTool }) {
   const stageIds = model.stages.map((s) => s.id);
   const capabilityIds = model.capabilities.map((c) => c.id);
-  const tiered = state.tiers.includes(tool.id);
+  const canTier = hasEnterpriseTierUnlock(tool.cells);
+  const tiered = canTier && (state.volumeGb ?? 0) >= ENTERPRISE_TIER_VOLUME_GB;
   const groups = useMemo(() => groupCells(tool.cells.map((c) => applyTier(c, tiered)), stageIds, capabilityIds), [tool, model, tiered]);
   const spine = groups.filter((g) => lookup.capability(g.capability)?.kind === "spine");
   const band = groups.filter((g) => lookup.capability(g.capability)?.kind === "band");
   const inStack = state.tools.includes(tool.id);
-  const costEntry = state.scale ? tool.cost?.find((c) => c.scale === state.scale) : undefined;
+  const team = teamSize(state.profile);
+  const costNow = state.volumeGb !== undefined && tool.cost ? costAt(tool.cost, state.volumeGb, team) : undefined;
+  const hostingNow = state.volumeGb !== undefined && tool.cost ? hostingAt(tool.cost, state.volumeGb) : undefined;
   const members = (tool.includes ?? []).map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t);
   const parents = lookup.includedBy(tool.id);
-  const canTier = hasEnterpriseTierUnlock(tool.cells);
   const label = useMemo(() => tierLabel(tool, lookup), [tool, lookup]);
 
   return (
@@ -117,11 +119,8 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool
         )}
       </div>
 
-      {canTier && (
-        <label className="tiercheck">
-          <input type="checkbox" checked={tiered} onChange={() => onChange({ tiers: toggle(state.tiers, tool.id) })} />
-          I&rsquo;m on {label}
-        </label>
+      {tiered && (
+        <p className="callout">Counted as covered: at this volume, we assume this is on {label}, since a deployment moving this much data a month is usually already paying for whatever plan unlocks more.</p>
       )}
 
       {tool.tagline && <p className="lede">{tool.tagline}</p>}
@@ -145,23 +144,30 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool
         <dd>{tool.deployment.join(", ")}</dd>
         <dt>Pricing</dt>
         <dd>{tool.pricing_model}</dd>
-        {state.scale && (
+        {state.volumeGb !== undefined && (
           <>
             <dt>Cost</dt>
             <dd>
-              {costEntry ? (
+              {costNow && tool.cost ? (
                 <>
-                  ${costEntry.low.toLocaleString("en-US")}&ndash;${costEntry.high.toLocaleString("en-US")}/mo <span className="muted">approximate, as of {costEntry.as_of}</span>
-                  {costEntry.source && (
+                  ${costNow.low.toLocaleString("en-US")}&ndash;${costNow.high.toLocaleString("en-US")}/mo
+                  {hostingNow && (
                     <>
                       {" "}
-                      · <SourceLink href={safeHref(costEntry.source)} label={sourceHost(costEntry.source)} />
+                      + ${hostingNow.low.toLocaleString("en-US")}&ndash;${hostingNow.high.toLocaleString("en-US")}/mo hosting
+                    </>
+                  )}{" "}
+                  <span className="muted">approximate, as of {tool.cost.as_of}</span>
+                  {tool.cost.source && (
+                    <>
+                      {" "}
+                      · <SourceLink href={safeHref(tool.cost.source)} label={sourceHost(tool.cost.source)} />
                     </>
                   )}
-                  <p className="muted costpanel__note">{costEntry.note}</p>
+                  <p className="muted costpanel__note">{tool.cost.note}</p>
                 </>
               ) : (
-                <span className="muted">Not yet estimated at this scale</span>
+                <span className="muted">Not yet estimated at this volume</span>
               )}
             </dd>
           </>

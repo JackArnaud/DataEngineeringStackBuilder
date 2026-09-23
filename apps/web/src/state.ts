@@ -1,4 +1,4 @@
-import type { ProfileTag, RenderModel, Resource, Scale } from "@compile";
+import type { ProfileTag, RenderModel, Resource, TeamSize } from "@compile";
 
 /** The guided start's profile answers, one per question. Which answer confirms which fact is below. */
 export interface ProfileAnswers {
@@ -22,15 +22,23 @@ export interface StackState {
   profile: ProfileAnswers;
   /** What the guided start's resources step said the person already has; reorders suggestions only. */
   resources: Resource[];
-  /** Tools the user has confirmed are on the tier named by that tool's `tier_name`. */
-  tiers: string[];
-  /** How much the pipeline moves and runs, for the cost estimate. Unanswered until asked. */
-  scale?: Scale;
+  /**
+   * How much the pipeline moves and runs each month, in GB — for the cost estimate. Unanswered
+   * until the slider is dragged, never a guessed default. At or above `tiers.ts`'s
+   * `ENTERPRISE_TIER_VOLUME_GB`, a tool with an enterprise-tier-only capability is also assumed to
+   * be on that plan — see `tieredTools` — since a real deployment at that volume is usually
+   * already paying for whatever plan unlocks more. This used to be a separate per-tool checkbox,
+   * then a 3-bucket "Scale" answer; a real, continuous number replaces both.
+   */
+  volumeGb?: number;
 }
 
 const PROFILE_KEYS = ["team", "sensitivity", "stakes"] as const;
 const RESOURCE_TAGS: Resource[] = ["prefer-oss", "procurement"];
-const SCALES: Scale[] = ["prototype", "production", "scale"];
+const TEAM_SIZES: TeamSize[] = ["solo", "small-team", "multiple-teams"];
+
+/** `profile.team`'s free-text answer, narrowed to the closed `TeamSize` the cost model's per-seat basis uses — `undefined` when unanswered or not one of the three known ids. */
+export const teamSize = (profile: ProfileAnswers): TeamSize | undefined => ((TEAM_SIZES as string[]).includes(profile.team ?? "") ? (profile.team as TeamSize) : undefined);
 
 /**
  * Which answer to each profile question confirms the fact a capability's `skip_when` is about.
@@ -65,10 +73,8 @@ export const isSelectable = (model: RenderModel, id: string): boolean => model.t
 const canonical = (items: string[]): string[] => [...new Set(items)].sort();
 
 export function emptyState(_model: RenderModel): StackState {
-  return { tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [], tiers: [] };
+  return { tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [] };
 }
-
-const isScale = (v: string): v is Scale => (SCALES as string[]).includes(v);
 
 /** Read a query string against the model, quietly dropping anything that no longer exists. */
 export function parseState(search: string, model: RenderModel): StackState {
@@ -89,9 +95,8 @@ export function parseState(search: string, model: RenderModel): StackState {
     if (v && (PROFILE_KEYS as readonly string[]).includes(k)) profile[k as (typeof PROFILE_KEYS)[number]] = v;
   }
   const resources = canonical(list("resources").filter((t): t is Resource => (RESOURCE_TAGS as string[]).includes(t))) as Resource[];
-  const tiers = canonical(list("tiers").filter((id) => isSelectable(model, id)));
-  const scaleParam = params.get("scale");
-  const scale = scaleParam && isScale(scaleParam) ? scaleParam : undefined;
+  const volumeParam = Number(params.get("volume"));
+  const volumeGb = params.has("volume") && Number.isFinite(volumeParam) && volumeParam > 0 ? volumeParam : undefined;
 
   return {
     tools,
@@ -106,8 +111,7 @@ export function parseState(search: string, model: RenderModel): StackState {
     ),
     profile,
     resources,
-    tiers,
-    ...(scale && { scale }),
+    ...(volumeGb !== undefined && { volumeGb }),
   };
 }
 
@@ -122,8 +126,7 @@ export function serializeState(state: StackState, _model: RenderModel): string {
   const profile = PROFILE_KEYS.filter((k) => state.profile[k]).map((k) => `${k}:${state.profile[k]}`);
   if (profile.length) params.set("profile", profile.join(","));
   if (state.resources.length) params.set("resources", canonical(state.resources).join(","));
-  if (state.tiers.length) params.set("tiers", canonical(state.tiers).join(","));
-  if (state.scale) params.set("scale", state.scale);
+  if (state.volumeGb !== undefined) params.set("volume", String(state.volumeGb));
   // Commas are the list separator and are safe in a query string; keep the address readable.
   const query = params.toString().replace(/%2C/g, ",").replace(/%3A/g, ":");
   return query ? `?${query}` : "";

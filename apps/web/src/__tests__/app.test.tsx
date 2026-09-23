@@ -1,10 +1,22 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { computeGaps } from "@compile";
 import { Builder, Root } from "../App";
 import { model } from "./fixture";
+
+/**
+ * Sets a controlled `<input type="range">`'s value the way a real drag does. `fireEvent`'s own
+ * `target: { value }` already does the native-setter bypass React's controlled inputs need — but a
+ * single dispatch is silently dropped on the rare occasion the target equals the slider's own
+ * current (possibly uncommitted-default) position, since React's value tracker then sees no change
+ * at all. A real drag always passes through some other value first, so this does too when needed.
+ */
+function setSliderValue(input: HTMLInputElement, value: string) {
+  if (input.value === value) fireEvent.input(input, { target: { value: value === "0" ? "1" : "0" } });
+  fireEvent.input(input, { target: { value } });
+}
 
 function setup(url = "/") {
   window.history.replaceState(null, "", url);
@@ -158,73 +170,52 @@ describe("the guided start", () => {
     expect(within(screen.getByRole("list", { name: "Selected needs" })).getByText("ML serving")).toBeTruthy();
   });
 
-  it("opens straight to the tier question when an example loads a tool with an enterprise-gated capability", async () => {
+  it("loads an example without opening anything unasked, now that a tier is assumed from volume rather than chosen per tool", async () => {
     const user = setupLanding();
     await user.click(screen.getByRole("button", { name: /Start from an example/ }));
     await user.click(screen.getByRole("button", { name: "Load Snowflake, dbt and GitHub" }));
-    // Nobody has to find this by clicking into Snowflake's own detail: it's already open.
-    const dialog = screen.getByRole("dialog");
-    expect(within(dialog).getByRole("heading", { name: "Your stack" })).toBeTruthy();
-    const checkbox = within(dialog).getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }) as HTMLInputElement;
-    expect(checkbox.checked).toBe(false);
-
-    await user.click(checkbox);
-    await waitFor(() => expect(window.location.search).toContain("tiers=snowflake"));
-    // Reaches the same place the per-tool checkbox does.
-    expect(checkbox.checked).toBe(true);
-  });
-
-  it("does not open the stack panel unasked when nothing in the example has a tier to confirm", async () => {
-    const user = setupLanding();
-    await user.click(screen.getByRole("button", { name: /Start from an example/ }));
-    await user.click(screen.getByRole("button", { name: "Load Databricks lakehouse" }));
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("clears a tier confirmed for one stack when a different example is loaded", async () => {
+  it("clears an answered volume when a different example is loaded, so it never wrongly follows a demo stack", async () => {
     const user = setupLanding();
     await user.click(screen.getByRole("button", { name: /Start from an example/ }));
     await user.click(screen.getByRole("button", { name: "Load Snowflake, dbt and GitHub" }));
-    await user.click(screen.getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }));
-    await waitFor(() => expect(window.location.search).toContain("tiers=snowflake"));
+    setSliderValue(screen.getByRole("slider") as HTMLInputElement, "1000"); // max, exactly 1,048,576 GB
+    await waitFor(() => expect(window.location.search).toContain("volume=1048576"));
 
-    await user.click(screen.getByRole("button", { name: "Close details" }));
     await user.click(screen.getByRole("button", { name: "Guided start" }));
     await user.click(screen.getByRole("button", { name: /Start from an example/ }));
     await user.click(screen.getByRole("button", { name: "Load Databricks lakehouse" }));
-    expect(window.location.search).not.toContain("tiers=");
+    expect(window.location.search).not.toContain("volume=");
   });
 
   it("prompts for the pipeline's scale on Coverage, no matter how the stack was built", async () => {
     // A hand-built stack (setup with tools already in the URL) sees the same prompt as a loaded example.
     setup("/?tools=snowflake#coverage");
     expect(screen.getByText(/What.s the scale of this pipeline/)).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Exploring or a prototype" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Steady production traffic" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "High volume, many pipelines" })).toBeTruthy();
+    expect(screen.getByRole("slider", { name: "Pipeline volume per month" })).toBeTruthy();
   });
 
-  it("shows an approximate total once scale is answered, and updates it when scale changes", async () => {
+  it("shows an approximate total once volume is answered, and updates it when volume changes", async () => {
     const user = setup("/?tools=snowflake#coverage");
-    await user.click(screen.getByRole("button", { name: "Steady production traffic" }));
-    await waitFor(() => expect(window.location.search).toContain("scale=production"));
-    expect(screen.getByText(/\$200–\$800\/mo at steady production traffic/)).toBeTruthy();
+    setSliderValue(screen.getByRole("slider") as HTMLInputElement, "500"); // exactly 1024 GB, a sourced checkpoint
+    await waitFor(() => expect(window.location.search).toContain("volume=1024"));
+    expect(screen.getByText(/\$200–\$600\/mo at 1\.0 TB\/month/)).toBeTruthy();
     expect(screen.getByText(/Approximate, as of the date shown/)).toBeTruthy();
 
-    // Changing scale re-asks and shows a different total, not the same one relabelled.
-    await user.click(screen.getByRole("button", { name: "Change" }));
-    expect(screen.getByText(/What.s the scale of this pipeline/)).toBeTruthy();
-    await user.click(screen.getByRole("button", { name: "High volume, many pipelines" }));
-    await waitFor(() => expect(window.location.search).toContain("scale=scale"));
-    expect(screen.getByText(/\$2,000–\$10,000\/mo at high volume, many pipelines/)).toBeTruthy();
+    // Changing volume shows a different total, not the same one relabelled — no separate "answered" state to re-ask.
+    setSliderValue(screen.getByRole("slider") as HTMLInputElement, "1000"); // exactly 1,048,576 GB (1PB)
+    await waitFor(() => expect(window.location.search).toContain("volume=1048576"));
+    expect(screen.getByText(/\$25,000–\$70,000\/mo at 1\.00 PB\/month/)).toBeTruthy();
   });
 
   it("names the source and date behind a tool's own cost estimate in the breakdown fold", async () => {
-    const user = setup("/?tools=snowflake&scale=production#coverage");
+    const user = setup("/?tools=snowflake&volume=1024#coverage");
     await user.click(screen.getByText("Per-tool breakdown"));
     const breakdown = document.querySelector<HTMLElement>(".costpanel__breakdown")!;
     expect(within(breakdown).getByText("Snowflake")).toBeTruthy();
-    expect(within(breakdown).getByText(/\$200–\$800\/mo/)).toBeTruthy();
+    expect(within(breakdown).getByText(/\$200–\$600\/mo/)).toBeTruthy();
     expect(within(breakdown).getByText(/as of 2026-09-23/)).toBeTruthy();
     expect(within(breakdown).getByRole("link")).toBeTruthy();
   });
@@ -235,8 +226,8 @@ describe("the guided start", () => {
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByText(/What.s the scale of this pipeline/)).toBeTruthy();
 
-    await user.click(within(dialog).getByRole("button", { name: "Exploring or a prototype" }));
-    await waitFor(() => expect(window.location.search).toContain("scale=prototype"));
+    setSliderValue(within(dialog).getByRole("slider") as HTMLInputElement, "500");
+    await waitFor(() => expect(window.location.search).toContain("volume=1024"));
     // Answered: the total lives on Coverage, not duplicated in the edit panel.
     expect(within(dialog).queryByText(/What.s the scale of this pipeline/)).toBeNull();
     expect(within(dialog).queryByText(/\/mo at/)).toBeNull();
@@ -291,7 +282,7 @@ describe("the guided start", () => {
     await next(user);
 
     expect(title()).toBe("How much does it move and run?");
-    await user.click(screen.getByRole("radio", { name: /Steady production traffic/ }));
+    setSliderValue(screen.getByRole("slider") as HTMLInputElement, "500"); // the slider's geometric midpoint, exactly 1024 GB
     await next(user);
 
     expect(title()).toBe("Here is your stack");
@@ -301,7 +292,7 @@ describe("the guided start", () => {
     expect(review).toContain("BI and visualisation");
     expect(review).toContain("Just me");
     expect(review).toContain("Prefer free and open-source");
-    expect(review).toContain("Steady production traffic");
+    expect(review).toContain("1.0 TB/month");
 
     await user.click(screen.getByRole("button", { name: "Show me my stack" }));
     expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
@@ -897,44 +888,32 @@ describe("receipts", () => {
     expect(dialog.textContent).toContain("Not counted as coverage");
   });
 
-  it("confirming a tool's tier promotes what it gates into real coverage, everywhere", async () => {
+  it("assumes a tool is on its higher tier at or above the enterprise-tier volume, promoting what it gates into real coverage, everywhere", async () => {
     const user = setup(missing("/?tools=dbt-platform-services&needs=orchestrate.dependency-dag"));
     const dagGap = () => gapButtons().some((b) => /Dependency DAG/.test(b.textContent ?? ""));
     expect(dagGap()).toBe(true);
 
+    await openTab(user, /Coverage/);
+    setSliderValue(screen.getByRole("slider") as HTMLInputElement, "1000"); // max, well above the 10TB/month threshold
+    await waitFor(() => expect(window.location.search).toContain("volume=1048576"));
+
     await openEditor(user);
     await user.click(within(chips()).getByRole("button", { name: "dbt platform (hosted services)" }));
-    const checkbox = screen.getByRole("checkbox", { name: /I.m on dbt platform Enterprise or Enterprise\+ plan/ }) as HTMLInputElement;
-    expect(checkbox.checked).toBe(false);
-
-    await user.click(checkbox);
-    expect(checkbox.checked).toBe(true);
-    // The tool's own receipts now count it, not just note it.
+    // The tool's own receipts now count it, not just note it, with a read-only line saying why.
     expect(screen.queryByText(/Reaches core only on/)).toBeNull();
-    await waitFor(() => expect(window.location.search).toContain("tiers=dbt-platform-services"));
+    expect(screen.getByText(/Counted as covered: at this volume, we assume this is on dbt platform Enterprise or Enterprise\+ plan/)).toBeTruthy();
 
     await user.click(screen.getByRole("button", { name: "Close details" }));
     await openTab(user, /What.s missing/);
-    // The gap needing exactly what the confirmed tier now provides is gone.
+    // The gap needing exactly what the assumed tier now provides is gone.
     expect(dagGap()).toBe(false);
   });
 
-  it("lists every tier-eligible tool in one place in the edit-stack panel, not just on each tool's own page", async () => {
-    const user = setup("/?tools=snowflake,tableau,github");
+  it("does not assume a higher tier below the enterprise-tier volume threshold", async () => {
+    const user = setup("/?tools=snowflake&volume=1024"); // 1TB/month, well under the 10TB threshold
     await openEditor(user);
-    const dialog = screen.getByRole("dialog");
-    const snowflakeBox = within(dialog).getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }) as HTMLInputElement;
-    const tableauBox = within(dialog).getByRole("checkbox", { name: /I.m on Tableau Data Management/ }) as HTMLInputElement;
-    expect(snowflakeBox.checked).toBe(false);
-    expect(tableauBox.checked).toBe(false);
-    // GitHub has nothing gated behind a plan, so it gets no row here.
-    expect(within(dialog).queryByText(/I.m on GitHub/)).toBeNull();
-
-    await user.click(snowflakeBox);
-    await waitFor(() => expect(window.location.search).toContain("tiers=snowflake"));
-    // Confirming it here is the same fact as confirming it on Snowflake's own page.
-    await user.click(dialog.querySelector<HTMLButtonElement>(".tierpanel__more")!);
-    expect((screen.getByRole("checkbox", { name: /I.m on Snowflake Enterprise edition/ }) as HTMLInputElement).checked).toBe(true);
+    await user.click(within(chips()).getByRole("button", { name: "Snowflake" }));
+    expect(screen.queryByText(/Counted as covered: at this volume/)).toBeNull();
   });
 
   it("open a gap to why it matters and what would close it, and let you add a fix", async () => {

@@ -71,34 +71,20 @@
   "presentation": {
     "tagline": "Serverless data warehouse with SQL, Python, open table formats and column masking."
   },
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 0,
-      "high": 20,
-      "unit": "usd-per-month",
-      "note": "On-demand queries are $6.25/TB scanned with the first 1TB/month free, and storage is $0.023/GiB/month with the first 10GiB free; a small prototype often stays inside both free allowances.",
-      "source": "https://cloud.google.com/bigquery/pricing",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 0, "high": 5 },
+        { "volumeGb": 1024, "low": 20, "high": 90 },
+        { "volumeGb": 102400, "low": 3000, "high": 8000 },
+        { "volumeGb": 1048576, "low": 35000, "high": 80000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 50,
-      "high": 200,
-      "unit": "usd-per-month",
-      "note": "Third-party estimate: a small analytics team scanning about 10TiB of queries a month with 1TB of active storage runs roughly $75/month on-demand.",
-      "source": "https://yukidata.com/bigquery-cost-per-tb/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 500,
-      "high": 3000,
-      "unit": "usd-per-month",
-      "note": "Third-party estimate for 10TB storage and 50TB of monthly queries is about $445/month; widened upward for heavier query volume. Committed-use slot pricing can cost less than on-demand at sustained high volume and is not scored here.",
-      "source": "https://yukidata.com/bigquery-cost-per-tb/",
-      "as_of": "2026-09-23"
-    }
-  ],
-  "updated": "2026-09-20"
+    "note": "On-demand queries $6.25/TiB scanned (first 1TB/month free); active storage $0.02/GB/month (first 10GB/month free; long-term storage for tables untouched 90+ days is cheaper, not modeled). Each point assumes a 5:1 monthly-scan-to-stored-volume ratio, typical of active analytics use — stated per point, not billed at a flat rate. Committed-use slot pricing can cost less than on-demand at sustained high volume and is not scored here.",
+    "source": "https://cloud.google.com/bigquery/pricing",
+    "as_of": "2026-09-23"
+  },
+  "updated": "2026-09-23"
 }

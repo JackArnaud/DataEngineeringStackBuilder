@@ -276,12 +276,8 @@
           }
         },
         "cost": {
-          "description": "Real, approximate dollar ranges, one entry per scale it has been priced at. Absence means not yet estimated, never free. Deliberately approximate: every entry carries its own source and the date it was recorded, and the UI always shows both beside a permanent disclaimer rather than presenting a figure as a quote.",
-          "type": "array",
-          "maxItems": 3,
-          "items": {
-            "$ref": "#/$defs/costEstimate"
-          }
+          "description": "A real, approximate dollar estimate, keyed on whatever actually drives this tool's pricing: pipeline volume (GB/month), per-seat headcount, or a flat rate. Absence means not yet estimated, never free. Deliberately approximate: it carries its own source and the date it was recorded, and the UI always shows both beside a permanent disclaimer rather than presenting a figure as a quote.",
+          "$ref": "#/$defs/costEstimate"
         },
         "updated": {
           "type": "string",
@@ -289,24 +285,89 @@
         }
       }
     },
+    "costRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["low", "high"],
+      "properties": {
+        "low": { "type": "number", "minimum": 0 },
+        "high": { "type": "number", "minimum": 0 }
+      }
+    },
+    "costPoint": {
+      "description": "A real, sourced dollar figure at one monthly data volume. A `\"volume\"` basis needs at least two, ascending by volumeGb, so a cost between them is interpolated, never invented as a single formula.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["volumeGb", "low", "high"],
+      "properties": {
+        "volumeGb": { "type": "number", "exclusiveMinimum": 0 },
+        "low": { "type": "number", "minimum": 0 },
+        "high": { "type": "number", "minimum": 0 }
+      }
+    },
+    "costHosting": {
+      "description": "Self-hosted tools only: infrastructure cost, kept separate from licence. Sized against the app's VM_SIZES reference table.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis", "points"],
+      "properties": {
+        "basis": { "const": "volume" },
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/costPoint" }
+        }
+      }
+    },
+    "costBasis": {
+      "description": "How a tool's cost scales. Exactly one basis per tool.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["basis", "points"],
+          "properties": {
+            "basis": { "const": "volume" },
+            "points": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "$ref": "#/$defs/costPoint" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["basis", "perSeat"],
+          "properties": {
+            "basis": { "const": "per-seat" },
+            "perSeat": { "$ref": "#/$defs/costRange" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["basis", "amount"],
+          "properties": {
+            "basis": { "const": "flat" },
+            "amount": { "$ref": "#/$defs/costRange" }
+          }
+        }
+      ]
+    },
     "costEstimate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["scale", "low", "high", "unit", "note", "source", "as_of"],
+      "required": ["unit", "cost", "note", "source", "as_of"],
       "properties": {
-        "scale": {
-          "enum": ["prototype", "production", "scale"]
-        },
-        "low": {
-          "type": "number",
-          "minimum": 0
-        },
-        "high": {
-          "type": "number",
-          "minimum": 0
-        },
         "unit": {
           "const": "usd-per-month"
+        },
+        "cost": {
+          "$ref": "#/$defs/costBasis"
+        },
+        "hosting": {
+          "$ref": "#/$defs/costHosting"
         },
         "note": {
           "type": "string",

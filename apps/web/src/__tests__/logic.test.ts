@@ -9,6 +9,7 @@ import { groupCells, joinNames } from "../receipts";
 import { RAMP_ORDER, ROLE_RAMP, rampOf } from "../roles";
 import { computeGaps, groupGaps } from "@compile";
 import { add, emptyState, isSelectable, parseState, profileSkips, profileTags, serializeState, toggle } from "../state";
+import { ENTERPRISE_TIER_VOLUME_GB, tieredTools } from "../tiers";
 import { dataset, model } from "./fixture";
 
 describe("stack state in the address", () => {
@@ -27,25 +28,22 @@ describe("stack state in the address", () => {
   });
 
   it("starts empty", () => {
-    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [], tiers: [] });
+    expect(emptyState(model)).toEqual({ tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [] });
   });
 
   it("round-trips: what is written is what is read back", () => {
     // team: multiple-teams confirms no profile tag, so it never adds a capability to skip on its own.
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const], tiers: ["dbt-core"], scale: "production" as const };
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const], volumeGb: 1024 };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss&tiers=dbt-core&scale=production");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss&volume=1024");
     expect(parseState(query, model)).toEqual(state);
   });
 
-  it("drops a tier confirmed for a tool that is not selectable", () => {
-    expect(parseState("?tiers=dbt-core,aws,ghost", model).tiers).toEqual(["dbt-core"]);
-  });
-
-  it("leaves scale unanswered by default, and drops a value it does not recognise", () => {
-    expect(parseState("?tools=postgres", model).scale).toBeUndefined();
-    expect(parseState("?tools=postgres&scale=enormous", model).scale).toBeUndefined();
-    expect(parseState("?tools=postgres&scale=scale", model).scale).toBe("scale");
+  it("leaves volume unanswered by default, and drops a value that is not a positive number", () => {
+    expect(parseState("?tools=postgres", model).volumeGb).toBeUndefined();
+    expect(parseState("?tools=postgres&volume=enormous", model).volumeGb).toBeUndefined();
+    expect(parseState("?tools=postgres&volume=-5", model).volumeGb).toBeUndefined();
+    expect(parseState("?tools=postgres&volume=500", model).volumeGb).toBe(500);
   });
 
   it("pre-fills set aside for capabilities a profile answer confirms, additively and without duplicates", () => {
@@ -80,7 +78,7 @@ describe("stack state in the address", () => {
 
   it("drops anything the model no longer has, rather than failing", () => {
     const state = parseState("?tools=postgres,ghost&needs=ingest.cdc,nope", model);
-    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, profile: {}, resources: [], tiers: [] });
+    expect(state).toEqual({ tools: ["postgres"], needs: ["ingest.cdc"], skip: [], use: {}, profile: {}, resources: [] });
   });
 
   it("does not let a portfolio be selected, only its services", () => {
@@ -98,6 +96,24 @@ describe("stack state in the address", () => {
     expect(toggle(["a"], "b")).toEqual(["a", "b"]);
     expect(toggle(["a", "b"], "a")).toEqual(["b"]);
     expect(add(["b"], "a", "b")).toEqual(["a", "b"]);
+  });
+});
+
+describe("which tools are assumed to be on a higher tier", () => {
+  const tools = (ids: string[]) => ids.map((id) => model.tools.find((t) => t.id === id)!);
+
+  it("assumes nothing below the enterprise-tier volume threshold, or when nothing is answered", () => {
+    const stack = tools(["snowflake", "postgres"]);
+    expect(tieredTools(stack, undefined)).toEqual([]);
+    expect(tieredTools(stack, 100)).toEqual([]);
+    expect(tieredTools(stack, ENTERPRISE_TIER_VOLUME_GB - 1)).toEqual([]);
+  });
+
+  it("assumes every tool with an enterprise-tier-only capability is on it, at or above the threshold", () => {
+    const stack = tools(["snowflake", "postgres"]);
+    // Snowflake has masking gated behind Enterprise; Postgres has nothing gated at all.
+    expect(tieredTools(stack, ENTERPRISE_TIER_VOLUME_GB).map((t) => t.id)).toEqual(["snowflake"]);
+    expect(tieredTools(stack, ENTERPRISE_TIER_VOLUME_GB * 10).map((t) => t.id)).toEqual(["snowflake"]);
   });
 });
 

@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import type { RenderModel, RenderTool, Resource } from "@compile";
 import { ExampleGallery } from "./ExampleGallery";
+import { VolumeSlider } from "./VolumeSlider";
 import type { Example } from "../examples";
 import { listNames, plural } from "../labels";
 import type { Lookup } from "../lookup";
-import { CLOUDS, NEED_CARDS, PROFILE_QUESTIONS, RESOURCE_CARDS, SCALE_OPTIONS, cardIsOn, TOOL_STEPS } from "../landing";
+import { CLOUDS, NEED_CARDS, PROFILE_QUESTIONS, RESOURCE_CARDS, cardIsOn, formatVolume, TOOL_STEPS } from "../landing";
 import type { NeedCard, ProfileOption, ProfileQuestion, ToolStep } from "../landing";
 import { add, toggle } from "../state";
 import type { StackState } from "../state";
@@ -110,14 +111,14 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
             : screen.kind === "resources"
               ? state.resources.length
               : screen.kind === "scale"
-                ? (state.scale ? 1 : 0)
+                ? (state.volumeGb !== undefined ? 1 : 0)
                 : 0;
 
   // What the profile, resources and scale screens say, for the review: the option label picked for
   // each question that got one, and the label of every resource ticked.
   const profileLabels = PROFILE_QUESTIONS.flatMap((q) => q.options.filter((o) => state.profile[q.key] === o.id).map((o) => o.label));
   const resourceLabels = RESOURCE_CARDS.filter((c) => state.resources.includes(c.id)).map((c) => c.label);
-  const scaleLabel = SCALE_OPTIONS.find((o) => o.id === state.scale)?.label;
+  const scaleLabel = state.volumeGb !== undefined ? formatVolume(state.volumeGb) : undefined;
 
   return (
     <section className="landing" aria-labelledby="step-title">
@@ -212,12 +213,8 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
       {screen.kind === "scale" && (
         <>
           <h2 id="step-title">How much does it move and run?</h2>
-          <p className="muted">A real part of evaluating a stack: what it costs depends a lot on volume, not just which tools you pick.</p>
-          <ul className="tiles">
-            {SCALE_OPTIONS.map((o) => (
-              <Tile key={o.id} name={o.label} blurb={o.help} on={state.scale === o.id} onToggle={() => onChange({ scale: o.id })} type="radio" group="scale" />
-            ))}
-          </ul>
+          <p className="muted">A real part of evaluating a stack: what it costs depends a lot on volume, not just which tools you pick. Drag to set roughly how much data moves through it a month.</p>
+          <VolumeSlider volumeGb={state.volumeGb} onChange={(volumeGb) => onChange({ volumeGb })} id="landing-volume" />
         </>
       )}
 

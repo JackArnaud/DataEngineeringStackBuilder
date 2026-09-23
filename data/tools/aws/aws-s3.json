@@ -59,34 +59,20 @@
   "presentation": {
     "tagline": "Object storage that underpins most AWS data lakes."
   },
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 5,
-      "high": 30,
-      "unit": "usd-per-month",
-      "note": "Under 100GB stored at S3 Standard ($0.023/GB/month, us-east-1), plus light request and egress traffic (the first 100GB/month out to the internet is free).",
-      "source": "https://www.cloudzero.com/blog/s3-pricing/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 1, "high": 8 },
+        { "volumeGb": 1024, "low": 25, "high": 70 },
+        { "volumeGb": 102400, "low": 1800, "high": 4500 },
+        { "volumeGb": 1048576, "low": 18000, "high": 35000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 50,
-      "high": 400,
-      "unit": "usd-per-month",
-      "note": "Roughly 1-10TB stored at S3 Standard, plus moderate request and egress traffic.",
-      "source": "https://www.cloudzero.com/blog/s3-pricing/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 2000,
-      "high": 15000,
-      "unit": "usd-per-month",
-      "note": "Roughly 100TB-1PB stored (rates step down to $0.022/GB above 50TB, $0.021/GB above 500TB), plus heavier request and egress traffic.",
-      "source": "https://www.cloudzero.com/blog/s3-pricing/",
-      "as_of": "2026-09-23"
-    }
-  ],
-  "updated": "2026-09-20"
+    "note": "S3 Standard storage, us-east-1, genuinely tiered: $0.023/GB for the first 50TB, $0.022/GB up to 500TB, $0.021/GB above that. Each point also assumes a plausible amount of request and egress traffic for a pipeline storing that much (PUT/COPY/POST/LIST $0.005/1,000 requests, GET/SELECT $0.0004/1,000, egress free for the first 100GB/month then tiered from $0.09/GB down) — stated per point, not billed at a flat rate.",
+    "source": "https://aws.amazon.com/s3/pricing/",
+    "as_of": "2026-09-23"
+  },
+  "updated": "2026-09-23"
 }

@@ -44,25 +44,24 @@
     "tagline": "Python-native orchestration: flows are ordinary functions, not a DAG declared up front."
   },
   "pairs_with": ["dbt-core", "snowflake", "aws-s3"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 10,
-      "high": 50,
-      "unit": "usd-per-month",
-      "note": "No licence cost (Apache 2.0). This range is the small VM or container running the server and a database continuously, not a Prefect charge.",
-      "source": "https://github.com/PrefectHQ/prefect/blob/main/LICENSE",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "flat",
+      "amount": { "low": 0, "high": 0 }
     },
-    {
-      "scale": "production",
-      "low": 100,
-      "high": 500,
-      "unit": "usd-per-month",
-      "note": "No licence cost. Production use needs PostgreSQL rather than the default SQLite to avoid lock contention, plus a properly sized instance for more concurrent flows; generic cloud compute pricing, not a Prefect-specific figure.",
-      "source": "https://github.com/PrefectHQ/prefect/blob/main/LICENSE",
-      "as_of": "2026-09-23"
-    }
-  ],
+    "hosting": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 30, "high": 80 },
+        { "volumeGb": 1024, "low": 120, "high": 300 },
+        { "volumeGb": 102400, "low": 300, "high": 800 },
+        { "volumeGb": 1048576, "low": 1500, "high": 3500 }
+      ]
+    },
+    "note": "No licence cost (Apache 2.0; Prefect Cloud is the separate paid product, not scored here). `hosting` is generic cloud compute pricing sized against a comparable VM at each volume: the default SQLite is fine at light use, but production needs PostgreSQL to avoid lock contention (from the 1TB point up), plus more instance capacity for concurrent flows at higher volume — not a Prefect-specific figure.",
+    "source": "https://github.com/PrefectHQ/prefect/blob/main/LICENSE",
+    "as_of": "2026-09-23"
+  },
   "updated": "2026-09-23"
 }

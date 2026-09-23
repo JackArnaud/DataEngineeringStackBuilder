@@ -109,34 +109,20 @@
   "presentation": {
     "tagline": "Serverless data integration: Spark ETL jobs, a metadata catalog and workflows."
   },
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 20,
-      "high": 100,
-      "unit": "usd-per-month",
-      "note": "Standard ETL is $0.44/DPU-hour (Flex, for jobs that can start late, is $0.29); a few small jobs running occasionally at the 2-DPU minimum.",
-      "source": "https://www.integrate.io/blog/aws-glue-pricing/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 10, "high": 40 },
+        { "volumeGb": 1024, "low": 100, "high": 300 },
+        { "volumeGb": 102400, "low": 1000, "high": 3000 },
+        { "volumeGb": 1048576, "low": 5000, "high": 15000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 150,
-      "high": 800,
-      "unit": "usd-per-month",
-      "note": "Regular daily jobs at the commonly-needed 3-5 DPUs each, several jobs a day.",
-      "source": "https://www.integrate.io/blog/aws-glue-pricing/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 2000,
-      "high": 8000,
-      "unit": "usd-per-month",
-      "note": "Many jobs at higher DPU allocations. One documented real pipeline went from $0.66 for its first run to $5,000+/month six months into production.",
-      "source": "https://www.integrate.io/blog/aws-glue-pricing/",
-      "as_of": "2026-09-23"
-    }
-  ],
-  "updated": "2026-09-20"
+    "note": "Standard ETL is $0.44/DPU-hour (2 DPU minimum, billed per-second; Flex, for jobs that can start late, is $0.29/DPU-hour). Each point assumes a plausible DPU allocation and monthly job-hours for a pipeline moving that much data (2 DPU ~10 job-hours/month at 10GB, up to 20 DPU ~800 job-hours/month at 1PB) — stated per point, not billed at a flat rate.",
+    "source": "https://aws.amazon.com/glue/pricing/",
+    "as_of": "2026-09-23"
+  },
+  "updated": "2026-09-23"
 }

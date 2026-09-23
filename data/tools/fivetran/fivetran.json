@@ -38,34 +38,20 @@
     "tagline": "Fully managed connectors that extract and load data with automatic schema handling."
   },
   "pairs_with": ["dbt-core", "dbt-platform", "snowflake", "gcp-bigquery", "databricks"],
-  "cost": [
-    {
-      "scale": "prototype",
-      "low": 5,
-      "high": 50,
-      "unit": "usd-per-month",
-      "note": "A $5 minimum applies to each standard connection with 1-1M Monthly Active Rows (MAR); a couple of low-volume connectors at that floor.",
-      "source": "https://hevodata.com/learn/fivetran-mar-pricing/",
-      "as_of": "2026-09-23"
+  "cost": {
+    "unit": "usd-per-month",
+    "cost": {
+      "basis": "volume",
+      "points": [
+        { "volumeGb": 10, "low": 5, "high": 50 },
+        { "volumeGb": 1024, "low": 1500, "high": 4000 },
+        { "volumeGb": 102400, "low": 15000, "high": 30000 },
+        { "volumeGb": 1048576, "low": 100000, "high": 250000 }
+      ]
     },
-    {
-      "scale": "production",
-      "low": 800,
-      "high": 4000,
-      "unit": "usd-per-month",
-      "note": "Third-party estimate: smaller teams processing under 10 million MAR/month often land $1,250-4,200/month at $500/million MAR (Standard plan).",
-      "source": "https://hevodata.com/learn/fivetran-mar-pricing/",
-      "as_of": "2026-09-23"
-    },
-    {
-      "scale": "scale",
-      "low": 10000,
-      "high": 40000,
-      "unit": "usd-per-month",
-      "note": "High MAR volume (tens of millions of rows/month) at Enterprise's $667/million MAR rate; annual contracts can bring 5-36% discounts off this.",
-      "source": "https://hevodata.com/learn/fivetran-mar-pricing/",
-      "as_of": "2026-09-23"
-    }
-  ],
+    "note": "Fivetran does not publish a per-million-Monthly-Active-Rows (MAR) rate card; it routes to a dynamic estimator/sales Service Consumption Table. Its own page confirms only the free tier (500K MAR/month) and a $5 minimum per standard connection under 1M MAR/month. The $500 (Standard) / $667 (Enterprise) / $1,067 (Business Critical) per-million-MAR figures used at each point below are third-party \"effective rate\" estimates widely cross-cited as directional, not Fivetran's own list prices — this is the one tool here without an official rate card. Annual contracts can bring 5-36% off. Since Jan 1 2026, deletes count toward paid MAR alongside inserts/updates.",
+    "source": "https://www.fivetran.com/pricing",
+    "as_of": "2026-09-23"
+  },
   "updated": "2026-09-23"
 }
