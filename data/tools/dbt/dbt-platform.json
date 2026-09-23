@@ -16,5 +16,34 @@
     "tagline": "The dbt framework plus a hosted scheduler, CI, catalog, semantic layer and IDE."
   },
   "pairs_with": ["databricks", "snowflake"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 0,
+      "high": 100,
+      "unit": "usd-per-month",
+      "note": "The free Developer plan (1 seat, 3,000 model builds/month) covers a solo prototype; one Starter seat at $100/user/month if you need more.",
+      "source": "https://www.getdbt.com/pricing",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 300,
+      "high": 800,
+      "unit": "usd-per-month",
+      "note": "Starter plan at $100/user/month, assumes 3-8 seats.",
+      "source": "https://www.getdbt.com/pricing",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 4000,
+      "high": 15000,
+      "unit": "usd-per-month",
+      "note": "Enterprise is negotiated, typically $200-400/seat/month before volume discounts; third-party data cites a 20-seat Enterprise team paying $36,000-84,000/year ($3,000-7,000/month), and 25-100+ seat deals often settling at $150-250/seat/month with volume discounts.",
+      "source": "https://www.paradime.io/guides/dbt-cloud-pricing",
+      "as_of": "2026-09-23"
+    }
+  ],
   "updated": "2026-09-21"
 }

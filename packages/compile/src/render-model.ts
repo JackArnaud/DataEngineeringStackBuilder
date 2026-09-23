@@ -1,3 +1,4 @@
+import type { CostEstimate } from "./cost.js";
 import type { Cell } from "./derive.js";
 import type { ToolLensView } from "./project.js";
 import type { Archetype } from "./roles.js";
@@ -71,6 +72,8 @@ export interface RenderTool {
   tagline?: string;
   /** Records this one is commonly used with. A hint for suggestions, never a coverage claim. */
   pairs_with?: string[];
+  /** Real, approximate dollar-per-month ranges, one per scale priced. Absence means not yet estimated. */
+  cost?: CostEstimate[];
   /** Members of a bundle or portfolio. */
   includes?: string[];
   bundling?: string;

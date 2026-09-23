@@ -152,7 +152,10 @@ describe("suggestions from the same ecosystem", () => {
 
   it("then put tools that are commonly paired with yours, naming which of yours", () => {
     const s = suggest(["snowflake"], "band:observe.lineage@transform");
-    expect(s[0]).toMatchObject({ tool: "dbt-core", affinity: "paired", related: ["snowflake"] });
+    // Monte Carlo's cross-system lineage (level 3) outranks dbt-core's dbt-only DAG (level 2)
+    // within the same "paired" tier — a stronger fit wins even among equally-paired tools.
+    expect(s[0]).toMatchObject({ tool: "monte-carlo", affinity: "paired", related: ["snowflake"] });
+    expect(s.find((x) => x.tool === "dbt-core")).toMatchObject({ affinity: "paired", related: ["snowflake"] });
     const otherFirst = s.findIndex((x) => x.affinity === "other");
     expect(s.slice(0, otherFirst).every((x) => x.affinity !== "other")).toBe(true);
   });

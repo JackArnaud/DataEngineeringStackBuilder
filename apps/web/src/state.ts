@@ -1,4 +1,4 @@
-import type { ProfileTag, RenderModel, Resource } from "@compile";
+import type { ProfileTag, RenderModel, Resource, Scale } from "@compile";
 
 /** The guided start's profile answers, one per question. Which answer confirms which fact is below. */
 export interface ProfileAnswers {
@@ -24,10 +24,13 @@ export interface StackState {
   resources: Resource[];
   /** Tools the user has confirmed are on the tier named by that tool's `tier_name`. */
   tiers: string[];
+  /** How much the pipeline moves and runs, for the cost estimate. Unanswered until asked. */
+  scale?: Scale;
 }
 
 const PROFILE_KEYS = ["team", "sensitivity", "stakes"] as const;
 const RESOURCE_TAGS: Resource[] = ["prefer-oss", "procurement"];
+const SCALES: Scale[] = ["prototype", "production", "scale"];
 
 /**
  * Which answer to each profile question confirms the fact a capability's `skip_when` is about.
@@ -65,6 +68,8 @@ export function emptyState(_model: RenderModel): StackState {
   return { tools: [], needs: [], skip: [], use: {}, profile: {}, resources: [], tiers: [] };
 }
 
+const isScale = (v: string): v is Scale => (SCALES as string[]).includes(v);
+
 /** Read a query string against the model, quietly dropping anything that no longer exists. */
 export function parseState(search: string, model: RenderModel): StackState {
   const params = new URLSearchParams(search);
@@ -85,6 +90,8 @@ export function parseState(search: string, model: RenderModel): StackState {
   }
   const resources = canonical(list("resources").filter((t): t is Resource => (RESOURCE_TAGS as string[]).includes(t))) as Resource[];
   const tiers = canonical(list("tiers").filter((id) => isSelectable(model, id)));
+  const scaleParam = params.get("scale");
+  const scale = scaleParam && isScale(scaleParam) ? scaleParam : undefined;
 
   return {
     tools,
@@ -100,6 +107,7 @@ export function parseState(search: string, model: RenderModel): StackState {
     profile,
     resources,
     tiers,
+    ...(scale && { scale }),
   };
 }
 
@@ -115,6 +123,7 @@ export function serializeState(state: StackState, _model: RenderModel): string {
   if (profile.length) params.set("profile", profile.join(","));
   if (state.resources.length) params.set("resources", canonical(state.resources).join(","));
   if (state.tiers.length) params.set("tiers", canonical(state.tiers).join(","));
+  if (state.scale) params.set("scale", state.scale);
   // Commas are the list separator and are safe in a query string; keep the address readable.
   const query = params.toString().replace(/%2C/g, ",").replace(/%3A/g, ":");
   return query ? `?${query}` : "";

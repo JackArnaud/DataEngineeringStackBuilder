@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { computeGaps, effectiveLens, groupGaps, hasEnterpriseTierUnlock, projectGaps, stackBands } from "@compile";
 import type { Gap, RenderModel, RenderTool } from "@compile";
+import { CostPanel } from "./components/CostPanel";
 import { DetailPanel } from "./components/Detail";
 import { Landing } from "./components/Landing";
 import { OverlapList } from "./components/OverlapList";
@@ -186,6 +187,13 @@ export function Builder({ model, startOnLanding = false }: { model: RenderModel;
                 </h2>
                 <StageStrip model={model} lookup={lookup} report={report} />
               </section>
+
+              {state.tools.length > 0 && (
+                <section aria-labelledby="cost">
+                  <h2 id="cost">Cost</h2>
+                  <CostPanel state={state} tools={tools} onChange={change} />
+                </section>
+              )}
 
               <section aria-labelledby="where">
                 <h2 id="where">Where your tools sit</h2>

@@ -1,0 +1,109 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "confluent-cloud",
+  "name": "Confluent Cloud",
+  "vendor": "Confluent",
+  "kind": "tool",
+  "sku": "Confluent Cloud with the Stream Governance Essentials package, included free. Stream Governance Advanced (data quality rules, business metadata, 7-day lineage vs 10-minute) is a separate paid add-on and not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "source.event-stream": {
+      "level": 3,
+      "delivery": "native",
+      "note": "A fully managed, cloud-native Apache Kafka engine on AWS, Google Cloud or Azure: elastic, partitioned, append-only topics producers publish to.",
+      "source": "https://docs.confluent.io/cloud/current/overview.html"
+    },
+    "ingest.stream-ingest": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Managed Kafka topics take continuous writes from producers, with many consumers reading the same topic independently.",
+      "source": "https://docs.confluent.io/cloud/current/overview.html"
+    },
+    "transform.stream-processing": {
+      "level": 2,
+      "delivery": "native",
+      "note": "ksqlDB (SQL directly against topics) and a managed Apache Flink offering (SQL or Table API, stateful and low-latency) are both available as separately metered compute on top of the same topics.",
+      "source": "https://docs.confluent.io/cloud/current/overview.html"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.contracts",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Confluent's own docs call this feature \"data contracts\": Schema Registry centralises, versions and enforces schema compatibility (Avro, JSON Schema or Protobuf) across topics, rejecting an incompatible change. Included free in Stream Governance Essentials, up to 100 schemas; Stream Governance Advanced adds Data Rules for richer enforcement on top of this.",
+      "source": "https://www.confluent.io/product/stream-governance/"
+    },
+    {
+      "band": "govern.catalog",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Stream Catalog, part of Stream Governance Essentials, inventories topics and schemas with tagging and a self-service Data Portal. Business metadata and a GraphQL catalog API need Stream Governance Advanced.",
+      "source": "https://docs.confluent.io/cloud/current/stream-governance/packages.html"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Stream Lineage visualises how topics, connectors and stream processors relate. Included in Essentials but limited to the last 10 minutes of point-in-time data; Stream Governance Advanced extends it to 7 days.",
+      "source": "https://docs.confluent.io/cloud/current/stream-governance/packages.html"
+    },
+    {
+      "band": "govern.policy",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "A topic's retention period is a native, per-topic setting (retention.ms), 7 days by default and configurable down or up to infinite. A single retention lever, not the fuller residency or classification policy a governance platform manages.",
+      "source": "https://docs.confluent.io/cloud/current/topics/overview.html"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["source", "ingest"],
+      "note": "Metrics on throughput, consumer lag and cluster health, with alerting.",
+      "source": "https://docs.confluent.io/cloud/current/overview.html"
+    }
+  ],
+  "presentation": {
+    "tagline": "Fully managed, multi-cloud Kafka with schema, catalog and lineage governance built in."
+  },
+  "pairs_with": ["dbt-core", "snowflake", "databricks"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 0,
+      "high": 50,
+      "unit": "usd-per-month",
+      "note": "The Basic cluster tier starts at $0/month base, with usage (ingress, egress, storage) billed on top; low, occasional volume stays cheap.",
+      "source": "https://www.cloudzero.com/blog/confluent-cloud-pricing/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 400,
+      "high": 800,
+      "unit": "usd-per-month",
+      "note": "A Standard cluster starts at $385/month base and, per third-party estimate, handles most production workloads for a small team (around 5 engineers) at $500-800/month including usage.",
+      "source": "https://www.cloudzero.com/blog/confluent-cloud-pricing/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 1500,
+      "high": 6000,
+      "unit": "usd-per-month",
+      "note": "An Enterprise cluster starts at $895/month base, plus higher ingress/egress/storage and per-feature meters (connectors, ksqlDB, Schema Registry, Stream Governance) at real volume.",
+      "source": "https://www.cloudzero.com/blog/confluent-cloud-pricing/",
+      "as_of": "2026-09-23"
+    }
+  ],
+  "updated": "2026-09-23"
+}

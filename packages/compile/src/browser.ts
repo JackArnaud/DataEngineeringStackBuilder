@@ -7,6 +7,8 @@ export type { Gap, GapGroup, GapKind, GapReport, GapsInLens, Overlap, PlacedGap,
 export { suggestTools, vendorFamily } from "./suggest.js";
 export type { Affinity, Resource, Suggestion } from "./suggest.js";
 export { stackBands } from "./stack-bands.js";
+export { estimateCost } from "./cost.js";
+export type { CostEstimate, Scale, StackCost } from "./cost.js";
 export { applyTier, hasEnterpriseTierUnlock, isEnterpriseTierOnly } from "./derive.js";
 export type { Cell, ConditionalLevel, Delivery, Evidence, Maturity } from "./derive.js";
 export { effectiveLens } from "./project.js";

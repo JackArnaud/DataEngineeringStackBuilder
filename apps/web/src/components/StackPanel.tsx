@@ -6,6 +6,7 @@ import type { Lookup } from "../lookup";
 import { toggle } from "../state";
 import type { StackState } from "../state";
 import { tierLabel } from "../tiers";
+import { CostPanel } from "./CostPanel";
 import { NeedsPicker } from "./NeedsPicker";
 import { TabBar, panelId, tabId } from "./TabBar";
 import { ToolPicker } from "./ToolPicker";
@@ -31,7 +32,8 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
     { id: "tools" as const, label: "Tools you have", count: state.tools.length },
     { id: "needs" as const, label: "What you need", count: state.needs.length },
   ];
-  const tierable = state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t && hasEnterpriseTierUnlock(t.cells));
+  const selectedTools = state.tools.map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t);
+  const tierable = selectedTools.filter((t) => hasEnterpriseTierUnlock(t.cells));
 
   return (
     <div className="panel stack">
@@ -79,6 +81,7 @@ export function StackPanel({ model, lookup, state, onChange, onOpenTool }: Props
             </ul>
           </div>
         )}
+        {state.tools.length > 0 && <CostPanel state={state} tools={selectedTools} onChange={onChange} compact />}
         {state.needs.length > 0 && (
           <>
             <p className="chips__label muted">You need</p>

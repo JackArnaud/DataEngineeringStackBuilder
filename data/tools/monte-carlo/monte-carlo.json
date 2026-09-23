@@ -1,0 +1,36 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "monte-carlo",
+  "name": "Monte Carlo",
+  "vendor": "Monte Carlo Data",
+  "kind": "tool",
+  "sku": "Monte Carlo Cloud deployment, Start plan. Cloud-with-customer-hosted-data-store and fully customer-hosted deployments exist for regulated environments and are not scored separately.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.0",
+  "bands": [
+    {
+      "band": "quality.anomaly-detection",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest", "store", "transform", "serve"],
+      "note": "ML-driven anomaly detection scans metadata for deviations against a learned baseline, with default detectors for freshness, volume, schema and distribution shifts, without hand-written rules. This is the product's core pitch.",
+      "source": "https://montecarlo.ai/blog-what-is-data-observability"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["ingest", "store", "transform", "serve"],
+      "note": "Lineage is tracked from source through transformations and used automatically: an incident surfaces the affected assets, its blast radius and probable upstream sources alongside the lineage view, not just a static graph.",
+      "source": "https://www.getorchestra.io/guides/data-observability-with-monte-carlo-enhancing-data-integrity"
+    }
+  ],
+  "presentation": {
+    "tagline": "Data observability: ML anomaly detection and lineage, with incident triage built around both."
+  },
+  "pairs_with": ["snowflake", "databricks", "dbt-core"],
+  "updated": "2026-09-23"
+}

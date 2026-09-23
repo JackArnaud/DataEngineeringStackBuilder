@@ -32,14 +32,20 @@ describe("stack state in the address", () => {
 
   it("round-trips: what is written is what is read back", () => {
     // team: multiple-teams confirms no profile tag, so it never adds a capability to skip on its own.
-    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const], tiers: ["dbt-core"] };
+    const state = { tools: ["dbt-core", "postgres"], needs: ["ingest.cdc"], skip: ["govern.masking"], use: { "transform.sql-transform": "dbt-core" }, profile: { team: "multiple-teams" }, resources: ["prefer-oss" as const], tiers: ["dbt-core"], scale: "production" as const };
     const query = serializeState(state, model);
-    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss&tiers=dbt-core");
+    expect(query).toBe("?tools=dbt-core,postgres&needs=ingest.cdc&skip=govern.masking&use=transform.sql-transform:dbt-core&profile=team:multiple-teams&resources=prefer-oss&tiers=dbt-core&scale=production");
     expect(parseState(query, model)).toEqual(state);
   });
 
   it("drops a tier confirmed for a tool that is not selectable", () => {
     expect(parseState("?tiers=dbt-core,aws,ghost", model).tiers).toEqual(["dbt-core"]);
+  });
+
+  it("leaves scale unanswered by default, and drops a value it does not recognise", () => {
+    expect(parseState("?tools=postgres", model).scale).toBeUndefined();
+    expect(parseState("?tools=postgres&scale=enormous", model).scale).toBeUndefined();
+    expect(parseState("?tools=postgres&scale=scale", model).scale).toBe("scale");
   });
 
   it("pre-fills set aside for capabilities a profile answer confirms, additively and without duplicates", () => {

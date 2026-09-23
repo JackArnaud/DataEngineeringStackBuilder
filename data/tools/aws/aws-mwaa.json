@@ -62,5 +62,34 @@
     "tagline": "Managed Apache Airflow for scheduling and orchestrating pipelines."
   },
   "pairs_with": ["aws-emr", "aws-glue", "aws-redshift", "apache-airflow"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 360,
+      "high": 450,
+      "unit": "usd-per-month",
+      "note": "The mw1.small environment class runs about $0.49/hour, roughly $358/month, and bills continuously (730 hours/month) whether or not anything is running, plus one included worker and scheduler.",
+      "source": "https://www.d23.io/blog/aws-mwaa-vs-self-hosted-airflow-cost-comparison",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 500,
+      "high": 1500,
+      "unit": "usd-per-month",
+      "note": "A small or medium environment class with autoscaling adding workers beyond the included baseline, each billed per additional unit-hour.",
+      "source": "https://www.d23.io/blog/aws-mwaa-vs-self-hosted-airflow-cost-comparison",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 2000,
+      "high": 6000,
+      "unit": "usd-per-month",
+      "note": "A large environment class with many autoscaled workers and extra schedulers for high concurrency.",
+      "source": "https://www.d23.io/blog/aws-mwaa-vs-self-hosted-airflow-cost-comparison",
+      "as_of": "2026-09-23"
+    }
+  ],
   "updated": "2026-09-21"
 }

@@ -71,5 +71,34 @@
   "presentation": {
     "tagline": "Serverless data warehouse with SQL, Python, open table formats and column masking."
   },
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 0,
+      "high": 20,
+      "unit": "usd-per-month",
+      "note": "On-demand queries are $6.25/TB scanned with the first 1TB/month free, and storage is $0.023/GiB/month with the first 10GiB free; a small prototype often stays inside both free allowances.",
+      "source": "https://cloud.google.com/bigquery/pricing",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 50,
+      "high": 200,
+      "unit": "usd-per-month",
+      "note": "Third-party estimate: a small analytics team scanning about 10TiB of queries a month with 1TB of active storage runs roughly $75/month on-demand.",
+      "source": "https://yukidata.com/bigquery-cost-per-tb/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 500,
+      "high": 3000,
+      "unit": "usd-per-month",
+      "note": "Third-party estimate for 10TB storage and 50TB of monthly queries is about $445/month; widened upward for heavier query volume. Committed-use slot pricing can cost less than on-demand at sustained high volume and is not scored here.",
+      "source": "https://yukidata.com/bigquery-cost-per-tb/",
+      "as_of": "2026-09-23"
+    }
+  ],
   "updated": "2026-09-20"
 }

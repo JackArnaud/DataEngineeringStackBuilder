@@ -1,0 +1,84 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "dagster",
+  "name": "Dagster (self-hosted)",
+  "vendor": "Dagster Labs",
+  "kind": "tool",
+  "sku": "Dagster OSS, self-hosted, Apache 2.0. Dagster+ (Cloud) adds branch deployments, Insights and a cross-deployment catalog on top; those are not scored here.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["ui", "api", "cli", "python"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Asset-centric, not task-centric: an @asset function declares its own logic and its dependencies on other assets, and Dagster builds the dependency graph from that. Only the assets needed to reach the desired state are recomputed, not the whole pipeline.",
+      "source": "https://dagster.io/glossary/software-defined-assets"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Schedules materialise assets on a cron-style interval, alongside the asset-based execution model.",
+      "source": "https://dagster.io/"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Sensors poll for an event at a regular interval and trigger a run, or explain why they skipped one. A first-class, fully self-hosted feature, unlike branch deployments below.",
+      "source": "https://docs.dagster.io/guides/automate/sensors"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.tests",
+      "level": 3,
+      "delivery": "native",
+      "scope": ["transform", "store"],
+      "note": "Asset checks are pass/fail assertions (nulls, schema, freshness, custom logic via AssetCheckResult) attached to an asset. Setting blocking=True stops a failed check's downstream assets from materialising, so it can gate a pipeline, not just report on it afterwards.",
+      "source": "https://docs.dagster.io/guides/test/asset-checks"
+    },
+    {
+      "band": "observe.lineage",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "The asset graph is lineage by construction: every asset's declared dependencies are visualised in the Dagster UI. The richer cross-deployment catalog and cost/usage Insights on top of it are Dagster+ only.",
+      "source": "https://dagster.io/platform-overview"
+    },
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "dagster dev runs the full UI and daemon locally against your code for local development, alongside the standard Python tooling (pytest, type checking) any Python codebase gets.",
+      "source": "https://docs.dagster.io/guides/automate/sensors"
+    }
+  ],
+  "presentation": {
+    "tagline": "Asset-based orchestration: pipelines defined by the data they produce, not the tasks that run."
+  },
+  "pairs_with": ["dbt-core", "snowflake", "aws-s3"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 10,
+      "high": 50,
+      "unit": "usd-per-month",
+      "note": "No licence cost (Apache 2.0). This range is the small VM or container running the webserver, daemon and a database continuously, not a Dagster charge.",
+      "source": "https://github.com/dagster-io/dagster/blob/master/LICENSE",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 100,
+      "high": 500,
+      "unit": "usd-per-month",
+      "note": "No licence cost. A properly sized instance (or small cluster) and managed Postgres for more concurrent runs; generic cloud compute pricing, not a Dagster-specific figure.",
+      "source": "https://github.com/dagster-io/dagster/blob/master/LICENSE",
+      "as_of": "2026-09-23"
+    }
+  ],
+  "updated": "2026-09-23"
+}

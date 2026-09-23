@@ -26,5 +26,34 @@
     "tagline": "Lakehouse platform: Spark compute, warehouse SQL, orchestration and governance under one contract."
   },
   "pairs_with": ["dbt-core"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 50,
+      "high": 300,
+      "unit": "usd-per-month",
+      "note": "A few notebook sessions and light scheduled jobs. DBU rates run $0.07-0.70/DBU by compute type on top of the underlying cloud compute bill, which this range includes.",
+      "source": "https://www.cloudzero.com/blog/databricks-pricing/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 500,
+      "high": 3000,
+      "unit": "usd-per-month",
+      "note": "Third-party estimate: most teams spend $500-5,000+/month, including the underlying cloud infrastructure cost, which typically adds 30-60% on top of the DBU charge alone.",
+      "source": "https://www.cloudzero.com/blog/databricks-pricing/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 5000,
+      "high": 20000,
+      "unit": "usd-per-month",
+      "note": "Third-party estimate for a mid-size team, including cloud infrastructure, was $2,000-10,000/month; widened upward for genuinely high-volume, many-pipeline use.",
+      "source": "https://www.cloudzero.com/blog/databricks-pricing/",
+      "as_of": "2026-09-23"
+    }
+  ],
   "updated": "2026-09-20"
 }

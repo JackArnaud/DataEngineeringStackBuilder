@@ -1,0 +1,78 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "airbyte",
+  "name": "Airbyte (self-hosted)",
+  "vendor": "Airbyte",
+  "kind": "tool",
+  "sku": "Airbyte Self-Managed Community, self-hosted. Airbyte Cloud and Self-Managed Enterprise are separate, closed-source commercial editions and are not scored.",
+  "license": "source-available",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["ui", "api", "cli"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "600+ pre-built connectors, plus a no-code Connector Builder with AI assist for building your own from a source's API docs. Full refresh or incremental sync modes.",
+      "source": "https://airbyte.com/data-engineering-resources/open-source-data-integration-tools"
+    },
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Log-based CDC for supported databases embeds Debezium to capture inserts, updates and deletes from the transaction log continuously, without standing up and operating Kafka yourself.",
+      "source": "https://airbyte.com/top-etl-tools-for-sources/cdc-tools"
+    }
+  },
+  "bands": [
+    {
+      "band": "quality.contracts",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "Schema change management can require manual approval before a source's field or stream changes propagate, and automatically pauses a connection when a breaking change (a removed primary key or cursor) is detected, rather than always auto-propagating. Free on every plan tier, but is a configuration choice, not a formal schema validated on every record.",
+      "source": "https://docs.airbyte.com/using-airbyte/schema-change-management"
+    },
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "The no-code Connector Builder, with AI assist that reads a source's API documentation to auto-fill configuration, is the tooling for authoring a custom connector.",
+      "source": "https://airbyte.com/data-engineering-resources/open-source-data-integration-tools"
+    },
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "Sync health, record counts and failure notifications per connection. It covers connector health, not the data's own quality.",
+      "source": "https://airbyte.com/data-replication"
+    }
+  ],
+  "presentation": {
+    "tagline": "Open-source data movement: 600+ connectors, self-hosted, log-based CDC built in."
+  },
+  "pairs_with": ["dbt-core", "postgres", "snowflake"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 20,
+      "high": 80,
+      "unit": "usd-per-month",
+      "note": "No licence cost (ELv2 core is free to run yourself). This range is the small VM or container running the platform and worker pods continuously, not an Airbyte charge.",
+      "source": "https://docs.airbyte.com/community/licenses",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 150,
+      "high": 600,
+      "unit": "usd-per-month",
+      "note": "No licence cost. A properly sized instance and more worker capacity for more connections syncing on shorter schedules; generic cloud compute pricing, not an Airbyte-specific figure.",
+      "source": "https://docs.airbyte.com/community/licenses",
+      "as_of": "2026-09-23"
+    }
+  ],
+  "updated": "2026-09-23"
+}

@@ -195,6 +195,53 @@ describe("the guided start", () => {
     expect(window.location.search).not.toContain("tiers=");
   });
 
+  it("prompts for the pipeline's scale on Coverage, no matter how the stack was built", async () => {
+    // A hand-built stack (setup with tools already in the URL) sees the same prompt as a loaded example.
+    setup("/?tools=snowflake#coverage");
+    expect(screen.getByText(/What.s the scale of this pipeline/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Exploring or a prototype" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Steady production traffic" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "High volume, many pipelines" })).toBeTruthy();
+  });
+
+  it("shows an approximate total once scale is answered, and updates it when scale changes", async () => {
+    const user = setup("/?tools=snowflake#coverage");
+    await user.click(screen.getByRole("button", { name: "Steady production traffic" }));
+    await waitFor(() => expect(window.location.search).toContain("scale=production"));
+    expect(screen.getByText(/\$200–\$800\/mo at steady production traffic/)).toBeTruthy();
+    expect(screen.getByText(/Approximate, as of the date shown/)).toBeTruthy();
+
+    // Changing scale re-asks and shows a different total, not the same one relabelled.
+    await user.click(screen.getByRole("button", { name: "Change" }));
+    expect(screen.getByText(/What.s the scale of this pipeline/)).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "High volume, many pipelines" }));
+    await waitFor(() => expect(window.location.search).toContain("scale=scale"));
+    expect(screen.getByText(/\$2,000–\$10,000\/mo at high volume, many pipelines/)).toBeTruthy();
+  });
+
+  it("names the source and date behind a tool's own cost estimate in the breakdown fold", async () => {
+    const user = setup("/?tools=snowflake&scale=production#coverage");
+    await user.click(screen.getByText("Per-tool breakdown"));
+    const breakdown = document.querySelector<HTMLElement>(".costpanel__breakdown")!;
+    expect(within(breakdown).getByText("Snowflake")).toBeTruthy();
+    expect(within(breakdown).getByText(/\$200–\$800\/mo/)).toBeTruthy();
+    expect(within(breakdown).getByText(/as of 2026-09-23/)).toBeTruthy();
+    expect(within(breakdown).getByRole("link")).toBeTruthy();
+  });
+
+  it("also asks in the Edit Stack panel, but only while unanswered", async () => {
+    const user = setup("/?tools=snowflake#coverage");
+    await openEditor(user);
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText(/What.s the scale of this pipeline/)).toBeTruthy();
+
+    await user.click(within(dialog).getByRole("button", { name: "Exploring or a prototype" }));
+    await waitFor(() => expect(window.location.search).toContain("scale=prototype"));
+    // Answered: the total lives on Coverage, not duplicated in the edit panel.
+    expect(within(dialog).queryByText(/What.s the scale of this pipeline/)).toBeNull();
+    expect(within(dialog).queryByText(/\/mo at/)).toBeNull();
+  });
+
   it("builds a stack one question at a time, and lets any step be skipped", async () => {
     const user = setupLanding();
     await user.click(screen.getByRole("button", { name: /Build my own/ }));
@@ -243,6 +290,10 @@ describe("the guided start", () => {
     await user.click(screen.getByRole("checkbox", { name: /Prefer free and open-source/ }));
     await next(user);
 
+    expect(title()).toBe("How much does it move and run?");
+    await user.click(screen.getByRole("radio", { name: /Steady production traffic/ }));
+    await next(user);
+
     expect(title()).toBe("Here is your stack");
     const review = document.querySelector(".landing")!.textContent!;
     expect(review).toContain("Snowflake");
@@ -250,6 +301,7 @@ describe("the guided start", () => {
     expect(review).toContain("BI and visualisation");
     expect(review).toContain("Just me");
     expect(review).toContain("Prefer free and open-source");
+    expect(review).toContain("Steady production traffic");
 
     await user.click(screen.getByRole("button", { name: "Show me my stack" }));
     expect(screen.getByRole("heading", { name: "Coverage by stage" })).toBeTruthy();
@@ -266,7 +318,7 @@ describe("the guided start", () => {
     await user.click(screen.getByRole("button", { name: /Build my own/ }));
     for (let i = 0; i < 6; i += 1) await next(user); // 5 tool steps + needs, none picked
     await user.click(screen.getByRole("radio", { name: "Just me" }));
-    for (let i = 0; i < 4; i += 1) await next(user); // team, sensitivity, stakes, resources
+    for (let i = 0; i < 5; i += 1) await next(user); // team, sensitivity, stakes, resources, scale
     expect(title()).toBe("Here is your stack");
     expect(screen.queryByText(/have not picked anything yet/)).toBeNull();
     expect(screen.getByText(/what you told us about the project/)).toBeTruthy();
@@ -302,7 +354,7 @@ describe("the guided start", () => {
     for (let i = 0; i < 5; i += 1) await next(user);
     await user.click(screen.getByRole("checkbox", { name: /Machine learning in production/ }));
     await user.click(screen.getByRole("button", { name: "Next" }));
-    for (let i = 0; i < 4; i += 1) await next(user); // profile x3, resources, all skipped
+    for (let i = 0; i < 5; i += 1) await next(user); // profile x3, resources, scale, all skipped
     await user.click(screen.getByRole("button", { name: "Show me my stack" }));
     await openEditor(user);
     await user.click(screen.getByRole("tab", { name: /What you need/ }));

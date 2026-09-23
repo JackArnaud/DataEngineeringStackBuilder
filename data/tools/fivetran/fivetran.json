@@ -1,0 +1,71 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "fivetran",
+  "name": "Fivetran",
+  "vendor": "Fivetran",
+  "kind": "tool",
+  "sku": "Fivetran Standard plan, Fivetran Cloud deployment. Hybrid (agent-based) and self-hosted HVR deployment for database CDC exist but are not scored.",
+  "license": "proprietary",
+  "deployment": ["saas"],
+  "pricing_model": "usage",
+  "interfaces": ["ui", "api"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "ingest.batch-extract": {
+      "level": 3,
+      "delivery": "native",
+      "note": "700+ pre-built, fully managed connectors across databases, SaaS applications and files, with automatic schema mapping and incremental syncs. This is what the product is for.",
+      "source": "https://fivetran.com/docs/core-concepts"
+    },
+    "ingest.cdc": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Log-based change data capture for supported databases extracts row-level changes from the transaction log rather than full-table scans, run as managed, scheduled syncs rather than a continuous stream.",
+      "source": "https://www.fivetran.com/learn/cdc-tools-2024"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["ingest"],
+      "note": "The dashboard reports sync status, row counts and logs per connector, with alerting on sync failures and schema changes. It covers connector health, not the data's own quality.",
+      "source": "https://fivetran.com/docs/core-concepts"
+    }
+  ],
+  "presentation": {
+    "tagline": "Fully managed connectors that extract and load data with automatic schema handling."
+  },
+  "pairs_with": ["dbt-core", "dbt-platform", "snowflake", "gcp-bigquery", "databricks"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 5,
+      "high": 50,
+      "unit": "usd-per-month",
+      "note": "A $5 minimum applies to each standard connection with 1-1M Monthly Active Rows (MAR); a couple of low-volume connectors at that floor.",
+      "source": "https://hevodata.com/learn/fivetran-mar-pricing/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 800,
+      "high": 4000,
+      "unit": "usd-per-month",
+      "note": "Third-party estimate: smaller teams processing under 10 million MAR/month often land $1,250-4,200/month at $500/million MAR (Standard plan).",
+      "source": "https://hevodata.com/learn/fivetran-mar-pricing/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 10000,
+      "high": 40000,
+      "unit": "usd-per-month",
+      "note": "High MAR volume (tens of millions of rows/month) at Enterprise's $667/million MAR rate; annual contracts can bring 5-36% discounts off this.",
+      "source": "https://hevodata.com/learn/fivetran-mar-pricing/",
+      "as_of": "2026-09-23"
+    }
+  ],
+  "updated": "2026-09-23"
+}

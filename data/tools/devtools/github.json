@@ -67,5 +67,34 @@
     "tagline": "Git hosting, pull requests and CI/CD workflows for pipeline code."
   },
   "pairs_with": ["dbt", "snowflake", "databricks", "apache-airflow", "aws-mwaa"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 4,
+      "high": 16,
+      "unit": "usd-per-month",
+      "note": "Team plan is $4/user/month billed annually; assumes 1-4 people. Included Actions minutes (3,000/month) usually cover light CI use at this scale.",
+      "source": "https://github.com/pricing",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 20,
+      "high": 60,
+      "unit": "usd-per-month",
+      "note": "Team plan, assumes 5-15 people. Heavier CI/CD (more pipeline runs, longer jobs) can exceed the included Actions minutes and add metered cost on top, not included here.",
+      "source": "https://github.com/pricing",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "scale",
+      "low": 525,
+      "high": 2100,
+      "unit": "usd-per-month",
+      "note": "Enterprise plan ($21/user/month) for SSO and advanced auditing, assumes 25-100 people. Actions minutes overage for many concurrent pipelines is likely and not included here.",
+      "source": "https://github.com/pricing",
+      "as_of": "2026-09-23"
+    }
+  ],
   "updated": "2026-09-21"
 }

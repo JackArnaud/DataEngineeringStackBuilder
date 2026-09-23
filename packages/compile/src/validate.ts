@@ -313,6 +313,14 @@ function checkTool(rec: ToolRecord, file: string, t: Taxonomy, lenses: Map<strin
     }
   });
 
+  const seenScales = new Set<string>();
+  (rec.cost ?? []).forEach((c, i) => {
+    const ptr = `/cost/${i}`;
+    if (c.low > c.high) sink.error("cost-range-inverted", file, ptr, `low (${c.low}) is above high (${c.high})`);
+    if (seenScales.has(c.scale)) sink.error("cost-scale-duplicate", file, ptr, `"${c.scale}" is priced twice; one entry per scale`);
+    seenScales.add(c.scale);
+  });
+
   if (rec.kind !== "tool") return;
 
   for (const [id, score] of Object.entries(rec.coverage ?? {})) {

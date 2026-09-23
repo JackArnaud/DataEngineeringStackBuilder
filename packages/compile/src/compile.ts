@@ -61,6 +61,7 @@ export function compileRenderModel(input: CompileInput): RenderModel {
       interfaces: record.interfaces ?? [],
       tagline: record.presentation?.tagline,
       ...(record.pairs_with?.length && { pairs_with: [...record.pairs_with] }),
+      ...(record.cost?.length && { cost: [...record.cost] }),
       includes: record.kind === "tool" ? undefined : [...record.includes],
       bundling: record.kind === "tool" ? undefined : record.bundling,
       taxonomy_version: record.taxonomy_version,

@@ -1,0 +1,68 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "prefect",
+  "name": "Prefect (self-hosted)",
+  "vendor": "Prefect",
+  "kind": "tool",
+  "sku": "Prefect OSS server, self-hosted, Apache 2.0. Prefect Cloud is a separate managed deployment of the same engine and is not scored.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["ui", "api", "cli", "python"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Flows are plain Python functions that branch, loop and create tasks at runtime rather than a DAG declared up front, so dependencies come from ordinary function calls, not a separate graph definition.",
+      "source": "https://www.prefect.io/opensource"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Deployments run a flow on a schedule, alongside on-demand and event-driven runs.",
+      "source": "https://docs.prefect.io/v3/get-started"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Automations are first-class in self-hosted Server as well as Cloud in Prefect 3.x: triggers fire from flow-run state changes, metric thresholds or custom events. Webhook-based triggers need inbound routing configured, and production use needs PostgreSQL rather than the default SQLite to avoid lock contention delaying them.",
+      "source": "https://docs.prefect.io/v3/concepts/automations"
+    }
+  },
+  "bands": [
+    {
+      "band": "observe.monitoring",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "The UI tracks flow and task run states, logs and automatic retries. It covers run health, not the data's own quality.",
+      "source": "https://docs.prefect.io/v3/get-started"
+    }
+  ],
+  "presentation": {
+    "tagline": "Python-native orchestration: flows are ordinary functions, not a DAG declared up front."
+  },
+  "pairs_with": ["dbt-core", "snowflake", "aws-s3"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 10,
+      "high": 50,
+      "unit": "usd-per-month",
+      "note": "No licence cost (Apache 2.0). This range is the small VM or container running the server and a database continuously, not a Prefect charge.",
+      "source": "https://github.com/PrefectHQ/prefect/blob/main/LICENSE",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 100,
+      "high": 500,
+      "unit": "usd-per-month",
+      "note": "No licence cost. Production use needs PostgreSQL rather than the default SQLite to avoid lock contention, plus a properly sized instance for more concurrent flows; generic cloud compute pricing, not a Prefect-specific figure.",
+      "source": "https://github.com/PrefectHQ/prefect/blob/main/LICENSE",
+      "as_of": "2026-09-23"
+    }
+  ],
+  "updated": "2026-09-23"
+}

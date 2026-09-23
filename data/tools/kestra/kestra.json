@@ -1,0 +1,74 @@
+{
+  "$schema": "../../tool.schema.json",
+  "id": "kestra",
+  "name": "Kestra (self-hosted)",
+  "vendor": "Kestra",
+  "kind": "tool",
+  "sku": "Kestra Open Source Edition, self-hosted, Apache 2.0. Enterprise Edition adds blueprint promotion between environments, namespace-scoped RBAC, audit logs and worker isolation on top; not scored here.",
+  "license": "open-source",
+  "deployment": ["self-hosted"],
+  "pricing_model": "free",
+  "interfaces": ["ui", "api", "cli", "yaml"],
+  "taxonomy_version": "1.0.0",
+  "coverage": {
+    "orchestrate.dependency-dag": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Flows are declarative YAML, not Python: a task's dependencies are declared in the flow definition, and 2,000+ plugins run any script, API call or container as a task, language-agnostic.",
+      "source": "https://kestra.io/"
+    },
+    "orchestrate.scheduling": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Schedule triggers run a flow on an interval, one of several trigger types feeding the same engine.",
+      "source": "https://www.kai-waehner.de/blog/2026/09/09/what-is-kestra-the-open-source-platform-for-unified-orchestration/"
+    },
+    "orchestrate.event-triggers": {
+      "level": 3,
+      "delivery": "native",
+      "note": "Event-driven by design: schedules, events, webhooks and messages all trigger flows through the same engine, not as a bolt-on to a scheduler.",
+      "source": "https://libs.tech/project/204164353/kestra"
+    },
+    "orchestrate.ci-cd": {
+      "level": 2,
+      "delivery": "native",
+      "note": "Flows and namespace files sync bidirectionally with any Git provider over HTTPS or SSH (GitHub, GitLab, Bitbucket, Azure DevOps Repos and more), with documented GitHub Actions workflows and dry-run diffs. Promoting a reviewed flow between environments from the UI without a Git round-trip is an Enterprise Edition feature.",
+      "source": "https://kestra.io/docs/version-control-cicd/git"
+    }
+  },
+  "bands": [
+    {
+      "band": "platform.dev-experience",
+      "level": 2,
+      "delivery": "native",
+      "scope": ["orchestrate"],
+      "note": "A built-in YAML editor with autocomplete and validation, plus an official VS Code extension for editing and running flows outside the UI.",
+      "source": "https://kestra.io/docs/version-control-cicd/vscode"
+    }
+  ],
+  "presentation": {
+    "tagline": "Declarative YAML orchestration: any language as a task, one engine for schedules and events."
+  },
+  "pairs_with": ["dbt-core", "snowflake", "aws-s3"],
+  "cost": [
+    {
+      "scale": "prototype",
+      "low": 10,
+      "high": 50,
+      "unit": "usd-per-month",
+      "note": "No licence cost (Apache 2.0). This range is the small VM or container running the engine and a database continuously, not a Kestra charge.",
+      "source": "https://kestra.io/",
+      "as_of": "2026-09-23"
+    },
+    {
+      "scale": "production",
+      "low": 100,
+      "high": 500,
+      "unit": "usd-per-month",
+      "note": "No licence cost. A properly sized instance for more concurrent flows and workers; generic cloud compute pricing, not a Kestra-specific figure.",
+      "source": "https://kestra.io/",
+      "as_of": "2026-09-23"
+    }
+  ],
+  "updated": "2026-09-23"
+}

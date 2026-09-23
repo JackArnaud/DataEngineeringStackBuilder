@@ -4,7 +4,7 @@ import { ExampleGallery } from "./ExampleGallery";
 import type { Example } from "../examples";
 import { listNames, plural } from "../labels";
 import type { Lookup } from "../lookup";
-import { CLOUDS, NEED_CARDS, PROFILE_QUESTIONS, RESOURCE_CARDS, cardIsOn, TOOL_STEPS } from "../landing";
+import { CLOUDS, NEED_CARDS, PROFILE_QUESTIONS, RESOURCE_CARDS, SCALE_OPTIONS, cardIsOn, TOOL_STEPS } from "../landing";
 import type { NeedCard, ProfileOption, ProfileQuestion, ToolStep } from "../landing";
 import { add, toggle } from "../state";
 import type { StackState } from "../state";
@@ -25,6 +25,7 @@ type Screen =
   | { kind: "needs"; key: string }
   | { kind: "profile"; key: string; question: ProfileQuestion }
   | { kind: "resources"; key: string }
+  | { kind: "scale"; key: string }
   | { kind: "review"; key: string };
 
 type Place = "welcome" | "examples" | number;
@@ -47,7 +48,7 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
     }
     screens.push({ kind: "needs", key: "needs" });
     for (const q of PROFILE_QUESTIONS) screens.push({ kind: "profile", key: `profile-${q.key}`, question: q });
-    screens.push({ kind: "resources", key: "resources" }, { kind: "review", key: "review" });
+    screens.push({ kind: "resources", key: "resources" }, { kind: "scale", key: "scale" }, { kind: "review", key: "review" });
     return screens;
   }, [chosen, portfolios]);
 
@@ -108,12 +109,15 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
             ? (state.profile[screen.question.key] ? 1 : 0)
             : screen.kind === "resources"
               ? state.resources.length
-              : 0;
+              : screen.kind === "scale"
+                ? (state.scale ? 1 : 0)
+                : 0;
 
-  // What the profile and resources screens say, for the review: the option label picked for each
-  // question that got one, and the label of every resource ticked.
+  // What the profile, resources and scale screens say, for the review: the option label picked for
+  // each question that got one, and the label of every resource ticked.
   const profileLabels = PROFILE_QUESTIONS.flatMap((q) => q.options.filter((o) => state.profile[q.key] === o.id).map((o) => o.label));
   const resourceLabels = RESOURCE_CARDS.filter((c) => state.resources.includes(c.id)).map((c) => c.label);
+  const scaleLabel = SCALE_OPTIONS.find((o) => o.id === state.scale)?.label;
 
   return (
     <section className="landing" aria-labelledby="step-title">
@@ -205,10 +209,22 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
         </>
       )}
 
+      {screen.kind === "scale" && (
+        <>
+          <h2 id="step-title">How much does it move and run?</h2>
+          <p className="muted">A real part of evaluating a stack: what it costs depends a lot on volume, not just which tools you pick.</p>
+          <ul className="tiles">
+            {SCALE_OPTIONS.map((o) => (
+              <Tile key={o.id} name={o.label} blurb={o.help} on={state.scale === o.id} onToggle={() => onChange({ scale: o.id })} type="radio" group="scale" />
+            ))}
+          </ul>
+        </>
+      )}
+
       {screen.kind === "review" && (
         <>
           <h2 id="step-title">Here is your stack</h2>
-          {state.tools.length === 0 && state.needs.length === 0 && profileLabels.length === 0 && resourceLabels.length === 0 ? (
+          {state.tools.length === 0 && state.needs.length === 0 && profileLabels.length === 0 && resourceLabels.length === 0 && !scaleLabel ? (
             <p className="muted">You have not picked anything yet. You can still continue and pick tools in the builder, or go back and choose some.</p>
           ) : (
             <>
@@ -224,10 +240,10 @@ export function Landing({ model, lookup, state, onChange, onDone, onLoadExample 
                   {listNames(state.needs.map((id) => lookup.capabilityName(id)))}
                 </p>
               )}
-              {(profileLabels.length > 0 || resourceLabels.length > 0) && (
+              {(profileLabels.length > 0 || resourceLabels.length > 0 || scaleLabel) && (
                 <p className="review__line">
                   <span className="muted">About your project: </span>
-                  {listNames([...profileLabels, ...resourceLabels])}
+                  {listNames([...profileLabels, ...resourceLabels, ...(scaleLabel ? [scaleLabel] : [])])}
                 </p>
               )}
             </>

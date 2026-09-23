@@ -1,4 +1,4 @@
-import type { Resource } from "@compile";
+import type { Resource, Scale } from "@compile";
 
 /**
  * The guided start: a short run of choice screens that build a stack before any guidance is shown.
@@ -131,6 +131,23 @@ export const PROFILE_QUESTIONS: ProfileQuestion[] = [
       { id: "customer-facing", label: "Customers or revenue depend on it" },
     ],
   },
+];
+
+/** One option for the scale question, its id matching a `Scale` value. */
+export interface ScaleOption {
+  id: Scale;
+  label: string;
+  help: string;
+}
+
+/**
+ * How much the pipeline moves and runs — distinct from `profile.team` (headcount): this is about
+ * data volume and traffic, and it drives the cost estimate rather than dampening gap severity.
+ */
+export const SCALE_OPTIONS: ScaleOption[] = [
+  { id: "prototype", label: "Exploring or a prototype", help: "Low, occasional volume. Most tools fit inside a free tier at this scale." },
+  { id: "production", label: "Steady production traffic", help: "A real pipeline a small-to-mid team relies on." },
+  { id: "scale", label: "High volume, many pipelines", help: "Large volume, or many pipelines running at once." },
 ];
 
 /** A plain-language resource the guided start's resources step can tick. */

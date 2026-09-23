@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { applyTier, hasEnterpriseTierUnlock, suggestTools } from "@compile";
 import type { Gap, GapReport, GapsInLens, RenderLens, RenderModel, RenderTool } from "@compile";
-import { ARCHETYPE_LABEL, constraintPhrase, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural } from "../labels";
+import { ARCHETYPE_LABEL, constraintPhrase, gapTitle, KIND_LABEL, LEVEL_HELP, LEVEL_LABEL, plural, safeHref, sourceHost } from "../labels";
 import type { Lookup } from "../lookup";
 import { groupCells, joinNames } from "../receipts";
 import { toggle } from "../state";
@@ -11,7 +11,7 @@ import type { Detail } from "../types";
 import { CellGroups } from "./CellGroups";
 import { whereText } from "./GapList";
 import { RoleGlyph } from "./glyphs";
-import { DeliveryBadge, LevelBadge, SeverityChip } from "./parts";
+import { DeliveryBadge, LevelBadge, SeverityChip, SourceLink } from "./parts";
 import { StackPanel } from "./StackPanel";
 
 interface Props {
@@ -97,6 +97,7 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool
   const spine = groups.filter((g) => lookup.capability(g.capability)?.kind === "spine");
   const band = groups.filter((g) => lookup.capability(g.capability)?.kind === "band");
   const inStack = state.tools.includes(tool.id);
+  const costEntry = state.scale ? tool.cost?.find((c) => c.scale === state.scale) : undefined;
   const members = (tool.includes ?? []).map((id) => lookup.tool(id)).filter((t): t is RenderTool => !!t);
   const parents = lookup.includedBy(tool.id);
   const canTier = hasEnterpriseTierUnlock(tool.cells);
@@ -144,6 +145,27 @@ function ToolDetail({ model, lookup, state, tool, onOpen, onChange, onToggleTool
         <dd>{tool.deployment.join(", ")}</dd>
         <dt>Pricing</dt>
         <dd>{tool.pricing_model}</dd>
+        {state.scale && (
+          <>
+            <dt>Cost</dt>
+            <dd>
+              {costEntry ? (
+                <>
+                  ${costEntry.low.toLocaleString("en-US")}&ndash;${costEntry.high.toLocaleString("en-US")}/mo <span className="muted">approximate, as of {costEntry.as_of}</span>
+                  {costEntry.source && (
+                    <>
+                      {" "}
+                      · <SourceLink href={safeHref(costEntry.source)} label={sourceHost(costEntry.source)} />
+                    </>
+                  )}
+                  <p className="muted costpanel__note">{costEntry.note}</p>
+                </>
+              ) : (
+                <span className="muted">Not yet estimated at this scale</span>
+              )}
+            </dd>
+          </>
+        )}
         {tool.sku && (
           <>
             <dt>Scored as</dt>

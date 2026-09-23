@@ -182,6 +182,16 @@ a { color: inherit; }
 .tierpanel__list .tiercheck { flex: 1 1 auto; background: var(--page); }
 .tierpanel__more { color: var(--muted); font-size: 13px; }
 
+.costpanel { margin-top: 14px; padding: 12px; border: 1px solid var(--axis); border-radius: var(--r); background: var(--wash); }
+.costpanel__prompt { margin-bottom: 8px; color: var(--ink-2); font-size: 14px; }
+.costpanel__options { display: flex; flex-wrap: wrap; gap: 8px; }
+.costpanel__total { font: 600 17px/1.3 var(--serif); }
+.costpanel__change { margin-left: 8px; font-size: 13px; font-weight: 400; vertical-align: middle; }
+.costpanel__disclaimer { margin-top: 4px; font-size: 13px; }
+.costpanel__breakdown { display: grid; gap: 10px; margin-top: 8px; }
+.costpanel__row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.costpanel__note { margin-top: 2px; font-size: 13px; }
+
 .search input { width: 100%; padding: 8px 10px; border-radius: var(--r); border: 1px solid var(--axis); background: var(--page); }
 .search input::placeholder { color: var(--muted); }
 

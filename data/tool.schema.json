@@ -275,7 +275,47 @@
             "$ref": "#/$defs/toolId"
           }
         },
+        "cost": {
+          "description": "Real, approximate dollar ranges, one entry per scale it has been priced at. Absence means not yet estimated, never free. Deliberately approximate: every entry carries its own source and the date it was recorded, and the UI always shows both beside a permanent disclaimer rather than presenting a figure as a quote.",
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/costEstimate"
+          }
+        },
         "updated": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
+    "costEstimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scale", "low", "high", "unit", "note", "source", "as_of"],
+      "properties": {
+        "scale": {
+          "enum": ["prototype", "production", "scale"]
+        },
+        "low": {
+          "type": "number",
+          "minimum": 0
+        },
+        "high": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "const": "usd-per-month"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 10
+        },
+        "source": {
+          "$ref": "#/$defs/sourceUrl"
+        },
+        "as_of": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
         }

@@ -374,6 +374,34 @@ gone; the tooltip is now just the named tools and their levels ("AWS Lake Format
 "Nothing in your stack covers this here" when none do — the fact someone asking "how will this be
 managed and by which tool" actually wants, not a level that could belong to any of them.
 
+**Real dollar cost, reopening an earlier decision, with the mitigation built in rather than left
+implicit.** The tier-name work (above) deliberately scored the *name* of a plan, never its price —
+"actual dollar pricing is too volatile to score reliably." The user asked directly for real cost
+figures anyway, knowing this: "we should make it clear what the costs associated with a pipeline are
+likely to be." Rather than silently overriding the earlier concern or silently downgrading the
+request to something safer, the tension was named and the user chose real dollar ranges, so the
+mitigation is structural, not a caveat someone has to remember: every `CostEstimate`
+(`packages/compile/src/cost.ts`) carries its own `source` and the `as_of` date it was recorded, and
+the UI (`CostPanel.tsx`) shows a permanent, unconditional disclaimer next to every figure — "confirm
+current pricing with the vendor before budgeting" — not a one-time warning that scrolls away. A tool
+with no entry for the chosen scale is never treated as free: `estimateCost` puts it in `unpriced` and
+the total is shown as a floor with an explicit count of what's missing from it ("3 tools priced,
+1 tool not yet estimated"), so an incomplete estimate never silently reads as a complete one. Scored
+for an initial ~17 of the tools most likely to appear in a real stack (the ones most used across
+`examples.ts`, plus the eight tools added alongside this feature); the rest are backlog, the same
+"start deep, add more later" shape the project has used since its first pass at tool records.
+
+**Scale is asked everywhere a stack can start, without slowing down the fastest path.** Examples
+("quick start templates") deliberately skip every guided-start question, profile and resources
+included, so loading one stays a single click. Rather than adding a step to that path, the scale
+question is a prominent, always-visible, skippable prompt inside the builder itself — on the Coverage
+tab (where every path lands by default) and, in its unanswered form only, in the Edit Stack panel —
+the same shape the tier-declaration work already used for exactly this kind of "must be discoverable,
+must not gate anything" requirement. It's *also* a proper step in the guided "Build my own" flow,
+after resources, for anyone who takes that path and would expect it asked in sequence like
+profile and resources already are. Distinct from `profile.team` (headcount): this question is about
+data volume and traffic, and it drives the cost estimate, not gap severity.
+
 ## Left out on purpose
 
 **`presentation.hue`** is not in the schema, although the brief's example record has it. The brief
